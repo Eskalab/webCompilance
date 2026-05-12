@@ -1,0 +1,45 @@
+  'use client';
+
+  import ScanForm from '@/components/scan-form';
+  import { useLanguage } from '@/contexts/language';
+
+  export default function Home() {
+    const { t } = useLanguage();
+
+    return (
+      <main className="flex-1 flex flex-col items-center justify-center px-4 py-16">
+        <div className="text-center mb-10">
+          <h1 className="text-4xl sm:text-5xl font-bold white mb-4">
+            {t('hero_title')}
+          </h1>
+          <p className="text-lg white max-w-2xl mx-auto">
+            {t('hero_subtitle')}
+          </p>
+        </div>
+
+        <ScanForm />
+
+        <div className="mt-16 grid grid-cols-1 sm:grid-cols-3 gap-8 max-w-3xl mx-auto text-center">
+          <div>
+            <div className="text-3xl mb-2">🔒</div>
+            <h3 className="font-semibold white">SSL / HTTPS</h3>
+            <p className="text-sm white">{t('feature_ssl')}</p>
+          </div>
+          <div>
+            <div className="text-3xl mb-2">🍪</div>
+            <h3 className="font-semibold white">Cookie Banner</h3>
+            <p className="text-sm white">{t('feature_cookie')}</p>
+          </div>
+          <div>
+            <div className="text-3xl mb-2">📋</div>
+            <h3 className="font-semibold white">{t('feature_legal')}</h3>
+            <p className="text-sm white">{t('feature_legal_desc')}</p>
+          </div>
+        </div>
+
+        <footer className="mt-auto pt-16 pb-6 text-center text-xs text-gray-400">
+          <p>{t('footer')}</p>
+        </footer>
+      </main>
+    );
+  }

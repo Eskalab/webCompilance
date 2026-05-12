@@ -1,0 +1,44 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Scan {
+  id        String   @id
+  url       String
+  score     Int
+  summary   Json
+  checks    Json
+  scannedAt DateTime @default(now()) @map("scanned_at")
+  createdAt DateTime @default(now()) @map("created_at")
+  leads     Lead[]
+
+  @@map("scans")
+}
+
+model Lead {
+  id        Int      @id @default(autoincrement())
+  email     String
+  scan      Scan?    @relation(fields: [scanId], references: [id])
+  scanId    String?  @map("scan_id")
+  url       String?
+  score     Int?
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([email])
+  @@map("leads")
+}
+
+model RateLimit {
+  id          Int      @id @default(autoincrement())
+  ip          String
+  requestedAt DateTime @default(now()) @map("requested_at")
+
+  @@index([ip, requestedAt])
+  @@map("rate_limits")
+}
