@@ -17,8 +17,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "LATAM Legal Compliance Scanner — TDE",
+  title: "Escáner Legal - TDE Transformación Digital Empresarial",
   description: "Scan your website and check data protection compliance in Latin America. Free, no installation needed.",
+  icons: { icon: "/favicon.ico" },
 };
 
 export default function RootLayout({
