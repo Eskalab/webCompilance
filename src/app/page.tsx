@@ -2,6 +2,7 @@
 
 import ScanForm from '@/components/scan-form';
 import { useLanguage } from '@/contexts/language';
+import SiteHeader from '@/components/site-header';
 import {
   ShieldCheck,
   Cookie,
@@ -22,7 +23,7 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-6 h-12 flex items-center justify-between text-sm">
           <div className="flex items-center gap-4 text-gray-700">
             <span className="font-medium">
-              Habla con un asesor
+              {t('topbar_talk_advisor')}
             </span>
 
             <span className="text-[#0f8b8d] font-semibold">
@@ -31,113 +32,27 @@ export default function Home() {
           </div>
 
           <div className="hidden md:flex items-center gap-3 text-gray-600">
-            <span>Síguenos</span>
+            <span>{t('topbar_follow_us')}</span>
 
             <div className="flex gap-2">
-              <div className="w-8 h-8 rounded-full bg-[#6ed3c1] flex items-center justify-center text-white text-xs">
-                IG
-              </div>
+              <a href="https://www.instagram.com/transformaciondigitalempresas" target="_blank" rel="noopener noreferrer" className="w-8 h-8 rounded-full bg-[#6ed3c1] hover:bg-[#0f8b8d] transition-colors flex items-center justify-center text-white">
+                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+              </a>
 
-              <div className="w-8 h-8 rounded-full bg-[#6ed3c1] flex items-center justify-center text-white text-xs">
-                FB
-              </div>
+              <a href="https://www.facebook.com/transformaciondigitalempresarial" target="_blank" rel="noopener noreferrer" className="w-8 h-8 rounded-full bg-[#6ed3c1] hover:bg-[#0f8b8d] transition-colors flex items-center justify-center text-white">
+                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+              </a>
 
-              <div className="w-8 h-8 rounded-full bg-[#6ed3c1] flex items-center justify-center text-white text-xs">
-                IN
-              </div>
+              <a href="https://www.linkedin.com/company/transformaciondigitalempresarial" target="_blank" rel="noopener noreferrer" className="w-8 h-8 rounded-full bg-[#6ed3c1] hover:bg-[#0f8b8d] transition-colors flex items-center justify-center text-white">
+                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+              </a>
             </div>
           </div>
         </div>
       </div>
 
       {/* NAVBAR */}
-      <header className="bg-white border-b border-gray-200 sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="h-24 flex items-center justify-between">
-            {/* LEFT */}
-            <div className="flex items-center gap-6">
-              <img
-                src="/logo.png"
-                alt="TDE"
-                className="h-14 w-auto object-contain"
-              />
-
-              {/* <div className="hidden lg:block">
-                <h2 className="text-[#1f2d3d] font-bold text-2xl tracking-tight">
-                  TDE Compliance
-                </h2>
-
-                <p className="text-gray-500 text-sm">
-                  Legal Website Scanner
-                </p>
-              </div> */}
-            </div>
-
-            {/* MENU */}
-            <nav className="hidden lg:flex items-center gap-10">
-              <a
-                href="#features"
-                className="text-gray-700 hover:text-[#0f8b8d] transition font-medium"
-              >
-                Features
-              </a>
-
-              <a
-                href="#how"
-                className="text-gray-700 hover:text-[#0f8b8d] transition font-medium"
-              >
-                Cómo funciona
-              </a>
-
-              <a
-                href="#checks"
-                className="text-gray-700 hover:text-[#0f8b8d] transition font-medium"
-              >
-                Compliance
-              </a>
-
-              <a
-                href="#footer"
-                className="text-gray-700 hover:text-[#0f8b8d] transition font-medium"
-              >
-                Contacto
-              </a>
-            </nav>
-
-            {/* RIGHT */}
-            <div className="flex items-center gap-4">
-              <button
-                className="
-                  hidden md:flex
-                  h-12
-                  px-7
-                  items-center
-                  justify-center
-                  rounded-2xl
-                  bg-[#0f8b8d]
-                  text-white
-                  font-semibold
-                  shadow-lg
-                  hover:bg-[#0c7475]
-                  transition-all
-                "
-              >
-                Analizar sitio
-              </button>
-
-              <div className="flex items-center rounded-xl overflow-hidden border border-gray-200 shadow-sm">
-                <button className="px-4 py-2 bg-[#2563eb] text-white text-sm">
-                  🇪🇸 ES
-                </button>
-
-                <button className="px-4 py-2 bg-white text-gray-700 text-sm">
-                  🇺🇸 EN
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </header>
+      <SiteHeader/>
 
       {/* HERO */}
       <section className="relative">
@@ -149,196 +64,51 @@ export default function Home() {
         </div>
 
         <div className="relative max-w-7xl mx-auto px-6 py-20 lg:py-28">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
-            {/* LEFT */}
-            <div>
-              <div className="inline-flex items-center gap-2 bg-[#6ed3c1]/15 text-[#0f8b8d] px-5 py-2 rounded-full text-sm font-medium mb-8">
-                <ShieldCheck className="w-4 h-4" />
+          <div className="max-w-4xl mx-auto text-center">
+  <h2 className="text-6xl lg:text-7xl font-bold text-[#0f8b8d] mb-14">
+    {t('hero_page_title')}
+  </h2>
 
-                Plataforma de cumplimiento legal web
-              </div>
+  <div className="inline-flex items-center gap-2 bg-[#6ed3c1]/15 text-[#0f8b8d] px-5 py-2 rounded-full text-sm font-medium mb-8">
+    <ShieldCheck className="w-4 h-4" />
 
-              <h1 className="text-5xl lg:text-7xl font-bold leading-tight text-[#1f2d3d] mb-8">
-                Analiza si tu sitio cumple con privacidad y legalidad digital
-              </h1>
+    {t('hero_badge')}
+  </div>
 
-              <p className="text-xl text-gray-600 leading-relaxed mb-10 max-w-2xl">
-                Detectamos automáticamente problemas relacionados con cookies,
-                privacidad, tracking, SSL y cumplimiento normativo para tu
-                página web.
-              </p>
+  <h1 className="text-4xl lg:text-5xl font-bold leading-tight text-[#1f2d3d] mb-8">
+    {t('hero_title_main')}
+  </h1>
 
-              {/* FORM */}
-              <div className="bg-white rounded-[28px] shadow-2xl border border-gray-100 p-4">
-                <ScanForm />
-              </div>
+  <p className="text-xl text-gray-600 leading-relaxed mb-10 max-w-3xl mx-auto">
+    {t('hero_subtitle_main')}
+  </p>
 
-              {/* BADGES */}
-              <div className="flex flex-wrap items-center gap-6 mt-8 text-sm text-gray-600">
-                <div className="flex items-center gap-2">
-                  <div className="w-2.5 h-2.5 rounded-full bg-[#6ed3c1]" />
+  {/* FORM */}
+  <div className="bg-white rounded-[28px] shadow-2xl border border-gray-100 p-4 max-w-3xl mx-auto">
+    <ScanForm />
+  </div>
 
-                  Sin registros
-                </div>
+  {/* BADGES */}
+  <div className="flex flex-wrap justify-center items-center gap-6 mt-8 text-sm text-gray-600">
+    <div className="flex items-center gap-2">
+      <div className="w-2.5 h-2.5 rounded-full bg-[#6ed3c1]" />
 
-                <div className="flex items-center gap-2">
-                  <div className="w-2.5 h-2.5 rounded-full bg-[#6ed3c1]" />
+      {t('badge_no_registration')}
+    </div>
 
-                  Resultado inmediato
-                </div>
+    <div className="flex items-center gap-2">
+      <div className="w-2.5 h-2.5 rounded-full bg-[#6ed3c1]" />
 
-                <div className="flex items-center gap-2">
-                  <div className="w-2.5 h-2.5 rounded-full bg-[#6ed3c1]" />
+      {t('badge_instant_result')}
+    </div>
 
-                  Escaneo seguro
-                </div>
-              </div>
-            </div>
+    <div className="flex items-center gap-2">
+      <div className="w-2.5 h-2.5 rounded-full bg-[#6ed3c1]" />
 
-            {/* RIGHT CARD */}
-            <div className="relative">
-              <div className="bg-white rounded-[36px] border border-gray-100 shadow-2xl p-8">
-                {/* TOP */}
-                <div className="flex items-start justify-between mb-10">
-                  <div>
-                    <p className="text-sm text-gray-500 mb-1">
-                      Sitio analizado
-                    </p>
-
-                    <h3 className="text-3xl font-bold text-[#1f2d3d]">
-                      tde.com.co
-                    </h3>
-                  </div>
-
-                  <div className="flex items-center gap-2 text-[#0f8b8d] text-sm font-medium">
-                    <div className="w-3 h-3 rounded-full bg-[#6ed3c1]" />
-
-                    Escaneo activo
-                  </div>
-                </div>
-
-                {/* SCORE */}
-                <div className="grid grid-cols-2 gap-10 items-center mb-10">
-                  <div className="relative w-56 h-56 mx-auto">
-                    <div className="absolute inset-0 rounded-full border-[18px] border-[#e7f5f2]" />
-
-                    <div
-                      className="
-                        absolute
-                        inset-0
-                        rounded-full
-                        border-[18px]
-                        border-transparent
-                        border-t-[#6ed3c1]
-                        border-r-[#6ed3c1]
-                        rotate-45
-                      "
-                    />
-
-                    <div className="absolute inset-0 flex flex-col items-center justify-center">
-                      <span className="text-6xl font-bold text-[#1f2d3d]">
-                        74
-                      </span>
-
-                      <span className="text-[#0f8b8d] font-medium mt-2">
-                        Riesgo medio
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* CHECKS */}
-                  <div className="space-y-5">
-                    {[
-                      {
-                        label: 'SSL / HTTPS',
-                        ok: true,
-                      },
-                      {
-                        label: 'Cookie Banner',
-                        ok: false,
-                      },
-                      {
-                        label: 'Política Privacidad',
-                        warn: true,
-                      },
-                      {
-                        label: 'Trackers',
-                        warn: true,
-                      },
-                      {
-                        label: 'Consentimiento',
-                        ok: false,
-                      },
-                    ].map((item) => (
-                      <div
-                        key={item.label}
-                        className="flex items-center justify-between border-b border-gray-100 pb-4"
-                      >
-                        <span className="text-gray-700 font-medium">
-                          {item.label}
-                        </span>
-
-                        {item.ok && (
-                          <CheckCircle2 className="w-5 h-5 text-[#30c48d]" />
-                        )}
-
-                        {item.warn && (
-                          <div className="w-5 h-5 rounded-full border-2 border-yellow-400" />
-                        )}
-
-                        {!item.ok && !item.warn && (
-                          <div className="w-5 h-5 rounded-full border-2 border-red-400" />
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* ALERT */}
-                <div className="bg-[#f7f8fa] border border-red-100 rounded-3xl p-6">
-                  <div className="flex items-start gap-4">
-                    <div className="w-12 h-12 rounded-2xl bg-red-100 flex items-center justify-center text-red-500 font-bold">
-                      !
-                    </div>
-
-                    <div>
-                      <p className="text-red-500 font-semibold mb-1">
-                        Riesgo detectado
-                      </p>
-
-                      <h4 className="text-[#1f2d3d] font-bold text-xl mb-2">
-                        No se detectó consentimiento válido de cookies
-                      </h4>
-
-                      <p className="text-gray-600 leading-relaxed">
-                        Tu sitio instala cookies antes del consentimiento
-                        explícito del usuario.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* FLOATING */}
-              <div className="absolute -bottom-8 -left-8 bg-white shadow-xl rounded-3xl px-6 py-4 border border-gray-100">
-                <div className="flex items-center gap-4">
-                  <div className="w-14 h-14 rounded-2xl bg-[#6ed3c1]/15 flex items-center justify-center">
-                    <SearchCheck className="w-7 h-7 text-[#0f8b8d]" />
-                  </div>
-
-                  <div>
-                    <p className="text-sm text-gray-500">
-                      Escaneo automatizado
-                    </p>
-
-                    <h4 className="font-bold text-[#1f2d3d]">
-                      RGPD + Habeas Data
-                    </h4>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+      {t('badge_safe_scan')}
+    </div>
+  </div>
+</div>
         </div>
       </section>
 
@@ -350,16 +120,15 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-20">
             <p className="text-[#0f8b8d] font-semibold uppercase tracking-widest mb-4">
-              Plataforma Compliance
+              {t('features_label')}
             </p>
 
             <h2 className="text-5xl font-bold text-[#1f2d3d] mb-6">
-              Todo lo que necesitas analizar
+              {t('features_title')}
             </h2>
 
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Detectamos automáticamente problemas legales, técnicos y de
-              privacidad en sitios web empresariales.
+              {t('features_desc')}
             </p>
           </div>
 
@@ -367,23 +136,23 @@ export default function Home() {
             {[
               {
                 icon: ShieldCheck,
-                title: 'SSL y Seguridad',
-                text: 'Validamos HTTPS, certificados y configuraciones seguras.',
+                title: t('feat_ssl_title'),
+                text: t('feat_ssl_desc'),
               },
               {
                 icon: Cookie,
-                title: 'Cookies y Consentimiento',
-                text: 'Detectamos banners inválidos y trackers sin autorización.',
+                title: t('feat_cookies_title'),
+                text: t('feat_cookies_desc'),
               },
               {
                 icon: FileCheck,
-                title: 'Documentos Legales',
-                text: 'Verificamos políticas, términos y cumplimiento normativo.',
+                title: t('feat_legal_title'),
+                text: t('feat_legal_desc'),
               },
               {
                 icon: Globe,
-                title: 'Tracking y Scripts',
-                text: 'Analizamos Google Analytics, Meta Pixel y rastreadores.',
+                title: t('feat_tracking_title'),
+                text: t('feat_tracking_desc'),
               },
             ].map((feature) => (
               <div
@@ -424,11 +193,11 @@ export default function Home() {
         <div className="max-w-6xl mx-auto px-6">
           <div className="text-center mb-20">
             <p className="text-[#0f8b8d] font-semibold uppercase tracking-widest mb-4">
-              Cómo funciona
+              {t('how_label')}
             </p>
 
             <h2 className="text-5xl font-bold text-[#1f2d3d]">
-              Escaneo en 3 pasos
+              {t('how_title')}
             </h2>
           </div>
 
@@ -436,18 +205,18 @@ export default function Home() {
             {[
               {
                 step: '01',
-                title: 'Ingresa tu dominio',
-                text: 'Escribe la URL de tu sitio web.',
+                title: t('step1_title'),
+                text: t('step1_desc'),
               },
               {
                 step: '02',
-                title: 'Analizamos automáticamente',
-                text: 'Escaneamos cookies, scripts y documentos.',
+                title: t('step2_title'),
+                text: t('step2_desc'),
               },
               {
                 step: '03',
-                title: 'Obtén tu reporte',
-                text: 'Visualiza riesgos y oportunidades de mejora.',
+                title: t('step3_title'),
+                text: t('step3_desc'),
               },
             ].map((item) => (
               <div
@@ -479,12 +248,11 @@ export default function Home() {
 
             <div className="relative">
               <h2 className="text-5xl font-bold text-white mb-6">
-                Escanea tu sitio ahora
+                {t('cta_title')}
               </h2>
 
               <p className="text-white/90 text-xl mb-10 max-w-2xl mx-auto">
-                Obtén un diagnóstico automático de cumplimiento legal y
-                privacidad web.
+                {t('cta_subtitle')}
               </p>
 
               <div className="max-w-3xl mx-auto">
@@ -513,29 +281,28 @@ export default function Home() {
               />
 
               <p className="text-gray-600 leading-relaxed max-w-lg">
-                Plataforma de análisis de cumplimiento legal y privacidad para
-                empresas digitales.
+                {t('footer_desc')}
               </p>
             </div>
 
             {/* LINKS */}
             <div>
               <h4 className="font-bold text-[#1f2d3d] mb-6">
-                Plataforma
+                {t('footer_platform')}
               </h4>
 
               <div className="space-y-4 text-gray-600">
-                <p>Escaneo</p>
-                <p>Compliance</p>
-                <p>Privacidad</p>
-                <p>Reportes</p>
+                <p>{t('footer_scanning')}</p>
+                <p>{t('footer_compliance')}</p>
+                <p>{t('footer_privacy')}</p>
+                <p>{t('footer_reports')}</p>
               </div>
             </div>
 
             {/* CONTACT */}
             <div>
               <h4 className="font-bold text-[#1f2d3d] mb-6">
-                Contacto
+                {t('footer_contact')}
               </h4>
 
               <div className="space-y-4 text-gray-600">

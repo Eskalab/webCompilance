@@ -12,6 +12,8 @@ const HTML_PATTERNS: Record<string, RegExp> = {
   'Osano': /osano/i,
   'OneTrust': /onetrust/i,
   'Termly': /termly/i,
+  'data-cookie-consent': /data-cookie-consent\s*=\s*["']true["']/i,
+  'cookie-consent-meta': /<meta\s[^>]*name\s*=\s*["']cookie-consent["'][^>]*>/i,
 };
 
 export const cookieBannerCheck: Check = {
