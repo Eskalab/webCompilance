@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useLanguage } from '@/contexts/language';
 import { ScanResponse } from '@/lib/scanner/types';
 import SiteHeader from '@/components/site-header';
+import LeadGate from '@/components/lead-gate';
 
 import {
   ShieldCheck,
@@ -350,8 +351,11 @@ function ResultsContent() {
               </div>
 
               {/* CHECK ITEMS */}
-              <div className="divide-y divide-gray-100">
-                {scan.checks.map((check) => {
+              {(() => {
+                const freeChecks = scan.checks.filter(c => c.tier === 'free');
+                const premiumChecks = scan.checks.filter(c => c.tier === 'premium');
+
+                const renderCheckItem = (check: typeof scan.checks[number], showRecommendation: boolean) => {
                   const isPass = check.status === 'pass';
                   const isWarn = check.status === 'warn';
                   const isFail = check.status === 'fail';
@@ -417,47 +421,8 @@ function ResultsContent() {
                             </div>
                           </div>
 
-                          {/* LOCKED */}
-                          {!unlocked && (
-                            <div className="mt-6 p-5 rounded-2xl bg-[#f7f8fa] border border-gray-200">
-                              <div className="flex items-center justify-between gap-6 flex-wrap">
-                                <div className="flex items-center gap-4">
-                                  <div className="w-12 h-12 rounded-2xl bg-[#6ed3c1]/15 flex items-center justify-center">
-                                    <ShieldCheck className="w-6 h-6 text-[#0f8b8d]" />
-                                  </div>
-
-                                  <div>
-                                    <p className="font-semibold text-[#1f2d3d]">
-                                      {t('premium_recommendations_locked')}
-                                    </p>
-
-                                    <p className="text-sm text-gray-500">
-                                      {t('premium_unlock_desc')}
-                                    </p>
-                                  </div>
-                                </div>
-
-                                <button
-                                  onClick={() => setUnlocked(true)}
-                                  className="
-                                    h-12
-                                    px-6
-                                    rounded-2xl
-                                    bg-[#0f8b8d]
-                                    text-white
-                                    font-semibold
-                                    hover:bg-[#0c7475]
-                                    transition
-                                  "
-                                >
-                                  {t('btn_unlock')}
-                                </button>
-                              </div>
-                            </div>
-                          )}
-
-                          {/* UNLOCKED */}
-                          {unlocked && (
+                          {/* RECOMMENDATION (only when unlocked and showRecommendation) */}
+                          {showRecommendation && (
                             <div className="mt-6 bg-[#f7f8fa] rounded-3xl p-6 border border-gray-200">
                               <div className="flex items-start gap-4">
                                 <div className="w-12 h-12 rounded-2xl bg-[#6ed3c1]/15 flex items-center justify-center">
@@ -476,12 +441,64 @@ function ResultsContent() {
                               </div>
                             </div>
                           )}
+
+                          {/* BLURRED LOCKED INDICATOR (free checks when not unlocked) */}
+                          {!showRecommendation && !unlocked && (
+                            <div className="mt-6 p-5 rounded-2xl bg-[#f7f8fa] border border-gray-200 relative overflow-hidden">
+                              <div className="blur-sm select-none pointer-events-none">
+                                <div className="flex items-start gap-4">
+                                  <div className="w-12 h-12 rounded-2xl bg-[#6ed3c1]/15 flex items-center justify-center">
+                                    <SearchCheck className="w-6 h-6 text-[#0f8b8d]" />
+                                  </div>
+
+                                  <div>
+                                    <h4 className="font-bold text-[#1f2d3d] mb-2">
+                                      {t('recommendation_title')}
+                                    </h4>
+
+                                    <p className="text-gray-600 leading-relaxed">
+                                      {t('recommendation_text')}
+                                    </p>
+                                  </div>
+                                </div>
+                              </div>
+
+                              <div className="absolute inset-0 flex items-center justify-center">
+                                <div className="flex items-center gap-2 text-[#0f8b8d] font-semibold">
+                                  <Lock className="w-5 h-5" />
+                                  <span>{t('premium_recommendations_locked')}</span>
+                                </div>
+                              </div>
+                            </div>
+                          )}
                         </div>
                       </div>
                     </div>
                   );
-                })}
-              </div>
+                };
+
+                return (
+                  <div className="divide-y divide-gray-100">
+                    {/* FREE CHECKS — status only, no recommendations unless unlocked */}
+                    {freeChecks.map((check) => renderCheckItem(check, unlocked))}
+
+                    {/* LEAD GATE — shown between free and premium when locked */}
+                    {!unlocked && (
+                      <div className="p-8">
+                        <LeadGate
+                          scanId={scan.id}
+                          url={scan.url}
+                          score={scan.score}
+                          onUnlock={() => setUnlocked(true)}
+                        />
+                      </div>
+                    )}
+
+                    {/* PREMIUM CHECKS — only shown when unlocked, with recommendations */}
+                    {unlocked && premiumChecks.map((check) => renderCheckItem(check, true))}
+                  </div>
+                );
+              })()}
             </div>
           </div>
         </div>

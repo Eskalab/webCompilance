@@ -41,7 +41,7 @@ export default function LeadGate({ scanId, url, score, onUnlock }: LeadGateProps
   }
 
   return (
-    <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-6 text-center">
+    <div className="bg-gradient-to-r from-[#6ed3c1]/10 to-[#4cb8c4]/10 border border-[#6ed3c1]/30 rounded-[28px] p-10 text-center">
       <h3 className="text-lg font-semibold text-gray-900 mb-2">
         {t('unlock_title')}
       </h3>
@@ -54,13 +54,13 @@ export default function LeadGate({ scanId, url, score, onUnlock }: LeadGateProps
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="tu@email.com"
-          className="flex-1 px-4 py-2.5 rounded-lg border border-gray-300 text-sm text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="flex-1 px-4 py-2.5 rounded-2xl border border-gray-300 text-sm text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-[#0f8b8d]"
           disabled={loading}
         />
         <button
           type="submit"
           disabled={loading || !email.trim()}
-          className="px-6 py-2.5 bg-blue-600 text-white text-sm font-semibold rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
+          className="px-6 py-2.5 bg-[#0f8b8d] text-white text-sm font-semibold rounded-2xl hover:bg-[#0c7475] disabled:opacity-50 transition-colors"
         >
           {loading ? t('unlock_sending') : t('unlock_btn')}
         </button>
