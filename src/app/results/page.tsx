@@ -463,11 +463,17 @@ function ResultsContent() {
                                 </div>
                               </div>
 
-                              <div className="absolute inset-0 flex items-center justify-center">
+                              <div className="absolute inset-0 flex flex-col items-center justify-center gap-1">
                                 <div className="flex items-center gap-2 text-[#0f8b8d] font-semibold">
                                   <Lock className="w-5 h-5" />
                                   <span>{t('premium_recommendations_locked')}</span>
                                 </div>
+                                <button
+                                  onClick={() => document.getElementById('lead-gate')?.scrollIntoView({ behavior: 'smooth' })}
+                                  className="text-[#0f8b8d] text-sm underline hover:text-[#0c7475] transition cursor-pointer"
+                                >
+                                  {t('click_to_unlock')}
+                                </button>
                               </div>
                             </div>
                           )}
@@ -484,7 +490,7 @@ function ResultsContent() {
 
                     {/* LEAD GATE — shown between free and premium when locked */}
                     {!unlocked && (
-                      <div className="p-8">
+                      <div id="lead-gate" className="p-8">
                         <LeadGate
                           scanId={scan.id}
                           url={scan.url}

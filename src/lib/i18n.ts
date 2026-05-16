@@ -510,6 +510,11 @@ export const translations = {
     es: 'Este reporte es una evaluación automatizada y no constituye asesoría legal.',
     en: 'This report is an automated assessment and does not constitute legal advice.',
   },
+  click_to_unlock: {
+    es: 'Haz click aquí para desbloquear',
+    en: 'Click here to unlock',
+  },
+
   // Cookie consent banner
   cookie_message: {
     es: 'Utilizamos cookies para mejorar tu experiencia en nuestro sitio. Al continuar navegando, aceptas nuestra política de cookies.',
