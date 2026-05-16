@@ -6,6 +6,7 @@ import { useLanguage } from '@/contexts/language';
 import { ScanResponse } from '@/lib/scanner/types';
 import SiteHeader from '@/components/site-header';
 import LeadGate from '@/components/lead-gate';
+import LeadGateModal from '@/components/lead-gate-modal';
 
 import {
   ShieldCheck,
@@ -25,6 +26,7 @@ function ResultsContent() {
   const [scan, setScan] = useState<ScanResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [unlocked, setUnlocked] = useState(false);
+  const [showModal, setShowModal] = useState(false);
 
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -469,7 +471,7 @@ function ResultsContent() {
                                   <span>{t('premium_recommendations_locked')}</span>
                                 </div>
                                 <button
-                                  onClick={() => document.getElementById('lead-gate')?.scrollIntoView({ behavior: 'smooth' })}
+                                  onClick={() => setShowModal(true)}
                                   className="text-[#0f8b8d] text-sm underline hover:text-[#0c7475] transition cursor-pointer"
                                 >
                                   {t('click_to_unlock')}
@@ -539,6 +541,17 @@ function ResultsContent() {
           </div>
         </div>
       </section>
+
+      {/* LEAD GATE MODAL */}
+      {showModal && !unlocked && (
+        <LeadGateModal
+          scanId={scan.id}
+          url={scan.url}
+          score={scan.score}
+          onUnlock={() => { setUnlocked(true); setShowModal(false); }}
+          onClose={() => setShowModal(false)}
+        />
+      )}
 
       {/* FOOTER */}
       <footer className="bg-[#eef1f4] border-t border-gray-200">
