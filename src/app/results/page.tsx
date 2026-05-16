@@ -393,11 +393,11 @@ function ResultsContent() {
                           <div className="flex items-start justify-between gap-5 flex-wrap">
                             <div>
                               <h3 className="text-2xl font-bold text-[#1f2d3d] mb-2">
-                                {check.label}
+                                {locale === 'es' && check.labelEs ? check.labelEs : check.label}
                               </h3>
 
                               <p className="text-gray-600 leading-relaxed">
-                                {check.details}
+                                {locale === 'es' && check.detailsEs ? check.detailsEs : check.details}
                               </p>
                             </div>
 
@@ -413,7 +413,7 @@ function ResultsContent() {
                                 }
                               `}
                             >
-                              {check.status.toUpperCase()}
+                              {locale === 'es' ? t(`status_${check.status === 'pass' ? 'pass' : check.status === 'warn' ? 'warn' : check.status === 'fail' ? 'fail' : 'skip'}` as const) : check.status.toUpperCase()}
                             </div>
                           </div>
 
@@ -470,7 +470,7 @@ function ResultsContent() {
                                   </h4>
 
                                   <p className="text-gray-600 leading-relaxed">
-                                    {t('recommendation_text')}
+                                    {locale === 'es' && check.suggestionEs ? check.suggestionEs : check.suggestion || t('recommendation_text')}
                                   </p>
                                 </div>
                               </div>
