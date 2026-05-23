@@ -265,6 +265,29 @@ export default function Home() {
         </div>
       </section>
 
+      {/* QUIZ CTA */}
+      <section className="py-20 bg-[#f7f8fa]">
+        <div className="max-w-4xl mx-auto px-6 text-center">
+          <div className="bg-white rounded-[32px] p-12 shadow-xl border border-gray-100">
+            <div className="w-16 h-16 rounded-3xl bg-[#6ed3c1]/15 flex items-center justify-center mb-6 mx-auto">
+              <ShieldCheck className="w-8 h-8 text-[#0f8b8d]" />
+            </div>
+            <h2 className="text-3xl font-bold text-[#1f2d3d] mb-4">
+              {t('quiz_landing_title')}
+            </h2>
+            <p className="text-lg text-gray-600 mb-8 max-w-xl mx-auto">
+              {t('quiz_landing_desc')}
+            </p>
+            <a
+              href="/quiz"
+              className="inline-block px-8 py-4 bg-[#0f8b8d] text-white font-semibold rounded-2xl hover:bg-[#0c7475] transition-colors text-base"
+            >
+              {t('quiz_landing_btn')}
+            </a>
+          </div>
+        </div>
+      </section>
+
       {/* FOOTER */}
       <footer
         id="footer"

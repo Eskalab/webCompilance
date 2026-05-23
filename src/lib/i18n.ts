@@ -532,6 +532,148 @@ export const translations = {
     es: 'Política de cookies',
     en: 'Cookie policy',
   },
+
+  // Quiz
+  quiz_page_title: {
+    es: 'Evaluación de Ciberseguridad',
+    en: 'Cybersecurity Assessment',
+  },
+  quiz_badge: {
+    es: 'Test gratuito — 2 minutos',
+    en: 'Free test — 2 minutes',
+  },
+  quiz_title: {
+    es: '¿Qué tan protegida está tu empresa?',
+    en: 'How protected is your company?',
+  },
+  quiz_subtitle: {
+    es: 'Responde 5 preguntas y descubre tu nivel de riesgo en ciberseguridad. Recibe un diagnóstico inmediato.',
+    en: 'Answer 5 questions and discover your cybersecurity risk level. Get an instant diagnosis.',
+  },
+  quiz_step_info: {
+    es: 'Tus datos',
+    en: 'Your info',
+  },
+  quiz_name_label: {
+    es: 'Nombre',
+    en: 'Name',
+  },
+  quiz_name_placeholder: {
+    es: 'Tu nombre completo',
+    en: 'Your full name',
+  },
+  quiz_email_placeholder: {
+    es: 'tu@empresa.com',
+    en: 'you@company.com',
+  },
+  quiz_company_label: {
+    es: 'Empresa',
+    en: 'Company',
+  },
+  quiz_company_placeholder: {
+    es: 'Nombre de tu empresa',
+    en: 'Your company name',
+  },
+  quiz_send_results: {
+    es: '¿Deseas mantener los datos en tu correo?',
+    en: 'Would you like to keep the data in your email?',
+  },
+  quiz_lead_desc: {
+    es: 'Completa tus datos para recibir tu diagnóstico personalizado.',
+    en: 'Complete your info to receive your personalized diagnosis.',
+  },
+  quiz_start: {
+    es: 'Comenzar evaluación',
+    en: 'Start assessment',
+  },
+  quiz_next: {
+    es: 'Siguiente',
+    en: 'Next',
+  },
+  quiz_back: {
+    es: 'Atrás',
+    en: 'Back',
+  },
+  quiz_submit: {
+    es: 'Ver mi resultado',
+    en: 'See my result',
+  },
+  quiz_submitting: {
+    es: 'Calculando...',
+    en: 'Calculating...',
+  },
+  quiz_progress: {
+    es: 'Pregunta',
+    en: 'Question',
+  },
+  quiz_of: {
+    es: 'de',
+    en: 'of',
+  },
+  quiz_field_required: {
+    es: 'Este campo es requerido',
+    en: 'This field is required',
+  },
+  quiz_select_option: {
+    es: 'Selecciona una opción',
+    en: 'Select an option',
+  },
+  quiz_result_title: {
+    es: 'Tu diagnóstico de ciberseguridad',
+    en: 'Your cybersecurity diagnosis',
+  },
+  quiz_result_score: {
+    es: 'Tu puntaje',
+    en: 'Your score',
+  },
+  quiz_result_green_title: {
+    es: 'Tu empresa tiene bases sólidas',
+    en: 'Your company has a solid foundation',
+  },
+  quiz_result_green_desc: {
+    es: 'Ahora el reto es optimizar y fortalecer. Agenda una sesión gratuita para llevar tu seguridad al siguiente nivel.',
+    en: 'Now the challenge is to optimize and strengthen. Schedule a free session to take your security to the next level.',
+  },
+  quiz_result_yellow_title: {
+    es: 'Tienes avances, pero hay riesgos críticos sin atender',
+    en: 'You have progress, but there are critical unaddressed risks',
+  },
+  quiz_result_yellow_desc: {
+    es: 'Tu empresa tiene algunos controles, pero existen brechas importantes. Un experto puede ayudarte a priorizarlas.',
+    en: 'Your company has some controls, but significant gaps exist. An expert can help you prioritize them.',
+  },
+  quiz_result_red_title: {
+    es: '¡Acción inmediata requerida!',
+    en: 'Immediate action required!',
+  },
+  quiz_result_red_desc: {
+    es: 'Tu nivel de riesgo es muy alto. Tu empresa está expuesta a sanciones y brechas de seguridad. Habla con un experto ahora.',
+    en: 'Your risk level is very high. Your company is exposed to sanctions and security breaches. Talk to an expert now.',
+  },
+  quiz_cta_whatsapp: {
+    es: 'Agendar sesión gratuita',
+    en: 'Schedule free session',
+  },
+  quiz_cta_scan: {
+    es: 'Escanea tu sitio web',
+    en: 'Scan your website',
+  },
+  quiz_retake: {
+    es: 'Repetir evaluación',
+    en: 'Retake assessment',
+  },
+  quiz_landing_title: {
+    es: '¿Tu empresa está en riesgo?',
+    en: 'Is your company at risk?',
+  },
+  quiz_landing_desc: {
+    es: 'Descúbrelo en 2 minutos con nuestro test de ciberseguridad gratuito.',
+    en: 'Find out in 2 minutes with our free cybersecurity test.',
+  },
+  quiz_landing_btn: {
+    es: 'Hacer el test',
+    en: 'Take the test',
+  },
 } as const;
 
 export type TranslationKey = keyof typeof translations;
