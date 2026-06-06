@@ -77,9 +77,17 @@ function PoliticasContent() {
 
   return (
     <>
-      <section className="bg-gradient-to-r from-[#1a2a3a] to-[#2c3e50] py-20 px-6 text-center text-white">
-        <h1 className="text-4xl lg:text-6xl font-bold mb-4">{t.hero[locale]}</h1>
-        <p className="text-lg text-white/80 max-w-2xl mx-auto">{t.subtitle[locale]}</p>
+      <section className="relative h-[320px] lg:h-[400px] overflow-hidden">
+        <img
+          src="/politicas-hero.jpg"
+          alt="Política de Privacidad"
+          className="w-full h-full object-cover object-center"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#1a2a3a]/90 via-[#1a2a3a]/50 to-transparent" />
+        <div className="absolute bottom-0 left-0 right-0 px-6 pb-10 text-center text-white">
+          <h1 className="text-3xl lg:text-5xl font-bold mb-3">{t.hero[locale]}</h1>
+          <p className="text-white/80 text-lg max-w-xl mx-auto">{t.subtitle[locale]}</p>
+        </div>
       </section>
 
       <section className="py-20 bg-white px-6">
