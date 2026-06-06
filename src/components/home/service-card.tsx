@@ -11,7 +11,7 @@ interface ServiceCardProps {
 export default function ServiceCard({ service }: ServiceCardProps) {
   const { locale } = useLanguage();
 
-  const ctaText = { es: 'AMPLIAR INFORMACIÓN', en: 'LEARN MORE' };
+  const ctaText = { es: 'CONTACTAR POR WHATSAPP', en: 'CONTACT VIA WHATSAPP' };
 
   return (
     <div id={`servicio-${service.id}`} className="mb-4">
@@ -67,7 +67,9 @@ export default function ServiceCard({ service }: ServiceCardProps) {
           {/* CTA */}
           <div className="text-center mt-10">
             <a
-              href={service.ctaHref}
+              href={service.ctaWhatsApp[locale]}
+              target="_blank"
+              rel="noopener noreferrer"
               className="inline-block px-10 py-4 bg-gradient-to-r from-[#6ed3c1] to-[#4cb8c4] text-white font-bold rounded-full hover:shadow-lg transition-all text-base tracking-wide"
             >
               {ctaText[locale]}

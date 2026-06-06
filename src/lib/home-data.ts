@@ -12,7 +12,7 @@ export interface ServiceData {
   sectionTitle: { es: string; en: string };
   description: { es: string; en: string };
   benefits: { es: string; en: string }[];
-  ctaHref: string;
+  ctaWhatsApp: { es: string; en: string };
 }
 
 export interface TeamMember {
@@ -79,6 +79,10 @@ export const heroSlides: HeroSlide[] = [
 export const services: ServiceData[] = [
   {
     id: 'ley-1581',
+    ctaWhatsApp: {
+      es: 'https://wa.me/573143992911?text=Hola%2C%20me%20interesa%20la%20asesor%C3%ADa%20en%20Ley%201581%20de%202012%20para%20mi%20empresa.',
+      en: 'https://wa.me/573143992911?text=Hello%2C%20I%20am%20interested%20in%20advisory%20services%20for%20Law%201581%20of%202012%20for%20my%20company.',
+    },
     bannerTitle: {
       es: 'Asesorias e Implementación, Ley de Manejo de Datos Personales\npara el Comercio Electrónico LEY 1581 DE 2012.',
       en: 'Advisory & Implementation, Personal Data Management Law\nfor E-Commerce LAW 1581 OF 2012.',
@@ -94,10 +98,14 @@ export const services: ServiceData[] = [
       { es: 'Reduce el Riesgo Legal por sanción de la SIC.', en: 'Reduces Legal Risk from SIC sanctions.' },
       { es: 'Adapta la empresa a las nuevas exigencias del mercado.', en: 'Adapts the company to new market demands.' },
     ],
-    ctaHref: '#',
+    ctaWhatsApp: { es: '', en: '' },
   },
   {
     id: 'propiedad-horizontal',
+    ctaWhatsApp: {
+      es: 'https://wa.me/573143992911?text=Hola%2C%20me%20interesa%20la%20asesor%C3%ADa%20en%20protecci%C3%B3n%20de%20datos%20para%20Propiedad%20Horizontal.',
+      en: 'https://wa.me/573143992911?text=Hello%2C%20I%20am%20interested%20in%20data%20protection%20advisory%20for%20Condominiums.',
+    },
     bannerTitle: {
       es: 'Asesorias e Implementación, Ley de Manejo de Datos Personales\npara Propiedad Horizontal P.H',
       en: 'Advisory & Implementation, Personal Data Management Law\nfor Condominiums (P.H.)',
@@ -112,10 +120,14 @@ export const services: ServiceData[] = [
       { es: 'Reduce el Riesgo Legal por sanción de la SIC.', en: 'Reduces Legal Risk from SIC sanctions.' },
       { es: 'Reduce el Riesgo de un mal uso de las bases de datos.', en: 'Reduces Risk of database misuse.' },
     ],
-    ctaHref: '#',
+    ctaWhatsApp: { es: '', en: '' },
   },
   {
     id: 'consultorios-medicos',
+    ctaWhatsApp: {
+      es: 'https://wa.me/573143992911?text=Hola%2C%20me%20interesa%20la%20asesor%C3%ADa%20en%20protecci%C3%B3n%20de%20datos%20para%20consultorios%20m%C3%A9dicos.',
+      en: 'https://wa.me/573143992911?text=Hello%2C%20I%20am%20interested%20in%20data%20protection%20advisory%20for%20medical%20offices.',
+    },
     bannerTitle: {
       es: 'Asesoría e Implementación de la Ley de Proteccion de Datos Personales\npara Consultorios Médicos',
       en: 'Advisory & Implementation of Personal Data Protection Law\nfor Medical Offices',
@@ -130,10 +142,14 @@ export const services: ServiceData[] = [
       { es: 'Aumenta los niveles de seguridad digital.', en: 'Increases digital security levels.' },
       { es: 'Cumples con lo exigido por la norma.', en: 'Comply with regulatory requirements.' },
     ],
-    ctaHref: '#',
+    ctaWhatsApp: { es: '', en: '' },
   },
   {
     id: 'empresas-digitales',
+    ctaWhatsApp: {
+      es: 'https://wa.me/573143992911?text=Hola%2C%20me%20interesa%20la%20asesor%C3%ADa%20jur%C3%ADdica%20para%20empresas%20digitales%20y%20comercio%20electr%C3%B3nico.',
+      en: 'https://wa.me/573143992911?text=Hello%2C%20I%20am%20interested%20in%20legal%20advisory%20for%20digital%20companies%20and%20e-commerce.',
+    },
     bannerTitle: {
       es: 'Asesorías Jurídicas para Empresas Digitales & Comercio Electrónico',
       en: 'Legal Advisory for Digital Companies & E-Commerce',
@@ -148,10 +164,14 @@ export const services: ServiceData[] = [
       { es: 'Adapta la empresa a las nuevas exigencias del mercado.', en: 'Adapts the company to new market demands.' },
       { es: 'Reduce los costos operacionales.', en: 'Reduces operational costs.' },
     ],
-    ctaHref: '#',
+    ctaWhatsApp: { es: '', en: '' },
   },
   {
     id: 'auditoria-interna',
+    ctaWhatsApp: {
+      es: 'https://wa.me/573143992911?text=Hola%2C%20me%20interesa%20el%20servicio%20de%20auditor%C3%ADa%20interna%20en%20seguridad%20de%20la%20informaci%C3%B3n.',
+      en: 'https://wa.me/573143992911?text=Hello%2C%20I%20am%20interested%20in%20internal%20information%20security%20audit%20services.',
+    },
     bannerTitle: {
       es: 'Auditoria Interna en Seguridad de la Información de las empresas',
       en: 'Internal Information Security Audit for Companies',
@@ -166,10 +186,14 @@ export const services: ServiceData[] = [
       { es: 'Adapta la empresa a las nuevas exigencias del mercado.', en: 'Adapts the company to new market demands.' },
       { es: 'Reduce los costos operacionales.', en: 'Reduces operational costs.' },
     ],
-    ctaHref: '#',
+    ctaWhatsApp: { es: '', en: '' },
   },
   {
     id: 'evaluacion-amenazas',
+    ctaWhatsApp: {
+      es: 'https://wa.me/573143992911?text=Hola%2C%20me%20interesa%20la%20evaluaci%C3%B3n%20de%20amenazas%20y%20vulnerabilidades%20para%20mi%20empresa.',
+      en: 'https://wa.me/573143992911?text=Hello%2C%20I%20am%20interested%20in%20threat%20and%20vulnerability%20assessment%20for%20my%20company.',
+    },
     bannerTitle: {
       es: 'Evaluación de Amenzas & Vulnerabilidades en la Seguridad de la Información en Empresas.',
       en: 'Threat & Vulnerability Assessment in Enterprise Information Security.',
@@ -184,10 +208,14 @@ export const services: ServiceData[] = [
       { es: 'Implementación de Controles de Seguridad.', en: 'Security Controls Implementation.' },
       { es: 'Reduce el Riesgo Legal.', en: 'Reduces Legal Risk.' },
     ],
-    ctaHref: '#',
+    ctaWhatsApp: { es: '', en: '' },
   },
   {
     id: 'contratos-especializados',
+    ctaWhatsApp: {
+      es: 'https://wa.me/573143992911?text=Hola%2C%20me%20interesa%20el%20servicio%20de%20contratos%20especializados%20para%20transferencia%20de%20datos.',
+      en: 'https://wa.me/573143992911?text=Hello%2C%20I%20am%20interested%20in%20specialized%20contracts%20for%20data%20transfer%20and%20transmission.',
+    },
     bannerTitle: {
       es: 'Contratos especializados transferencia y transmisión de datos personales',
       en: 'Specialized contracts for personal data transfer and transmission',
@@ -202,7 +230,7 @@ export const services: ServiceData[] = [
       { es: 'Disminuye Riesgo Legal.', en: 'Reduces Legal Risk.' },
       { es: 'Responsabilidad demostrada.', en: 'Demonstrated accountability.' },
     ],
-    ctaHref: '#',
+    ctaWhatsApp: { es: '', en: '' },
   },
 ];
 
