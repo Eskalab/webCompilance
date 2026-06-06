@@ -32,7 +32,7 @@ function BlogContent() {
         </p>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {blogPosts.map((post) => (
+          {[...blogPosts].sort((a, b) => b.date.localeCompare(a.date)).map((post) => (
             <article key={post.slug} className="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow border border-gray-100 flex flex-col">
 
               {/* Imagen destacada */}
