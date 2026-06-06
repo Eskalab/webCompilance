@@ -26,8 +26,15 @@ export default function HeroSlider() {
 
   return (
     <section className="relative h-[500px] lg:h-[600px] overflow-hidden bg-[#2c3e50]">
-      {/* Background gradient overlay */}
-      <div className="absolute inset-0 bg-gradient-to-r from-[#1a2a3a]/80 to-[#2c3e50]/60" />
+      {/* Background image */}
+      <img
+        src="/hero-bg.jpg"
+        alt=""
+        className="absolute inset-0 w-full h-full object-cover"
+        aria-hidden="true"
+      />
+      {/* Overlay */}
+      <div className="absolute inset-0 bg-gradient-to-r from-[#1a2a3a]/85 to-[#2c3e50]/70" />
 
       {/* Decorative elements */}
       <div className="absolute inset-0 pointer-events-none">

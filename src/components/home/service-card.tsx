@@ -11,7 +11,7 @@ interface ServiceCardProps {
 export default function ServiceCard({ service }: ServiceCardProps) {
   const { locale } = useLanguage();
 
-  const ctaText = { es: 'AMPLIAR INFORMACIÓN', en: 'LEARN MORE' };
+  const ctaText = { es: 'CONTACTAR POR WHATSAPP', en: 'CONTACT VIA WHATSAPP' };
 
   return (
     <div id={`servicio-${service.id}`} className="mb-4">
@@ -36,21 +36,22 @@ export default function ServiceCard({ service }: ServiceCardProps) {
               </p>
             </div>
 
-            {/* Center: Image placeholder */}
+            {/* Center: Image */}
             <div className="flex justify-center">
-              <div className="bg-[#f7f8fa] rounded-[20px] w-full max-w-[350px] h-[250px] flex items-center justify-center border border-gray-100">
-                <div className="text-center text-gray-400">
-                  <svg className="w-16 h-16 mx-auto mb-2 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                  </svg>
-                  <p className="text-xs">Image</p>
-                </div>
+              <div className="rounded-[20px] w-full max-w-[350px] h-[250px] overflow-hidden border border-gray-100">
+                <img
+                  src={`/services/${service.id}.jpg`}
+                  alt={service.sectionTitle[locale]}
+                  className="w-full h-full object-cover"
+                />
               </div>
             </div>
 
             {/* Right: Benefits */}
             <div>
-              <h4 className="text-lg font-bold text-[#e91e8c] mb-6">BENEFICIOS</h4>
+              <h4 className="text-lg font-bold text-[#e91e8c] mb-6">
+                {locale === 'es' ? 'BENEFICIOS' : 'BENEFITS'}
+              </h4>
               <div className="space-y-4">
                 {service.benefits.map((benefit, i) => (
                   <div key={i} className="flex items-start gap-3">
@@ -67,7 +68,9 @@ export default function ServiceCard({ service }: ServiceCardProps) {
           {/* CTA */}
           <div className="text-center mt-10">
             <a
-              href={service.ctaHref}
+              href={service.ctaWhatsApp[locale]}
+              target="_blank"
+              rel="noopener noreferrer"
               className="inline-block px-10 py-4 bg-gradient-to-r from-[#6ed3c1] to-[#4cb8c4] text-white font-bold rounded-full hover:shadow-lg transition-all text-base tracking-wide"
             >
               {ctaText[locale]}
