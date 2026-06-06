@@ -30,6 +30,10 @@ export default function Capacitaciones() {
     },
     benefitsTitle: { es: 'BENEFICIOS', en: 'BENEFITS' },
     cta: { es: 'AMPLIAR INFORMACIÓN', en: 'LEARN MORE' },
+    ctaWa: {
+      es: 'https://wa.me/573143992911?text=Hola%2C%20me%20interesa%20informaci%C3%B3n%20sobre%20las%20capacitaciones%20y%20cursos%20empresariales%20de%20TDE.',
+      en: 'https://wa.me/573143992911?text=Hello%2C%20I%20am%20interested%20in%20information%20about%20TDE%20business%20training%20and%20courses.',
+    },
   };
 
   return (
@@ -85,7 +89,9 @@ export default function Capacitaciones() {
 
             <div className="mt-8">
               <a
-                href="#"
+                href={content.ctaWa[locale]}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="inline-block px-8 py-4 bg-[#1f2d3d] text-white font-bold rounded-full hover:bg-[#162030] transition-colors text-base tracking-wide"
               >
                 {content.cta[locale]}
