@@ -1,7 +1,7 @@
 'use client';
 
 import { useLanguage } from '@/contexts/language';
-import { blogPosts } from '@/lib/home-data';
+import { blogPosts } from '@/lib/blog-data';
 import BlogCard from './blog-card';
 
 export default function BlogSection() {
@@ -53,17 +53,17 @@ export default function BlogSection() {
           </p>
         </div>
 
-        {/* Blog Cards */}
+        {/* Blog Cards — mostrar los 3 más recientes */}
         <div className="grid md:grid-cols-3 gap-8 mb-12">
-          {blogPosts.map((post) => (
-            <BlogCard key={post.id} post={post} />
+          {blogPosts.slice(0, 3).map((post) => (
+            <BlogCard key={post.slug} post={post} />
           ))}
         </div>
 
         {/* CTA */}
         <div className="text-center space-y-4">
           <a
-            href="#"
+            href="/blog"
             className="inline-block px-10 py-4 bg-[#0f8b8d] text-white font-bold rounded-full hover:bg-[#0c7475] transition-colors text-base"
           >
             {content.blogBtn[locale]}

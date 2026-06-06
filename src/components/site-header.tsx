@@ -79,7 +79,7 @@ export default function SiteHeader() {
                 {t('nav_training')}
               </a>
 
-              <a href="/#blog" className="hover:text-[#6fcbb8] transition-colors">
+              <a href="/blog" className="hover:text-[#6fcbb8] transition-colors">
                 {t('nav_blog')}
               </a>
 
@@ -166,7 +166,7 @@ export default function SiteHeader() {
               </a>
 
               <a
-                href="/#blog"
+                href="/blog"
                 onClick={closeMobile}
                 className="py-4 border-b border-gray-100 hover:text-[#6fcbb8] transition-colors"
               >

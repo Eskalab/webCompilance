@@ -33,6 +33,9 @@ export default function SiteFooter() {
               <a href="/#capacitaciones" className="block text-gray-600 hover:text-[#0f8b8d] transition-colors">
                 {locale === 'es' ? 'Capacitaciones' : 'Training'}
               </a>
+              <a href="/blog" className="block text-gray-600 hover:text-[#0f8b8d] transition-colors">
+                Blog
+              </a>
               <a href="/quienes-somos" className="block text-gray-600 hover:text-[#0f8b8d] transition-colors">
                 {locale === 'es' ? 'Quiénes Somos' : 'About Us'}
               </a>
