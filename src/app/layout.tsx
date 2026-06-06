@@ -17,8 +17,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Escáner Legal - TDE Transformación Digital Empresarial",
-  description: "Scan your website and check data protection compliance in Latin America. Free, no installation needed.",
+  title: "TDE - Transformación Digital Empresarial",
+  description: "Asesoría legal especializada en protección de datos personales y seguridad de la información para empresas en Colombia y Latinoamérica.",
   icons: { icon: "/favicon.ico" },
 };
 
