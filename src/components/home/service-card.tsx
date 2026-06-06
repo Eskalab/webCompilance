@@ -1,7 +1,7 @@
 'use client';
 
 import { useLanguage } from '@/contexts/language';
-import { ChevronDown } from 'lucide-react';
+import { CheckCircle2 } from 'lucide-react';
 import type { ServiceData } from '@/lib/home-data';
 
 interface ServiceCardProps {
@@ -55,7 +55,7 @@ export default function ServiceCard({ service }: ServiceCardProps) {
               <div className="space-y-4">
                 {service.benefits.map((benefit, i) => (
                   <div key={i} className="flex items-start gap-3">
-                    <ChevronDown className="w-5 h-5 text-[#0f8b8d] shrink-0 mt-0.5" />
+                    <CheckCircle2 className="w-5 h-5 text-[#0f8b8d] shrink-0 mt-0.5" />
                     <p className="text-[#0f8b8d] font-semibold text-sm">
                       {benefit[locale]}
                     </p>
