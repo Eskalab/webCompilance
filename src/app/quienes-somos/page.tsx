@@ -62,7 +62,7 @@ function QuienesSomosContent() {
         </div>
       </section>
 
-      <section className="py-16 bg-gradient-to-r from-[#6ed3c1] to-[#1e2a52] px-6">
+      <section className="py-16 bg-[linear-gradient(120deg,#1e2a52_0%,#1e2a52_38%,#2d7d9a_50%,#1e2a52_62%,#1e2a52_100%)] px-6">
         <div className="max-w-7xl mx-auto text-center">
           <h2 className="text-3xl font-bold text-white mb-10">{t.valuesTitle[locale]}</h2>
           <div className="flex flex-wrap justify-center gap-4">
@@ -83,7 +83,7 @@ function QuienesSomosContent() {
           href="https://wa.me/573143992911?text=Hola%2C%20me%20gustar%C3%ADa%20conocer%20m%C3%A1s%20sobre%20TDE%20y%20sus%20servicios."
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-block px-10 py-4 bg-gradient-to-r from-[#6ed3c1] to-[#1e2a52] text-white font-bold rounded-full hover:shadow-lg transition-all text-base tracking-wide"
+          className="inline-block px-10 py-4 bg-[linear-gradient(120deg,#1e2a52_0%,#1e2a52_38%,#2d7d9a_50%,#1e2a52_62%,#1e2a52_100%)] text-white font-bold rounded-full hover:shadow-lg transition-all text-base tracking-wide"
         >
           {t.ctaBtn[locale]}
         </a>

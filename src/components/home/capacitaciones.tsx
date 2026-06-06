@@ -37,7 +37,7 @@ export default function Capacitaciones() {
   };
 
   return (
-    <section className="bg-gradient-to-r from-[#6ed3c1] to-[#1e2a52]">
+    <section className="bg-[linear-gradient(120deg,#1e2a52_0%,#1e2a52_38%,#2d7d9a_50%,#1e2a52_62%,#1e2a52_100%)]">
       {/* Header */}
       <div className="py-16 px-6">
         <div className="max-w-7xl mx-auto flex flex-col lg:flex-row items-center justify-between gap-8">

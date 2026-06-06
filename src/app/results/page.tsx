@@ -515,7 +515,7 @@ function ResultsContent() {
       {/* CTA */}
       <section className="py-24">
         <div className="max-w-5xl mx-auto px-6">
-          <div className="rounded-[40px] bg-gradient-to-r from-[#6ed3c1] to-[#1e2a52] p-14 text-center shadow-2xl">
+          <div className="rounded-[40px] bg-[linear-gradient(120deg,#1e2a52_0%,#1e2a52_38%,#2d7d9a_50%,#1e2a52_62%,#1e2a52_100%)] p-14 text-center shadow-2xl">
             <h2 className="text-5xl font-bold text-white mb-6">
               {t('need_legal_help')}
             </h2>

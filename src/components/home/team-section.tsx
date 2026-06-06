@@ -13,7 +13,7 @@ export default function TeamSection() {
   };
 
   return (
-    <section className="py-20 bg-gradient-to-r from-[#6ed3c1] to-[#1e2a52]">
+    <section className="py-20 bg-[linear-gradient(120deg,#1e2a52_0%,#1e2a52_38%,#2d7d9a_50%,#1e2a52_62%,#1e2a52_100%)]">
       <div className="max-w-7xl mx-auto px-6">
         {/* Header */}
         <div className="text-center mb-16">

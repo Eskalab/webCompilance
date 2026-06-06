@@ -20,7 +20,7 @@ export default function ServiceCard({ service }: ServiceCardProps) {
   return (
     <div id={`servicio-${service.id}`} className="mb-4">
       {/* Gradient Banner */}
-      <div className="bg-gradient-to-r from-[#6ed3c1] to-[#1e2a52] py-6 px-6">
+      <div className="bg-[linear-gradient(120deg,#1e2a52_0%,#1e2a52_38%,#2d7d9a_50%,#1e2a52_62%,#1e2a52_100%)] py-6 px-6">
         <p className="text-center text-white font-bold text-lg lg:text-xl whitespace-pre-line">
           {service.bannerTitle[locale]}
         </p>
@@ -87,7 +87,7 @@ export default function ServiceCard({ service }: ServiceCardProps) {
               href={service.ctaWhatsApp[locale]}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-block px-10 py-4 bg-gradient-to-r from-[#6ed3c1] to-[#1e2a52] text-white font-bold rounded-full hover:shadow-lg transition-all text-base tracking-wide"
+              className="inline-block px-10 py-4 bg-[linear-gradient(120deg,#1e2a52_0%,#1e2a52_38%,#2d7d9a_50%,#1e2a52_62%,#1e2a52_100%)] text-white font-bold rounded-full hover:shadow-lg transition-all text-base tracking-wide"
             >
               {ctaText[locale]}
             </a>

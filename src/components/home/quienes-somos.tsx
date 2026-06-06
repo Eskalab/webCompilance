@@ -19,7 +19,7 @@ export default function QuienesSomos() {
   };
 
   return (
-    <section className="py-20 bg-gradient-to-r from-[#6ed3c1] to-[#1e2a52]">
+    <section className="py-20 bg-[linear-gradient(120deg,#1e2a52_0%,#1e2a52_38%,#2d7d9a_50%,#1e2a52_62%,#1e2a52_100%)]">
       <div className="max-w-7xl mx-auto px-6">
         <div className="grid md:grid-cols-2 gap-12 items-center">
           <div className="rounded-[28px] h-[350px] overflow-hidden">
