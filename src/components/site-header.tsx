@@ -3,7 +3,7 @@
 import { useLanguage } from '@/contexts/language';
 
 export default function SiteHeader() {
-  const { t } = useLanguage();
+  const { t, locale } = useLanguage();
   return (
     <>
       {/* HEADER MENÚ PRINCIPAL */}
@@ -95,9 +95,16 @@ export default function SiteHeader() {
 
                     <a
                       href="/#servicio-evaluacion-amenazas"
-                      className="block px-8 py-4 text-white text-[16px] hover:bg-[#0e8087] transition-colors"
+                      className="block px-8 py-4 text-white text-[16px] border-b border-white hover:bg-[#0e8087] transition-colors"
                     >
                       {t('nav_svc_threats')}
+                    </a>
+
+                    <a
+                      href="/#servicio-contratos-especializados"
+                      className="block px-8 py-4 text-white text-[16px] hover:bg-[#0e8087] transition-colors"
+                    >
+                      {locale === 'es' ? 'Contratos Especializados Transferencia de Datos' : 'Specialized Data Transfer Contracts'}
                     </a>
 
                   </div>
@@ -106,21 +113,21 @@ export default function SiteHeader() {
 
               {/* LINKS */}
               <a
-                href="#"
+                href="/#capacitaciones"
                 className="hover:text-[#6fcbb8] transition-colors"
               >
                 {t('nav_training')}
               </a>
 
               <a
-                href="#"
+                href="/#blog"
                 className="hover:text-[#6fcbb8] transition-colors"
               >
                 {t('nav_blog')}
               </a>
 
               <a
-                href="#"
+                href="/#footer"
                 className="hover:text-[#6fcbb8] transition-colors"
               >
                 {t('nav_policies')}
