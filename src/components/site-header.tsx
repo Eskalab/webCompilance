@@ -12,7 +12,7 @@ export default function SiteHeader() {
           <div className="flex items-center justify-between h-[92px]">
 
             {/* LOGO */}
-            <a href="https://tde.com.co" target="_blank" rel="noopener noreferrer" className="flex items-center">
+            <a href="/" className="flex items-center">
               <img
                 src="/logo.png"
                 alt="TDE"
@@ -59,42 +59,42 @@ export default function SiteHeader() {
                   <div className="bg-[#0b6f75] min-w-[760px] shadow-2xl overflow-hidden">
 
                     <a
-                      href="#"
+                      href="/#servicio-ley-1581"
                       className="block px-8 py-4 text-white text-[16px] border-b border-white hover:bg-[#0e8087] transition-colors"
                     >
                       {t('nav_svc_ecommerce_data')}
                     </a>
 
                     <a
-                      href="#"
+                      href="/#servicio-propiedad-horizontal"
                       className="block px-8 py-4 text-white text-[16px] border-b border-white hover:bg-[#0e8087] transition-colors"
                     >
                       {t('nav_svc_horizontal')}
                     </a>
 
                     <a
-                      href="#"
+                      href="/#servicio-consultorios-medicos"
                       className="block px-8 py-4 text-white text-[16px] border-b border-white hover:bg-[#0e8087] transition-colors"
                     >
                       {t('nav_svc_medical')}
                     </a>
 
                     <a
-                      href="#"
+                      href="/#servicio-empresas-digitales"
                       className="block px-8 py-4 text-white text-[16px] border-b border-white hover:bg-[#0e8087] transition-colors"
                     >
                       {t('nav_svc_legal_ecommerce')}
                     </a>
 
                     <a
-                      href="#"
+                      href="/#servicio-auditoria-interna"
                       className="block px-8 py-4 text-white text-[16px] border-b border-white hover:bg-[#0e8087] transition-colors"
                     >
                       {t('nav_svc_audit')}
                     </a>
 
                     <a
-                      href="#"
+                      href="/#servicio-evaluacion-amenazas"
                       className="block px-8 py-4 text-white text-[16px] hover:bg-[#0e8087] transition-colors"
                     >
                       {t('nav_svc_threats')}
