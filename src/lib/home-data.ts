@@ -98,7 +98,6 @@ export const services: ServiceData[] = [
       { es: 'Reduce el Riesgo Legal por sanción de la SIC.', en: 'Reduces Legal Risk from SIC sanctions.' },
       { es: 'Adapta la empresa a las nuevas exigencias del mercado.', en: 'Adapts the company to new market demands.' },
     ],
-    ctaWhatsApp: { es: '', en: '' },
   },
   {
     id: 'propiedad-horizontal',
@@ -120,7 +119,6 @@ export const services: ServiceData[] = [
       { es: 'Reduce el Riesgo Legal por sanción de la SIC.', en: 'Reduces Legal Risk from SIC sanctions.' },
       { es: 'Reduce el Riesgo de un mal uso de las bases de datos.', en: 'Reduces Risk of database misuse.' },
     ],
-    ctaWhatsApp: { es: '', en: '' },
   },
   {
     id: 'consultorios-medicos',
@@ -142,7 +140,6 @@ export const services: ServiceData[] = [
       { es: 'Aumenta los niveles de seguridad digital.', en: 'Increases digital security levels.' },
       { es: 'Cumples con lo exigido por la norma.', en: 'Comply with regulatory requirements.' },
     ],
-    ctaWhatsApp: { es: '', en: '' },
   },
   {
     id: 'empresas-digitales',
@@ -164,7 +161,6 @@ export const services: ServiceData[] = [
       { es: 'Adapta la empresa a las nuevas exigencias del mercado.', en: 'Adapts the company to new market demands.' },
       { es: 'Reduce los costos operacionales.', en: 'Reduces operational costs.' },
     ],
-    ctaWhatsApp: { es: '', en: '' },
   },
   {
     id: 'auditoria-interna',
@@ -186,7 +182,6 @@ export const services: ServiceData[] = [
       { es: 'Adapta la empresa a las nuevas exigencias del mercado.', en: 'Adapts the company to new market demands.' },
       { es: 'Reduce los costos operacionales.', en: 'Reduces operational costs.' },
     ],
-    ctaWhatsApp: { es: '', en: '' },
   },
   {
     id: 'evaluacion-amenazas',
@@ -208,7 +203,6 @@ export const services: ServiceData[] = [
       { es: 'Implementación de Controles de Seguridad.', en: 'Security Controls Implementation.' },
       { es: 'Reduce el Riesgo Legal.', en: 'Reduces Legal Risk.' },
     ],
-    ctaWhatsApp: { es: '', en: '' },
   },
   {
     id: 'contratos-especializados',
@@ -230,7 +224,6 @@ export const services: ServiceData[] = [
       { es: 'Disminuye Riesgo Legal.', en: 'Reduces Legal Risk.' },
       { es: 'Responsabilidad demostrada.', en: 'Demonstrated accountability.' },
     ],
-    ctaWhatsApp: { es: '', en: '' },
   },
 ];
 
