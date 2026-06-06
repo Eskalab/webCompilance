@@ -18,31 +18,41 @@ function formatDate(dateStr: string, locale: 'es' | 'en') {
 
 export default function BlogCard({ post }: Props) {
   const { locale } = useLanguage();
-  const readMore = { es: 'Leer más', en: 'Read more' };
 
   return (
-    <div className="bg-white rounded-[20px] shadow-lg border border-gray-100 overflow-hidden hover:shadow-xl transition-all flex flex-col">
-      <div className="h-48 bg-[#f7f8fa] flex items-center justify-center">
-        <svg className="w-12 h-12 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-        </svg>
-      </div>
+    <article className="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow border border-gray-100 flex flex-col">
+      <a href={`/blog/${post.slug}`} className="block h-44 overflow-hidden bg-[#eef1f4]">
+        {post.image ? (
+          <img
+            src={post.image}
+            alt={post.title}
+            className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center">
+            <svg className="w-10 h-10 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 12h6" />
+            </svg>
+          </div>
+        )}
+      </a>
 
-      <div className="p-6 flex flex-col flex-1">
-        <h3 className="text-[#0f8b8d] font-bold text-base mb-2 line-clamp-2">
-          {post.title}
-        </h3>
-        <p className="text-gray-400 text-sm mb-3">{formatDate(post.date, locale)}</p>
-        <p className="text-gray-600 text-sm leading-relaxed line-clamp-3 mb-4 flex-1">
+      <div className="p-5 flex flex-col flex-1">
+        <a href={`/blog/${post.slug}`}>
+          <h3 className="text-[#1f2d3d] font-bold text-sm leading-snug hover:text-[#0f8b8d] transition-colors line-clamp-3 mb-2">
+            {post.title}
+          </h3>
+        </a>
+        <p className="text-gray-500 text-xs leading-relaxed line-clamp-2 mb-3 flex-1">
           {post.excerpt}
         </p>
-        <a
-          href={`/blog/${post.slug}`}
-          className="inline-block px-5 py-2 border border-gray-300 rounded-lg text-gray-600 text-sm font-medium hover:bg-gray-50 transition-colors"
-        >
-          {readMore[locale]}
-        </a>
+        <div className="flex items-center justify-between pt-3 border-t border-gray-100">
+          <span className="text-xs text-gray-400">{formatDate(post.date, locale)}</span>
+          <a href={`/blog/${post.slug}`} className="text-[#0f8b8d] text-xs font-semibold hover:underline">
+            {locale === 'es' ? 'Leer más »' : 'Read more »'}
+          </a>
+        </div>
       </div>
-    </div>
+    </article>
   );
 }
