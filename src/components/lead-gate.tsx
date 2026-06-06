@@ -41,7 +41,7 @@ export default function LeadGate({ scanId, url, score, onUnlock }: LeadGateProps
   }
 
   return (
-    <div className="bg-gradient-to-r from-[#6ed3c1]/10 to-[#4cb8c4]/10 border border-[#6ed3c1]/30 rounded-[28px] p-10 text-center">
+    <div className="bg-gradient-to-r from-[#6ed3c1]/10 to-[#1e2a52]/10 border border-[#6ed3c1]/30 rounded-[28px] p-10 text-center">
       <h3 className="text-lg font-semibold text-gray-900 mb-2">
         {t('unlock_title')}
       </h3>

@@ -129,7 +129,7 @@ function PostContent({ slug }: { slug: string }) {
               )}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-block px-10 py-4 bg-gradient-to-r from-[#6ed3c1] to-[#4cb8c4] text-white font-bold rounded-full hover:shadow-lg transition-all text-base"
+              className="inline-block px-10 py-4 bg-gradient-to-r from-[#6ed3c1] to-[#1e2a52] text-white font-bold rounded-full hover:shadow-lg transition-all text-base"
             >
               {locale === 'es' ? 'CONTACTAR POR WHATSAPP' : 'CONTACT VIA WHATSAPP'}
             </a>

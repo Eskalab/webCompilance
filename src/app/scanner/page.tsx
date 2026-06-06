@@ -24,7 +24,7 @@ export default function ScannerPage() {
       <section className="relative">
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute top-[-120px] left-[-120px] w-[500px] h-[500px] rounded-full bg-[#6ed3c1]/20 blur-3xl" />
-          <div className="absolute bottom-[-180px] right-[-120px] w-[600px] h-[600px] rounded-full bg-[#4cb8c4]/20 blur-3xl" />
+          <div className="absolute bottom-[-180px] right-[-120px] w-[600px] h-[600px] rounded-full bg-[#1e2a52]/20 blur-3xl" />
         </div>
 
         <div className="relative max-w-7xl mx-auto px-6 py-20 lg:py-28">
@@ -136,7 +136,7 @@ export default function ScannerPage() {
       {/* CTA */}
       <section className="py-28 bg-white">
         <div className="max-w-5xl mx-auto px-6">
-          <div className="relative overflow-hidden rounded-[40px] bg-gradient-to-r from-[#6ed3c1] to-[#4cb8c4] p-14 text-center shadow-2xl">
+          <div className="relative overflow-hidden rounded-[40px] bg-gradient-to-r from-[#6ed3c1] to-[#1e2a52] p-14 text-center shadow-2xl">
             <div className="absolute top-0 right-0 w-72 h-72 rounded-full bg-white/10 blur-3xl" />
             <div className="relative">
               <h2 className="text-5xl font-bold text-white mb-6">{t('cta_title')}</h2>

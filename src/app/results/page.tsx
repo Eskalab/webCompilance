@@ -134,7 +134,7 @@ function ResultsContent() {
       <section className="relative overflow-hidden">
         <div className="absolute top-[-150px] left-[-120px] w-[500px] h-[500px] rounded-full bg-[#6ed3c1]/20 blur-3xl" />
 
-        <div className="absolute bottom-[-180px] right-[-120px] w-[600px] h-[600px] rounded-full bg-[#4cb8c4]/20 blur-3xl" />
+        <div className="absolute bottom-[-180px] right-[-120px] w-[600px] h-[600px] rounded-full bg-[#1e2a52]/20 blur-3xl" />
 
         <div className="relative max-w-7xl mx-auto px-6 py-16">
           {/* BACK */}
@@ -515,7 +515,7 @@ function ResultsContent() {
       {/* CTA */}
       <section className="py-24">
         <div className="max-w-5xl mx-auto px-6">
-          <div className="rounded-[40px] bg-gradient-to-r from-[#6ed3c1] to-[#4cb8c4] p-14 text-center shadow-2xl">
+          <div className="rounded-[40px] bg-gradient-to-r from-[#6ed3c1] to-[#1e2a52] p-14 text-center shadow-2xl">
             <h2 className="text-5xl font-bold text-white mb-6">
               {t('need_legal_help')}
             </h2>

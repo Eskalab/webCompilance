@@ -113,7 +113,7 @@ function ContactoContent() {
                 href={buildWhatsAppUrl()}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="block text-center px-10 py-4 bg-gradient-to-r from-[#6ed3c1] to-[#4cb8c4] text-white font-bold rounded-full hover:shadow-lg transition-all text-base tracking-wide"
+                className="block text-center px-10 py-4 bg-gradient-to-r from-[#6ed3c1] to-[#1e2a52] text-white font-bold rounded-full hover:shadow-lg transition-all text-base tracking-wide"
               >
                 {t.whatsappBtn[locale]}
               </a>

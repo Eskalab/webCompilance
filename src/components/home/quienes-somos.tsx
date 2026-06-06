@@ -19,7 +19,7 @@ export default function QuienesSomos() {
   };
 
   return (
-    <section className="py-20 bg-gradient-to-r from-[#6ed3c1] to-[#4cb8c4]">
+    <section className="py-20 bg-gradient-to-r from-[#6ed3c1] to-[#1e2a52]">
       <div className="max-w-7xl mx-auto px-6">
         <div className="grid md:grid-cols-2 gap-12 items-center">
           <div className="rounded-[28px] h-[350px] overflow-hidden">
@@ -32,10 +32,10 @@ export default function QuienesSomos() {
 
           {/* Content */}
           <div>
-            <h2 className="text-4xl lg:text-5xl font-bold text-[#1f2d3d] mb-4">
+            <h2 className="text-4xl lg:text-5xl font-bold text-white mb-4">
               {content.title[locale]}
             </h2>
-            <p className="text-lg font-bold text-[#1f2d3d] mb-4">
+            <p className="text-lg font-bold text-white mb-4">
               {content.subtitle[locale]}
             </p>
             <p className="text-white text-lg leading-relaxed mb-8">
