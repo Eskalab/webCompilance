@@ -83,11 +83,11 @@ export default function SiteHeader() {
                 {t('nav_blog')}
               </a>
 
-              <a href="/#footer" className="hover:text-[#6fcbb8] transition-colors">
+              <a href="/politicas" className="hover:text-[#6fcbb8] transition-colors">
                 {t('nav_policies')}
               </a>
 
-              <a href="/#footer" className="hover:text-[#6fcbb8] transition-colors">
+              <a href="/contacto" className="hover:text-[#6fcbb8] transition-colors">
                 {t('nav_contact')}
               </a>
 
@@ -174,7 +174,7 @@ export default function SiteHeader() {
               </a>
 
               <a
-                href="/#footer"
+                href="/politicas"
                 onClick={closeMobile}
                 className="py-4 border-b border-gray-100 hover:text-[#6fcbb8] transition-colors"
               >
@@ -182,7 +182,7 @@ export default function SiteHeader() {
               </a>
 
               <a
-                href="/#footer"
+                href="/contacto"
                 onClick={closeMobile}
                 className="py-4 hover:text-[#6fcbb8] transition-colors"
               >

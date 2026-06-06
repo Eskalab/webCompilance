@@ -33,13 +33,13 @@ export default function SiteFooter() {
               <a href="/#capacitaciones" className="block text-gray-600 hover:text-[#0f8b8d] transition-colors">
                 {locale === 'es' ? 'Capacitaciones' : 'Training'}
               </a>
-              <a href="/#que-hacemos" className="block text-gray-600 hover:text-[#0f8b8d] transition-colors">
+              <a href="/quienes-somos" className="block text-gray-600 hover:text-[#0f8b8d] transition-colors">
                 {locale === 'es' ? 'Quiénes Somos' : 'About Us'}
               </a>
-              <a href="/#footer" className="block text-gray-600 hover:text-[#0f8b8d] transition-colors">
+              <a href="/contacto" className="block text-gray-600 hover:text-[#0f8b8d] transition-colors">
                 {locale === 'es' ? 'Contacto' : 'Contact'}
               </a>
-              <a href="/#footer" className="block text-gray-600 hover:text-[#0f8b8d] transition-colors">
+              <a href="/politicas" className="block text-gray-600 hover:text-[#0f8b8d] transition-colors">
                 {locale === 'es' ? 'Política de privacidad' : 'Privacy Policy'}
               </a>
             </div>

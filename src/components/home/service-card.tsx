@@ -1,7 +1,8 @@
 'use client';
 
+import { useState } from 'react';
 import { useLanguage } from '@/contexts/language';
-import { CheckCircle2 } from 'lucide-react';
+import { ChevronDown } from 'lucide-react';
 import type { ServiceData } from '@/lib/home-data';
 
 interface ServiceCardProps {
@@ -10,8 +11,11 @@ interface ServiceCardProps {
 
 export default function ServiceCard({ service }: ServiceCardProps) {
   const { locale } = useLanguage();
+  const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   const ctaText = { es: 'CONTACTAR POR WHATSAPP', en: 'CONTACT VIA WHATSAPP' };
+
+  const toggle = (i: number) => setOpenIndex(openIndex === i ? null : i);
 
   return (
     <div id={`servicio-${service.id}`} className="mb-4">
@@ -47,18 +51,30 @@ export default function ServiceCard({ service }: ServiceCardProps) {
               </div>
             </div>
 
-            {/* Right: Benefits */}
+            {/* Right: Benefits accordion */}
             <div>
               <h4 className="text-lg font-bold text-[#e91e8c] mb-6">
                 {locale === 'es' ? 'BENEFICIOS' : 'BENEFITS'}
               </h4>
-              <div className="space-y-4">
+              <div className="divide-y divide-gray-100 border border-gray-100 rounded-lg overflow-hidden">
                 {service.benefits.map((benefit, i) => (
-                  <div key={i} className="flex items-start gap-3">
-                    <CheckCircle2 className="w-5 h-5 text-[#0f8b8d] shrink-0 mt-0.5" />
-                    <p className="text-[#0f8b8d] font-semibold text-sm">
-                      {benefit[locale]}
-                    </p>
+                  <div key={i}>
+                    <button
+                      onClick={() => toggle(i)}
+                      className="w-full flex items-center justify-between gap-3 px-4 py-3 text-left hover:bg-gray-50 transition-colors"
+                    >
+                      <span className="text-[#0f8b8d] font-semibold text-sm">
+                        {benefit[locale]}
+                      </span>
+                      <ChevronDown
+                        className={`w-4 h-4 text-[#0f8b8d] shrink-0 transition-transform ${openIndex === i ? 'rotate-180' : ''}`}
+                      />
+                    </button>
+                    {openIndex === i && (
+                      <div className="px-4 pb-3 text-gray-600 text-sm leading-relaxed bg-gray-50">
+                        {locale === 'es' ? benefit.bodyEs : benefit.bodyEn}
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>

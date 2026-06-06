@@ -11,7 +11,7 @@ export interface ServiceData {
   bannerTitle: { es: string; en: string };
   sectionTitle: { es: string; en: string };
   description: { es: string; en: string };
-  benefits: { es: string; en: string }[];
+  benefits: { es: string; en: string; bodyEs: string; bodyEn: string }[];
   ctaWhatsApp: { es: string; en: string };
 }
 
@@ -32,6 +32,7 @@ export interface BlogPost {
 export interface TrainingAccordionItem {
   id: string;
   title: { es: string; en: string };
+  body: { es: string; en: string };
 }
 
 export interface TrainingBenefit {
@@ -93,10 +94,30 @@ export const services: ServiceData[] = [
       en: 'We advise you on the creation, development and implementation of Technical Protocols, which generate Personal Data Protection programs that, as Data Controller, the company is obligated to implement. As required by Law 1581 of 2012 in Colombia. Act from prevention, avoid legal and economic risk to the company. At Digital Business Transformation, we facilitate the adoption of new Legal regulations for Digital Companies and e-commerce in Colombia.',
     },
     benefits: [
-      { es: 'Aumenta los niveles de seguridad digital.', en: 'Increases digital security levels.' },
-      { es: 'Reduce los costos operacionales.', en: 'Reduces operational costs.' },
-      { es: 'Reduce el Riesgo Legal por sanción de la SIC.', en: 'Reduces Legal Risk from SIC sanctions.' },
-      { es: 'Adapta la empresa a las nuevas exigencias del mercado.', en: 'Adapts the company to new market demands.' },
+      {
+        es: 'Aumenta los niveles de seguridad digital.',
+        en: 'Increases digital security levels.',
+        bodyEs: 'En la empresa, al tomar acciones en pro de aumentar la seguridad en el manejo de los datos de información.',
+        bodyEn: 'In the company, by taking actions to increase security in data information management.',
+      },
+      {
+        es: 'Reduce los costos operacionales.',
+        en: 'Reduces operational costs.',
+        bodyEs: 'Por errores o fallas en la gestión de las bases de datos de la empresa.',
+        bodyEn: 'By reducing errors or failures in the company\'s database management.',
+      },
+      {
+        es: 'Reduce el Riesgo Legal por sanción de la SIC.',
+        en: 'Reduces Legal Risk from SIC sanctions.',
+        bodyEs: 'Al ser una obligación legal por la ley 1581 de 2012, la organización puede incurrir en sanciones al no cumplir con parámetros mínimos en materia de datos personales.',
+        bodyEn: 'Being a legal obligation under Law 1581 of 2012, the organization may face sanctions for failing to meet minimum personal data requirements.',
+      },
+      {
+        es: 'Adapta la empresa a las nuevas exigencias del mercado.',
+        en: 'Adapts the company to new market demands.',
+        bodyEs: 'La transformación digital empresarial del comercio exige la adopción de nuevas medidas, esto como parte de evolución del mercado y la revolución tecnológica que vivimos actualmente.',
+        bodyEn: 'Digital business transformation in commerce demands adopting new measures as part of market evolution and the current technological revolution.',
+      },
     ],
   },
   {
@@ -115,9 +136,24 @@ export const services: ServiceData[] = [
       en: 'Every residential, commercial or mixed building under the horizontal property regime (P.H.) that collects or uses Personal Data from visitors, employees, residents, etc., is required to implement the protocols established by Law 1581 of 2012. We advise you on the creation, development and implementation of Technical Protocols to generate Personal Data Protection programs that the horizontal property is obligated to implement as Data Controller.',
     },
     benefits: [
-      { es: 'Aumenta los niveles de seguridad digital.', en: 'Increases digital security levels.' },
-      { es: 'Reduce el Riesgo Legal por sanción de la SIC.', en: 'Reduces Legal Risk from SIC sanctions.' },
-      { es: 'Reduce el Riesgo de un mal uso de las bases de datos.', en: 'Reduces Risk of database misuse.' },
+      {
+        es: 'Aumenta los niveles de seguridad digital.',
+        en: 'Increases digital security levels.',
+        bodyEs: 'En la propiedad horizontal al tomar acciones en pro de aumentar la seguridad en el debido uso y manejo de los datos de información que este recolecta.',
+        bodyEn: 'In condominiums, by taking actions to increase security in the proper use and handling of collected data.',
+      },
+      {
+        es: 'Reduce el Riesgo Legal por sanción de la SIC.',
+        en: 'Reduces Legal Risk from SIC sanctions.',
+        bodyEs: 'Al ser una obligación legal, la copropiedad puede incurrir en sanciones, al no cumplir con parámetros mínimos que en materia de datos personales exige la ley.',
+        bodyEn: 'Being a legal obligation, the condominium may face sanctions for failing to meet minimum personal data requirements under the law.',
+      },
+      {
+        es: 'Reduce el Riesgo de un mal uso de las bases de datos.',
+        en: 'Reduces Risk of database misuse.',
+        bodyEs: 'Al ser la Propiedad Horizontal responsable de datos personales que en ocasiones son sensibles, un mal uso puede llegar a lesionar a algún residente.',
+        bodyEn: 'As the condominium is responsible for personal data that can be sensitive, misuse can harm residents.',
+      },
     ],
   },
   {
@@ -136,9 +172,24 @@ export const services: ServiceData[] = [
       en: 'Personal data collected in medical offices is classified as highly sensitive and confidential under Law 1581 of 2012. Proper handling of this data ensures patients\' personal information is protected against unauthorized access and misuse. We advise on the creation, development and implementation of Technical Protocols for Personal Data Protection programs that health professionals or companies are obligated to implement.',
     },
     benefits: [
-      { es: 'Mejora de la Calidad de la Atención Médica.', en: 'Improves Quality of Medical Care.' },
-      { es: 'Aumenta los niveles de seguridad digital.', en: 'Increases digital security levels.' },
-      { es: 'Cumples con lo exigido por la norma.', en: 'Comply with regulatory requirements.' },
+      {
+        es: 'Mejora de la Calidad de la Atención Médica.',
+        en: 'Improves Quality of Medical Care.',
+        bodyEs: 'El análisis de datos médicos contribuye a mejorar la calidad de la atención médica. El tratamiento adecuado de datos permite a los profesionales de la salud acceder a información relevante sobre los pacientes.',
+        bodyEn: 'Medical data analysis contributes to improving healthcare quality. Proper data handling allows health professionals to access relevant patient information.',
+      },
+      {
+        es: 'Aumenta los niveles de seguridad digital.',
+        en: 'Increases digital security levels.',
+        bodyEs: 'Implementar los protocolos de Manejo de Datos Personales es una de las acciones que aumenta la seguridad de las bases de datos en el manejo de los datos de información médica recolectados.',
+        bodyEn: 'Implementing Personal Data Management protocols is one of the actions that increases database security for collected medical data.',
+      },
+      {
+        es: 'Cumples con lo exigido por la norma.',
+        en: 'Comply with regulatory requirements.',
+        bodyEs: 'Al implementar los protocolos de manejo de Datos Personales no solo actualizas la empresa a las nuevas regulaciones del mercado, también disminuyes el riesgo legal.',
+        bodyEn: 'By implementing Personal Data Management protocols you not only update your practice to new market regulations, but also reduce legal risk.',
+      },
     ],
   },
   {
@@ -157,9 +208,24 @@ export const services: ServiceData[] = [
       en: 'Strategic legal advisory is essential for long-term business success and sustainability, providing a solid legal foundation to face challenges and seize opportunities in today\'s digital business environment. Digital regulations are constantly evolving, which is why digital legal advisory helps companies understand and comply with applicable laws such as data protection, online privacy, cybersecurity, and more.',
     },
     benefits: [
-      { es: 'Aprovechar las oportunidades en el entorno.', en: 'Leverage opportunities in the environment.' },
-      { es: 'Adapta la empresa a las nuevas exigencias del mercado.', en: 'Adapts the company to new market demands.' },
-      { es: 'Reduce los costos operacionales.', en: 'Reduces operational costs.' },
+      {
+        es: 'Aprovechar las oportunidades en el entorno.',
+        en: 'Leverage opportunities in the environment.',
+        bodyEs: 'Gracias a las asesorías jurídicas en materia digital podemos abordar los desafíos legales específicos del nuevo ecosistema tecnológico.',
+        bodyEn: 'Through digital legal advisory we can address the specific legal challenges of the new technological ecosystem.',
+      },
+      {
+        es: 'Adapta la empresa a las nuevas exigencias del mercado.',
+        en: 'Adapts the company to new market demands.',
+        bodyEs: 'Desarrollarse exitosamente en el comercio electrónico exige la adopción de nuevas medidas en distintas áreas de la empresa.',
+        bodyEn: 'Succeeding in e-commerce requires adopting new measures across different areas of the company.',
+      },
+      {
+        es: 'Reduce los costos operacionales.',
+        en: 'Reduces operational costs.',
+        bodyEs: 'Actuar desde el análisis y conocimiento de una situación disminuye errores o fallas en la gestión de la empresa.',
+        bodyEn: 'Acting from analysis and knowledge of a situation reduces errors or failures in company management.',
+      },
     ],
   },
   {
@@ -178,9 +244,24 @@ export const services: ServiceData[] = [
       en: 'Internal information security audit is a fundamental process to evaluate and ensure the effectiveness of implemented security controls, providing a comprehensive assessment of the company\'s security status, identifying areas for improvement, and strengthening data protection while demonstrating accountability as required by law.\n\nOur team facilitates the adoption of ISO 27001 regulations for Digital Companies.\n\nSecurity is not a one-time event, but a continuous process.',
     },
     benefits: [
-      { es: 'Contribuye a fortalecer la protección de los datos de la información.', en: 'Contributes to strengthening data protection.' },
-      { es: 'Adapta la empresa a las nuevas exigencias del mercado.', en: 'Adapts the company to new market demands.' },
-      { es: 'Reduce los costos operacionales.', en: 'Reduces operational costs.' },
+      {
+        es: 'Contribuye a fortalecer la protección de los datos de la información.',
+        en: 'Contributes to strengthening data protection.',
+        bodyEs: 'Actuar desde el análisis y conocimiento de una situación disminuye errores o fallas en la gestión de la empresa.',
+        bodyEn: 'Acting from analysis and knowledge of a situation reduces errors or failures in company management.',
+      },
+      {
+        es: 'Adapta la empresa a las nuevas exigencias del mercado.',
+        en: 'Adapts the company to new market demands.',
+        bodyEs: 'Desarrollarse exitosamente en el comercio electrónico exige la adopción de nuevas medidas en distintas áreas de la empresa.',
+        bodyEn: 'Succeeding in e-commerce requires adopting new measures across different areas of the company.',
+      },
+      {
+        es: 'Reduce los costos operacionales.',
+        en: 'Reduces operational costs.',
+        bodyEs: 'Actuar desde el análisis y conocimiento de una situación disminuye errores o fallas en la gestión de las empresa.',
+        bodyEn: 'Acting from analysis and knowledge reduces errors or failures in company operations.',
+      },
     ],
   },
   {
@@ -199,9 +280,24 @@ export const services: ServiceData[] = [
       en: 'Assessment is a necessary process for SMEs seeking to grow digitally, protect their online assets and operations, and increase market competitiveness. Protecting our digital assets is key. Act from prevention, avoid legal and economic risk. At TDE, we facilitate security threat and vulnerability assessments for Digital Companies and e-commerce in Colombia.',
     },
     benefits: [
-      { es: 'Identificación de Activos Críticos.', en: 'Critical Asset Identification.' },
-      { es: 'Implementación de Controles de Seguridad.', en: 'Security Controls Implementation.' },
-      { es: 'Reduce el Riesgo Legal.', en: 'Reduces Legal Risk.' },
+      {
+        es: 'Identificación de Activos Críticos.',
+        en: 'Critical Asset Identification.',
+        bodyEs: 'Toda Pyme debe tener identificados los activos más sensibles para sus operaciones; controlamos lo que conocemos y medimos. Es de ahí donde surge la seguridad digital.',
+        bodyEn: 'Every SME must identify its most sensitive operational assets — we control what we know and measure. That is the foundation of digital security.',
+      },
+      {
+        es: 'Implementación de Controles de Seguridad.',
+        en: 'Security Controls Implementation.',
+        bodyEs: 'Con base en los hallazgos de la evaluación de riesgos, las Pymes deben implementar controles de seguridad adecuados para mitigar las amenazas y reducir las vulnerabilidades.',
+        bodyEn: 'Based on risk assessment findings, SMEs must implement appropriate security controls to mitigate threats and reduce vulnerabilities.',
+      },
+      {
+        es: 'Reduce el Riesgo Legal.',
+        en: 'Reduces Legal Risk.',
+        bodyEs: 'Cada día va en aumento la posibilidad de sufrir incidentes de seguridad, es por esto que aumenta la posibilidad de enfrentar demandas y/o sanciones por indebido uso de información recolectada.',
+        bodyEn: 'The likelihood of security incidents grows daily, which increases the possibility of facing lawsuits and/or sanctions for improper use of collected information.',
+      },
     ],
   },
   {
@@ -220,9 +316,24 @@ export const services: ServiceData[] = [
       en: 'Build trust with your clients and business partners by demonstrating your commitment and responsibility regarding data security and privacy. Our legal expert team will guide you through the process, ensuring each contract reflects your needs and adheres to best legal practices.\n\nOur Specialized Contracts service for Data Transmission and Transfer will help you reach clear and efficient agreements, reducing legal risks and improving operational efficiency.',
     },
     benefits: [
-      { es: 'Proteccion Integral.', en: 'Comprehensive Protection.' },
-      { es: 'Disminuye Riesgo Legal.', en: 'Reduces Legal Risk.' },
-      { es: 'Responsabilidad demostrada.', en: 'Demonstrated accountability.' },
+      {
+        es: 'Proteccion Integral.',
+        en: 'Comprehensive Protection.',
+        bodyEs: 'Desde acuerdos de confidencialidad hasta cláusulas de seguridad, nuestros contratos abarcan todos los aspectos necesarios para garantizar una transmisión y transferencia segura de datos personales.',
+        bodyEn: 'From confidentiality agreements to security clauses, our contracts cover all necessary aspects to ensure secure personal data transmission and transfer.',
+      },
+      {
+        es: 'Disminuye Riesgo Legal.',
+        en: 'Reduces Legal Risk.',
+        bodyEs: 'Evita riesgos legales por multas o responsabilidades no definidas, además de proteger la confianza de tus clientes al cumplir con las normativas más recientes en seguridad de la información.',
+        bodyEn: 'Avoid legal risks from fines or undefined liabilities, and protect client trust by complying with the latest information security regulations.',
+      },
+      {
+        es: 'Responsabilidad demostrada.',
+        en: 'Demonstrated accountability.',
+        bodyEs: 'Pues demuestra el compromiso y cumplimiento de la empresa con ciertos estándares, normas, regulaciones en materia de datos personales lo exige la ley 1581 de 2012.',
+        bodyEn: 'Demonstrates the company\'s commitment and compliance with standards and regulations in personal data management as required by Law 1581 of 2012.',
+      },
     ],
   },
 ];
@@ -230,11 +341,31 @@ export const services: ServiceData[] = [
 // ── Training Accordion ──
 
 export const trainingAccordion: TrainingAccordionItem[] = [
-  { id: 'duracion', title: { es: 'Duración', en: 'Duration' } },
-  { id: 'profesores', title: { es: 'Profesores', en: 'Instructors' } },
-  { id: 'modalidad', title: { es: 'Modalidad', en: 'Modality' } },
-  { id: 'habilidades', title: { es: 'Habilidades', en: 'Skills' } },
-  { id: 'certificado', title: { es: 'Certificado', en: 'Certificate' } },
+  {
+    id: 'duracion',
+    title: { es: 'Duración', en: 'Duration' },
+    body: { es: '3, 6, 9 y 12 horas según requerimiento.', en: '3, 6, 9 and 12 hours depending on requirements.' },
+  },
+  {
+    id: 'profesores',
+    title: { es: 'Profesores', en: 'Instructors' },
+    body: { es: 'Profesores certificados y con experiencia en el área.', en: 'Certified instructors with experience in the field.' },
+  },
+  {
+    id: 'modalidad',
+    title: { es: 'Modalidad', en: 'Modality' },
+    body: { es: 'Presencial o Virtual según intensidad y requerimiento.', en: 'In-person or Virtual depending on intensity and requirements.' },
+  },
+  {
+    id: 'habilidades',
+    title: { es: 'Habilidades', en: 'Skills' },
+    body: { es: 'Jurídico Digitales. Prevención y Amenazas en Seguridad Digital.', en: 'Digital Legal. Prevention and Threats in Digital Security.' },
+  },
+  {
+    id: 'certificado',
+    title: { es: 'Certificado', en: 'Certificate' },
+    body: { es: 'Sí, se entrega certificado de participación al finalizar.', en: 'Yes, a participation certificate is issued upon completion.' },
+  },
 ];
 
 export const trainingBenefits: TrainingBenefit[] = [
