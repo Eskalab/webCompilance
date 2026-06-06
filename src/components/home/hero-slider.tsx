@@ -26,13 +26,16 @@ export default function HeroSlider() {
 
   return (
     <section className="relative h-[500px] lg:h-[600px] overflow-hidden bg-[#2c3e50]">
-      {/* Background image */}
-      <img
-        src="/hero-bg.jpg"
-        alt=""
-        className="absolute inset-0 w-full h-full object-cover"
-        aria-hidden="true"
-      />
+      {/* Background image — cambia por slide */}
+      {heroSlides.map((s, i) => (
+        <img
+          key={s.id}
+          src={s.bgImage}
+          alt=""
+          aria-hidden="true"
+          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ${i === active ? 'opacity-100' : 'opacity-0'}`}
+        />
+      ))}
       {/* Overlay */}
       <div className="absolute inset-0 bg-gradient-to-r from-[#1a2a3a]/85 to-[#2c3e50]/70" />
 

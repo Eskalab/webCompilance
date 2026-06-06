@@ -4,6 +4,7 @@ export interface HeroSlide {
   subtitle: { es: string; en: string };
   ctaText: { es: string; en: string };
   ctaHref: string;
+  bgImage: string;
 }
 
 export interface ServiceData {
@@ -52,6 +53,7 @@ export const heroSlides: HeroSlide[] = [
     },
     ctaText: { es: 'VER MÁS', en: 'LEARN MORE' },
     ctaHref: '#que-hacemos',
+    bgImage: '/hero/slide-1.jpg',
   },
   {
     id: 'seguridad-info',
@@ -62,6 +64,7 @@ export const heroSlides: HeroSlide[] = [
     },
     ctaText: { es: 'VER MÁS', en: 'LEARN MORE' },
     ctaHref: '#servicios',
+    bgImage: '/hero/slide-2.jpg',
   },
   {
     id: 'cumplimiento',
@@ -72,6 +75,7 @@ export const heroSlides: HeroSlide[] = [
     },
     ctaText: { es: 'VER MÁS', en: 'LEARN MORE' },
     ctaHref: '#servicios',
+    bgImage: '/hero/slide-3.jpg',
   },
 ];
 
