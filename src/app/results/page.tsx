@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, Suspense } from 'react';
+import React, { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useLanguage } from '@/contexts/language';
 import { ScanResponse } from '@/lib/scanner/types';
@@ -16,18 +16,41 @@ import {
   XCircle,
   Download,
   ChevronRight,
+  ChevronDown,
   Globe,
   Lock,
   Cookie,
   FileText,
   SearchCheck,
+  Shield,
+  Scale,
 } from 'lucide-react';
+
+const SECURITY_CHECKS = new Set(['ssl', 'third_party']);
+const LEGAL_CHECKS = new Set(['privacy_policy', 'legal_pages', 'forms_consent', 'cookie_banner']);
+
+function calcSubScore(checks: { checkId: string; status: string; weight: number }[], ids: Set<string>) {
+  const group = checks.filter(c => ids.has(c.checkId));
+  if (!group.length) return 0;
+  const passed = group.filter(c => c.status === 'pass').reduce((s, c) => s + c.weight, 0);
+  const total = group.reduce((s, c) => s + c.weight, 0);
+  return total ? Math.round((passed / total) * 100) : 0;
+}
 
 function ResultsContent() {
   const [scan, setScan] = useState<ScanResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [unlocked, setUnlocked] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [activeTab, setActiveTab] = useState<'security' | 'legal'>('security');
+  const [expanded, setExpanded] = useState<Set<string>>(new Set());
+
+  const toggleExpand = (id: string) =>
+    setExpanded(prev => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
 
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -148,368 +171,235 @@ function ResultsContent() {
             {t('scan_another')}
           </button>
 
-          {/* TOP SECTION */}
-          <div className="grid lg:grid-cols-[420px,1fr] gap-10">
-            {/* LEFT SCORE */}
-            <div className="bg-white rounded-[36px] shadow-xl border border-gray-100 p-10">
-              <div className="flex items-center justify-between mb-10">
+          {/* 1. RIESGOS DETECTADOS */}
+          {scan.summary.fail > 0 && (
+            <div className="bg-white rounded-[36px] border border-red-100 shadow-xl p-8 mb-10">
+              <div className="flex items-start gap-5">
+                <div className="w-16 h-16 rounded-3xl bg-red-100 flex items-center justify-center shrink-0">
+                  <AlertTriangle className="w-8 h-8 text-red-500" />
+                </div>
                 <div>
-                  <p className="text-gray-500 text-sm mb-1">
-                    {t('site_analyzed')}
-                  </p>
-
-                  <h1 className="text-2xl font-bold text-[#1f2d3d] break-all">
-                    {scan.url}
-                  </h1>
-                </div>
-
-                <div className="flex items-center gap-2 text-[#0f8b8d] text-sm font-medium">
-                  <div className="w-3 h-3 rounded-full bg-[#30c48d]" />
-
-                  {t('scan_complete')}
-                </div>
-              </div>
-
-              {/* CIRCLE */}
-              <div className="relative w-64 h-64 mx-auto mb-10">
-                <div className="absolute inset-0 rounded-full border-[18px] border-[#eaf5f3]" />
-
-                <div
-                  className="absolute inset-0 rounded-full border-[18px] border-transparent"
-                  style={{
-                    borderTopColor: scoreColor,
-                    borderRightColor: scoreColor,
-                    transform: `rotate(${scan.score * 1.8}deg)`,
-                  }}
-                />
-
-                <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <span className="text-7xl font-bold text-[#1f2d3d]">
-                    {scan.score}
-                  </span>
-
-                  <span
-                    className="font-semibold mt-2"
-                    style={{ color: scoreColor }}
-                  >
-                    {scan.score >= 80
-                      ? t('compliance_high')
-                      : scan.score >= 50
-                      ? t('risk_medium')
-                      : t('risk_high')}
-                  </span>
-                </div>
-              </div>
-
-              {/* SUMMARY */}
-              <div className="grid grid-cols-3 gap-4">
-                <div className="bg-[#f7f8fa] rounded-2xl p-5 text-center">
-                  <p className="text-3xl font-bold text-[#30c48d]">
-                    {scan.summary.pass}
-                  </p>
-
-                  <p className="text-sm text-gray-600 mt-1">
-                    {t('passed')}
-                  </p>
-                </div>
-
-                <div className="bg-[#f7f8fa] rounded-2xl p-5 text-center">
-                  <p className="text-3xl font-bold text-[#f5b942]">
-                    {scan.summary.warn}
-                  </p>
-
-                  <p className="text-sm text-gray-600 mt-1">
-                    {t('warnings')}
-                  </p>
-                </div>
-
-                <div className="bg-[#f7f8fa] rounded-2xl p-5 text-center">
-                  <p className="text-3xl font-bold text-[#ef4444]">
-                    {scan.summary.fail}
-                  </p>
-
-                  <p className="text-sm text-gray-600 mt-1">
-                    {t('failed')}
-                  </p>
+                  <p className="text-red-500 font-semibold mb-2">{t('risks_detected')}</p>
+                  <h3 className="text-2xl font-bold text-[#1f2d3d] mb-4">{t('risk_alert_title')}</h3>
+                  <p className="text-gray-600 leading-relaxed">{t('risk_alert_desc')}</p>
                 </div>
               </div>
             </div>
+          )}
 
-            {/* RIGHT */}
-            <div className="space-y-6">
-              {/* QUICK INFO */}
-              <div className="bg-white rounded-[36px] border border-gray-100 shadow-xl p-8">
-                <h2 className="text-2xl font-bold text-[#1f2d3d] mb-8">
-                  {t('detected_data')}
-                </h2>
-
-                <div className="grid md:grid-cols-2 gap-6">
-                  {[
-                    {
-                      icon: Globe,
-                      label: t('label_domain'),
-                      value: scan.url,
-                    },
-                    {
-                      icon: Lock,
-                      label: t('label_https'),
-                      value: t('label_active'),
-                    },
-                    {
-                      icon: Cookie,
-                      label: t('label_cookies'),
-                      value: `${scan.summary.warn + scan.summary.fail} ${t('label_detected')}`,
-                    },
-                    {
-                      icon: FileText,
-                      label: t('label_policies'),
-                      value: t('label_analyzed'),
-                    },
-                  ].map((item) => (
-                    <div
-                      key={item.label}
-                      className="bg-[#f7f8fa] rounded-3xl p-6"
-                    >
-                      <div className="w-14 h-14 rounded-2xl bg-[#6ed3c1]/15 flex items-center justify-center mb-4">
-                        <item.icon className="w-7 h-7 text-[#0f8b8d]" />
-                      </div>
-
-                      <p className="text-sm text-gray-500 mb-1">
-                        {item.label}
-                      </p>
-
-                      <h3 className="font-bold text-[#1f2d3d] break-all">
-                        {item.value}
-                      </h3>
-                    </div>
-                  ))}
-                </div>
+          {/* CHECKS — two columns */}
+          <div className="mt-14">
+            <div className="flex items-center justify-between flex-wrap gap-4 mb-6">
+              <div>
+                <p className="text-[#0f8b8d] font-semibold uppercase tracking-widest text-sm mb-1">{t('compliance_report')}</p>
+                <h2 className="text-3xl font-bold text-[#1f2d3d]">{t('analysis_results')}</h2>
               </div>
-
-              {/* ALERT */}
-              {scan.summary.fail > 0 && (
-                <div className="bg-white rounded-[36px] border border-red-100 shadow-xl p-8">
-                  <div className="flex items-start gap-5">
-                    <div className="w-16 h-16 rounded-3xl bg-red-100 flex items-center justify-center">
-                      <AlertTriangle className="w-8 h-8 text-red-500" />
-                    </div>
-
-                    <div>
-                      <p className="text-red-500 font-semibold mb-2">
-                        {t('risks_detected')}
-                      </p>
-
-                      <h3 className="text-2xl font-bold text-[#1f2d3d] mb-4">
-                        {t('risk_alert_title')}
-                      </h3>
-
-                      <p className="text-gray-600 leading-relaxed">
-                        {t('risk_alert_desc')}
-                      </p>
-                    </div>
-                  </div>
-                </div>
+              {unlocked && (
+                <button onClick={handlePdf} className="h-11 px-6 rounded-2xl bg-[#0f8b8d] text-white font-semibold hover:bg-[#0c7475] transition flex items-center gap-2 text-sm">
+                  <Download className="w-4 h-4" />
+                  {t('download_pdf')}
+                </button>
               )}
             </div>
-          </div>
 
-          {/* CHECKS */}
-          <div className="mt-14">
-            <div className="bg-white rounded-[40px] border border-gray-100 shadow-xl overflow-hidden">
-              <div className="px-10 py-8 border-b border-gray-100">
-                <div className="flex items-center justify-between flex-wrap gap-6">
-                  <div>
-                    <p className="text-[#0f8b8d] font-semibold uppercase tracking-widest text-sm mb-2">
-                      {t('compliance_report')}
-                    </p>
+            {(() => {
+              const securityScore = calcSubScore(scan.checks, SECURITY_CHECKS);
+              const legalScore = calcSubScore(scan.checks, LEGAL_CHECKS);
 
-                    <h2 className="text-4xl font-bold text-[#1f2d3d]">
-                      {t('analysis_results')}
-                    </h2>
-                  </div>
+              const renderCheckItem = (check: typeof scan.checks[number], showRecommendation: boolean) => {
+                const isPass = check.status === 'pass';
+                const isWarn = check.status === 'warn';
+                const isFail = check.status === 'fail';
+                const isOpen = expanded.has(check.checkId);
+                const label = locale === 'es' && check.labelEs ? check.labelEs : check.label;
+                const details = locale === 'es' && check.detailsEs ? check.detailsEs : check.details;
+                const suggestion = locale === 'es' && check.suggestionEs ? check.suggestionEs : check.suggestion;
 
-                  {unlocked && (
+                return (
+                  <div key={check.checkId} className="border-b border-gray-100 last:border-0">
                     <button
-                      onClick={handlePdf}
-                      className="
-                        h-14
-                        px-8
-                        rounded-2xl
-                        bg-[#0f8b8d]
-                        text-white
-                        font-semibold
-                        hover:bg-[#0c7475]
-                        transition
-                        flex
-                        items-center
-                        gap-3
-                      "
+                      onClick={() => toggleExpand(check.checkId)}
+                      className="w-full flex items-center gap-3 px-6 py-4 hover:bg-[#fafafa] transition text-left"
                     >
-                      <Download className="w-5 h-5" />
-
-                      {t('download_pdf')}
+                      <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${isPass ? 'bg-green-100' : isWarn ? 'bg-yellow-100' : 'bg-red-100'}`}>
+                        {isPass && <CheckCircle2 className="w-4 h-4 text-green-600" />}
+                        {isWarn && <AlertTriangle className="w-4 h-4 text-yellow-600" />}
+                        {isFail && <XCircle className="w-4 h-4 text-red-600" />}
+                      </div>
+                      <span className="flex-1 font-semibold text-[#1f2d3d] text-sm">{label}</span>
+                      <div className={`px-2.5 py-1 rounded-full text-xs font-semibold shrink-0 ${isPass ? 'bg-green-100 text-green-700' : isWarn ? 'bg-yellow-100 text-yellow-700' : 'bg-red-100 text-red-700'}`}>
+                        {locale === 'es' ? t(`status_${check.status === 'pass' ? 'pass' : check.status === 'warn' ? 'warn' : check.status === 'fail' ? 'fail' : 'skip'}` as const) : check.status.toUpperCase()}
+                      </div>
+                      <ChevronDown className={`w-4 h-4 text-gray-400 shrink-0 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
                     </button>
-                  )}
-                </div>
-              </div>
 
-              {/* CHECK ITEMS */}
-              {(() => {
-                const freeChecks = scan.checks.filter(c => c.tier === 'free');
-                const premiumChecks = scan.checks.filter(c => c.tier === 'premium');
-
-                const renderCheckItem = (check: typeof scan.checks[number], showRecommendation: boolean) => {
-                  const isPass = check.status === 'pass';
-                  const isWarn = check.status === 'warn';
-                  const isFail = check.status === 'fail';
-
-                  return (
-                    <div
-                      key={check.checkId}
-                      className="p-8 hover:bg-[#fafafa] transition"
-                    >
-                      <div className="flex items-start gap-5">
-                        {/* ICON */}
-                        <div
-                          className={`
-                            w-14 h-14 rounded-2xl flex items-center justify-center shrink-0
-                            ${
-                              isPass
-                                ? 'bg-green-100'
-                                : isWarn
-                                ? 'bg-yellow-100'
-                                : 'bg-red-100'
-                            }
-                          `}
-                        >
-                          {isPass && (
-                            <CheckCircle2 className="w-7 h-7 text-green-600" />
-                          )}
-
-                          {isWarn && (
-                            <AlertTriangle className="w-7 h-7 text-yellow-600" />
-                          )}
-
-                          {isFail && (
-                            <XCircle className="w-7 h-7 text-red-600" />
-                          )}
-                        </div>
-
-                        {/* CONTENT */}
-                        <div className="flex-1">
-                          <div className="flex items-start justify-between gap-5 flex-wrap">
-                            <div>
-                              <h3 className="text-2xl font-bold text-[#1f2d3d] mb-2">
-                                {locale === 'es' && check.labelEs ? check.labelEs : check.label}
-                              </h3>
-
-                              <p className="text-gray-600 leading-relaxed">
-                                {locale === 'es' && check.detailsEs ? check.detailsEs : check.details}
-                              </p>
+                    {isOpen && (
+                      <div className="px-6 pb-4 space-y-3">
+                        <p className="text-gray-600 text-sm leading-relaxed">{details}</p>
+                        {showRecommendation && suggestion && (
+                          <div className="bg-[#f7f8fa] rounded-xl p-4 border border-gray-200 flex items-start gap-3">
+                            <SearchCheck className="w-4 h-4 text-[#0f8b8d] shrink-0 mt-0.5" />
+                            <p className="text-gray-600 text-sm leading-relaxed">{suggestion}</p>
+                          </div>
+                        )}
+                        {!showRecommendation && !unlocked && (
+                          <div className="bg-[#f7f8fa] rounded-xl p-4 border border-gray-200 relative overflow-hidden">
+                            <div className="blur-sm select-none pointer-events-none flex items-start gap-3">
+                              <SearchCheck className="w-4 h-4 text-[#0f8b8d] shrink-0 mt-0.5" />
+                              <p className="text-gray-600 text-sm">{t('recommendation_text')}</p>
                             </div>
-
-                            <div
-                              className={`
-                                px-4 py-2 rounded-full text-sm font-semibold
-                                ${
-                                  isPass
-                                    ? 'bg-green-100 text-green-700'
-                                    : isWarn
-                                    ? 'bg-yellow-100 text-yellow-700'
-                                    : 'bg-red-100 text-red-700'
-                                }
-                              `}
-                            >
-                              {locale === 'es' ? t(`status_${check.status === 'pass' ? 'pass' : check.status === 'warn' ? 'warn' : check.status === 'fail' ? 'fail' : 'skip'}` as const) : check.status.toUpperCase()}
+                            <div className="absolute inset-0 flex flex-col items-center justify-center gap-1">
+                              <div className="flex items-center gap-1.5 text-[#0f8b8d] font-semibold text-sm">
+                                <Lock className="w-4 h-4" />
+                                <span>{t('premium_recommendations_locked')}</span>
+                              </div>
+                              <button onClick={() => setShowModal(true)} className="text-[#0f8b8d] text-xs underline hover:text-[#0c7475] transition cursor-pointer">
+                                {t('click_to_unlock')}
+                              </button>
                             </div>
                           </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                );
+              };
 
-                          {/* RECOMMENDATION (only when unlocked and showRecommendation) */}
-                          {showRecommendation && (
-                            <div className="mt-6 bg-[#f7f8fa] rounded-3xl p-6 border border-gray-200">
-                              <div className="flex items-start gap-4">
-                                <div className="w-12 h-12 rounded-2xl bg-[#6ed3c1]/15 flex items-center justify-center">
-                                  <SearchCheck className="w-6 h-6 text-[#0f8b8d]" />
-                                </div>
+              const renderColumn = (
+                titleEs: string, titleEn: string,
+                icon: React.ReactNode,
+                score: number, accentColor: string,
+                ids: Set<string>
+              ) => {
+                const scoreColor = score >= 80 ? '#30c48d' : score >= 50 ? '#f5b942' : '#ef4444';
+                const colChecks = scan.checks.filter(c => ids.has(c.checkId));
+                const freeChecks = colChecks.filter(c => c.tier === 'free');
+                const premiumChecks = colChecks.filter(c => c.tier === 'premium');
 
-                                <div>
-                                  <h4 className="font-bold text-[#1f2d3d] mb-2">
-                                    {t('recommendation_title')}
-                                  </h4>
-
-                                  <p className="text-gray-600 leading-relaxed">
-                                    {locale === 'es' && check.suggestionEs ? check.suggestionEs : check.suggestion || t('recommendation_text')}
-                                  </p>
-                                </div>
-                              </div>
-                            </div>
-                          )}
-
-                          {/* BLURRED LOCKED INDICATOR (free checks when not unlocked) */}
-                          {!showRecommendation && !unlocked && (
-                            <div className="mt-6 p-5 rounded-2xl bg-[#f7f8fa] border border-gray-200 relative overflow-hidden">
-                              <div className="blur-sm select-none pointer-events-none">
-                                <div className="flex items-start gap-4">
-                                  <div className="w-12 h-12 rounded-2xl bg-[#6ed3c1]/15 flex items-center justify-center">
-                                    <SearchCheck className="w-6 h-6 text-[#0f8b8d]" />
-                                  </div>
-
-                                  <div>
-                                    <h4 className="font-bold text-[#1f2d3d] mb-2">
-                                      {t('recommendation_title')}
-                                    </h4>
-
-                                    <p className="text-gray-600 leading-relaxed">
-                                      {t('recommendation_text')}
-                                    </p>
-                                  </div>
-                                </div>
-                              </div>
-
-                              <div className="absolute inset-0 flex flex-col items-center justify-center gap-1">
-                                <div className="flex items-center gap-2 text-[#0f8b8d] font-semibold">
-                                  <Lock className="w-5 h-5" />
-                                  <span>{t('premium_recommendations_locked')}</span>
-                                </div>
-                                <button
-                                  onClick={() => setShowModal(true)}
-                                  className="text-[#0f8b8d] text-sm underline hover:text-[#0c7475] transition cursor-pointer"
-                                >
-                                  {t('click_to_unlock')}
-                                </button>
-                              </div>
-                            </div>
-                          )}
+                return (
+                  <div className="bg-white rounded-[32px] border border-gray-100 shadow-xl overflow-hidden flex flex-col">
+                    {/* Column header */}
+                    <div className="px-6 py-5 border-b border-gray-100" style={{ borderTop: `4px solid ${accentColor}` }}>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ backgroundColor: `${accentColor}18` }}>
+                            {icon}
+                          </div>
+                          <h3 className="font-bold text-[#1f2d3d]">
+                            {locale === 'es' ? titleEs : titleEn}
+                          </h3>
+                        </div>
+                        <div className="text-right">
+                          <span className="text-2xl font-bold" style={{ color: scoreColor }}>{score}</span>
+                          <span className="text-gray-400 text-sm"> / 100</span>
                         </div>
                       </div>
                     </div>
-                  );
-                };
 
-                return (
-                  <div className="divide-y divide-gray-100">
-                    {/* FREE CHECKS — status only, no recommendations unless unlocked */}
-                    {freeChecks.map((check) => renderCheckItem(check, unlocked))}
+                    {/* Checks */}
+                    <div className="flex-1">
+                      {freeChecks.map(c => renderCheckItem(c, unlocked))}
 
-                    {/* LEAD GATE — shown between free and premium when locked */}
-                    {!unlocked && (
-                      <div id="lead-gate" className="p-8">
-                        <LeadGate
-                          scanId={scan.id}
-                          url={scan.url}
-                          score={scan.score}
-                          onUnlock={() => setUnlocked(true)}
-                        />
-                      </div>
-                    )}
+                      {!unlocked && ids === LEGAL_CHECKS && (
+                        <div id="lead-gate" className="p-6">
+                          <LeadGate
+                            scanId={scan.id}
+                            url={scan.url}
+                            score={scan.score}
+                            onUnlock={() => setUnlocked(true)}
+                          />
+                        </div>
+                      )}
 
-                    {/* PREMIUM CHECKS — only shown when unlocked, with recommendations */}
-                    {unlocked && premiumChecks.map((check) => renderCheckItem(check, true))}
+                      {unlocked && premiumChecks.map(c => renderCheckItem(c, true))}
+                    </div>
                   </div>
                 );
-              })()}
+              };
+
+              return (
+                <div className="grid md:grid-cols-2 gap-6">
+                  {renderColumn(
+                    'Seguridad Digital', 'Digital Security',
+                    <Shield className="w-5 h-5" style={{ color: '#1e2a52' }} />,
+                    securityScore, '#1e2a52', SECURITY_CHECKS
+                  )}
+                  {renderColumn(
+                    'Cumplimiento Legal', 'Legal Compliance',
+                    <Scale className="w-5 h-5" style={{ color: '#0f8b8d' }} />,
+                    legalScore, '#0f8b8d', LEGAL_CHECKS
+                  )}
+                </div>
+              );
+            })()}
+          </div>
+
+          {/* 3. CALIFICACIÓN GLOBAL */}
+          <div className="mt-10 bg-white rounded-[36px] shadow-xl border border-gray-100 p-10">
+            <div className="flex items-center justify-between mb-8">
+              <div>
+                <p className="text-gray-500 text-sm mb-1">{t('site_analyzed')}</p>
+                <h2 className="text-2xl font-bold text-[#1f2d3d] break-all">{scan.url}</h2>
+              </div>
+              <div className="flex items-center gap-2 text-[#0f8b8d] text-sm font-medium">
+                <div className="w-3 h-3 rounded-full bg-[#30c48d]" />
+                {t('scan_complete')}
+              </div>
+            </div>
+            <div className="flex flex-col lg:flex-row items-center gap-10">
+              {/* Circle */}
+              <div className="relative w-52 h-52 shrink-0">
+                <div className="absolute inset-0 rounded-full border-[16px] border-[#eaf5f3]" />
+                <div
+                  className="absolute inset-0 rounded-full border-[16px] border-transparent"
+                  style={{ borderTopColor: scoreColor, borderRightColor: scoreColor, transform: `rotate(${scan.score * 1.8}deg)` }}
+                />
+                <div className="absolute inset-0 flex flex-col items-center justify-center">
+                  <span className="text-6xl font-bold text-[#1f2d3d]">{scan.score}</span>
+                  <span className="font-semibold mt-1 text-sm" style={{ color: scoreColor }}>
+                    {scan.score >= 80 ? t('compliance_high') : scan.score >= 50 ? t('risk_medium') : t('risk_high')}
+                  </span>
+                </div>
+              </div>
+              {/* Summary */}
+              <div className="grid grid-cols-3 gap-4 flex-1 w-full">
+                <div className="bg-[#f7f8fa] rounded-2xl p-5 text-center">
+                  <p className="text-3xl font-bold text-[#30c48d]">{scan.summary.pass}</p>
+                  <p className="text-sm text-gray-600 mt-1">{t('passed')}</p>
+                </div>
+                <div className="bg-[#f7f8fa] rounded-2xl p-5 text-center">
+                  <p className="text-3xl font-bold text-[#f5b942]">{scan.summary.warn}</p>
+                  <p className="text-sm text-gray-600 mt-1">{t('warnings')}</p>
+                </div>
+                <div className="bg-[#f7f8fa] rounded-2xl p-5 text-center">
+                  <p className="text-3xl font-bold text-[#ef4444]">{scan.summary.fail}</p>
+                  <p className="text-sm text-gray-600 mt-1">{t('failed')}</p>
+                </div>
+              </div>
             </div>
           </div>
+
+          {/* 4. DATOS DETECTADOS */}
+          <div className="mt-6 bg-white rounded-[36px] border border-gray-100 shadow-xl p-8">
+            <h2 className="text-xl font-bold text-[#1f2d3d] mb-6">{t('detected_data')}</h2>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {[
+                { icon: Globe, label: t('label_domain'), value: scan.url },
+                { icon: Lock, label: t('label_https'), value: t('label_active') },
+                { icon: Cookie, label: t('label_cookies'), value: `${scan.summary.warn + scan.summary.fail} ${t('label_detected')}` },
+                { icon: FileText, label: t('label_policies'), value: t('label_analyzed') },
+              ].map((item) => (
+                <div key={item.label} className="bg-[#f7f8fa] rounded-2xl p-5">
+                  <div className="w-10 h-10 rounded-xl bg-[#6ed3c1]/15 flex items-center justify-center mb-3">
+                    <item.icon className="w-5 h-5 text-[#0f8b8d]" />
+                  </div>
+                  <p className="text-xs text-gray-500 mb-1">{item.label}</p>
+                  <p className="font-bold text-[#1f2d3d] text-sm break-all">{item.value}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
         </div>
       </section>
 
