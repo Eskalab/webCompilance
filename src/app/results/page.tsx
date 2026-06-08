@@ -120,9 +120,9 @@ function ResultsContent() {
     <main className="min-h-screen bg-[#f7f8fa]">
       {/* TOPBAR */}
       <div className="bg-[#ececec] border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-6 h-12 flex items-center justify-between text-sm">
-          <div className="flex items-center gap-4 text-gray-700">
-            <span className="font-medium">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 min-h-12 py-2 flex flex-wrap items-center justify-between gap-2 text-sm">
+          <div className="flex items-center gap-2 sm:gap-4 text-gray-700 flex-wrap">
+            <span className="font-medium hidden sm:inline">
               {t('topbar_talk_advisor')}
             </span>
 
@@ -160,7 +160,7 @@ function ResultsContent() {
 
         <div className="absolute bottom-[-180px] right-[-120px] w-[600px] h-[600px] rounded-full bg-[#1e2a52]/20 blur-3xl" />
 
-        <div className="relative max-w-7xl mx-auto px-6 py-16">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-16">
           {/* BACK */}
           <button
             onClick={() => router.push('/scanner')}
@@ -173,17 +173,17 @@ function ResultsContent() {
 
           {/* 1. RIESGOS DETECTADOS */}
           {scan.summary.fail > 0 && (
-            <div className="bg-white rounded-[36px] border border-red-200 shadow-xl p-8 mb-10">
-              <div className="flex items-start gap-5">
-                <div className="w-16 h-16 rounded-3xl bg-red-100 flex items-center justify-center shrink-0">
-                  <AlertTriangle className="w-8 h-8 text-red-500" />
+            <div className="bg-white rounded-[28px] sm:rounded-[36px] border border-red-200 shadow-xl p-5 sm:p-8 mb-8 sm:mb-10">
+              <div className="flex items-start gap-4 sm:gap-5">
+                <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-2xl sm:rounded-3xl bg-red-100 flex items-center justify-center shrink-0">
+                  <AlertTriangle className="w-6 h-6 sm:w-8 sm:h-8 text-red-500" />
                 </div>
                 <div>
-                  <p className="text-red-600 font-semibold mb-2">{locale === 'es' ? 'Riesgo alto' : 'High risk'}</p>
-                  <h3 className="text-2xl font-bold text-[#1f2d3d] mb-3">
+                  <p className="text-red-600 font-semibold mb-1 sm:mb-2 text-sm sm:text-base">{locale === 'es' ? 'Riesgo alto' : 'High risk'}</p>
+                  <h3 className="text-xl sm:text-2xl font-bold text-[#1f2d3d] mb-2 sm:mb-3">
                     {locale === 'es' ? '¡Acción inmediata requerida!' : 'Immediate action required!'}
                   </h3>
-                  <p className="text-gray-600 leading-relaxed">
+                  <p className="text-gray-600 leading-relaxed text-sm sm:text-base">
                     {locale === 'es'
                       ? 'Tu nivel de riesgo es muy alto. Habla con un experto ahora.'
                       : 'Your risk level is very high. Talk to an expert now.'}
@@ -197,8 +197,8 @@ function ResultsContent() {
           <div className="mt-14">
             <div className="flex items-center justify-between flex-wrap gap-4 mb-6">
               <div>
-                <p className="text-[#0f8b8d] font-semibold uppercase tracking-widest text-sm mb-1">{t('compliance_report')}</p>
-                <h2 className="text-3xl font-bold text-[#1f2d3d]">{t('analysis_results')}</h2>
+                <p className="text-[#0f8b8d] font-semibold uppercase tracking-widest text-xs sm:text-sm mb-1">{t('compliance_report')}</p>
+                <h2 className="text-2xl sm:text-3xl font-bold text-[#1f2d3d]">{t('analysis_results')}</h2>
               </div>
               {unlocked && (
                 <button onClick={handlePdf} className="h-11 px-6 rounded-2xl bg-[#0f8b8d] text-white font-semibold hover:bg-[#0c7475] transition flex items-center gap-2 text-sm">
@@ -221,7 +221,7 @@ function ResultsContent() {
                 const suggestion = locale === 'es' && check.suggestionEs ? check.suggestionEs : check.suggestion;
 
                 return (
-                  <div key={check.checkId} className="border-b border-gray-100 last:border-0 px-6 py-5 space-y-3">
+                  <div key={check.checkId} className="border-b border-gray-100 last:border-0 px-4 sm:px-6 py-4 sm:py-5 space-y-3">
                     {/* Header */}
                     <div className="flex items-center gap-3">
                       <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${isPass ? 'bg-green-100' : isWarn ? 'bg-yellow-100' : 'bg-red-100'}`}>
@@ -278,10 +278,10 @@ function ResultsContent() {
                 const premiumChecks = colChecks.filter(c => c.tier === 'premium');
 
                 return (
-                  <div className="bg-white rounded-[32px] border border-gray-100 shadow-xl overflow-hidden flex flex-col">
+                  <div className="bg-white rounded-[24px] sm:rounded-[32px] border border-gray-100 shadow-xl overflow-hidden flex flex-col">
                     {/* Column header */}
-                    <div className="px-6 py-5 border-b border-gray-100" style={{ borderTop: `4px solid ${accentColor}` }}>
-                      <div className="flex items-center justify-between">
+                    <div className="px-4 sm:px-6 py-4 sm:py-5 border-b border-gray-100" style={{ borderTop: `4px solid ${accentColor}` }}>
+                      <div className="flex items-center justify-between flex-wrap gap-2">
                         <div className="flex items-center gap-3">
                           <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ backgroundColor: `${accentColor}18` }}>
                             {icon}
@@ -338,27 +338,27 @@ function ResultsContent() {
           </div>
 
           {/* 3. CALIFICACIÓN GLOBAL */}
-          <div className="mt-10 bg-white rounded-[36px] shadow-xl border border-gray-100 p-10">
-            <div className="flex items-center justify-between mb-8">
+          <div className="mt-8 sm:mt-10 bg-white rounded-[28px] sm:rounded-[36px] shadow-xl border border-gray-100 p-6 sm:p-10">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6 sm:mb-8">
               <div>
                 <p className="text-gray-500 text-sm mb-1">{t('site_analyzed')}</p>
-                <h2 className="text-2xl font-bold text-[#1f2d3d] break-all">{scan.url}</h2>
+                <h2 className="text-lg sm:text-2xl font-bold text-[#1f2d3d] break-all">{scan.url}</h2>
               </div>
-              <div className="flex items-center gap-2 text-[#0f8b8d] text-sm font-medium">
+              <div className="flex items-center gap-2 text-[#0f8b8d] text-sm font-medium shrink-0">
                 <div className="w-3 h-3 rounded-full bg-[#30c48d]" />
                 {t('scan_complete')}
               </div>
             </div>
-            <div className="flex flex-col lg:flex-row items-center gap-10">
+            <div className="flex flex-col lg:flex-row items-center gap-8 sm:gap-10">
               {/* Circle */}
-              <div className="relative w-52 h-52 shrink-0">
+              <div className="relative w-44 h-44 sm:w-52 sm:h-52 shrink-0">
                 <div className="absolute inset-0 rounded-full border-[16px] border-[#eaf5f3]" />
                 <div
                   className="absolute inset-0 rounded-full border-[16px] border-transparent"
                   style={{ borderTopColor: scoreColor, borderRightColor: scoreColor, transform: `rotate(${scan.score * 1.8}deg)` }}
                 />
                 <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <span className="text-6xl font-bold text-[#1f2d3d]">{scan.score}</span>
+                  <span className="text-5xl sm:text-6xl font-bold text-[#1f2d3d]">{scan.score}</span>
                   <span className="font-semibold mt-1 text-sm" style={{ color: scoreColor }}>
                     {scan.score >= 80 ? t('compliance_high') : scan.score >= 50 ? t('risk_medium') : t('risk_high')}
                   </span>
@@ -383,7 +383,7 @@ function ResultsContent() {
           </div>
 
           {/* 4. DATOS DETECTADOS */}
-          <div className="mt-6 bg-white rounded-[36px] border border-gray-100 shadow-xl p-8">
+          <div className="mt-6 bg-white rounded-[28px] sm:rounded-[36px] border border-gray-100 shadow-xl p-5 sm:p-8">
             <h2 className="text-xl font-bold text-[#1f2d3d] mb-6">{t('detected_data')}</h2>
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {[
@@ -407,29 +407,18 @@ function ResultsContent() {
       </section>
 
       {/* CTA */}
-      <section className="py-24">
-        <div className="max-w-5xl mx-auto px-6">
-          <div className="rounded-[40px] bg-[linear-gradient(120deg,#1e2a52_0%,#1e2a52_38%,#2d7d9a_50%,#1e2a52_62%,#1e2a52_100%)] p-14 text-center shadow-2xl">
-            <h2 className="text-5xl font-bold text-white mb-6">
+      <section className="py-12 sm:py-24">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6">
+          <div className="rounded-[28px] sm:rounded-[40px] bg-[linear-gradient(120deg,#1e2a52_0%,#1e2a52_38%,#2d7d9a_50%,#1e2a52_62%,#1e2a52_100%)] p-8 sm:p-14 text-center shadow-2xl">
+            <h2 className="text-3xl sm:text-5xl font-bold text-white mb-4 sm:mb-6">
               {t('need_legal_help')}
             </h2>
 
-            <p className="text-white/90 text-xl mb-10 max-w-2xl mx-auto">
+            <p className="text-white/90 text-base sm:text-xl mb-6 sm:mb-10 max-w-2xl mx-auto">
               {t('need_legal_help_desc')}
             </p>
 
-            <button
-              className="
-                h-14
-                px-10
-                rounded-2xl
-                bg-white
-                text-[#0f8b8d]
-                font-bold
-                hover:scale-105
-                transition
-              "
-            >
+            <button className="h-12 sm:h-14 px-7 sm:px-10 rounded-2xl bg-white text-[#0f8b8d] font-bold hover:scale-105 transition text-sm sm:text-base">
               {t('talk_advisor')}
             </button>
           </div>
