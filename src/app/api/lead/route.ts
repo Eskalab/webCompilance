@@ -200,9 +200,11 @@ function buildEmailHtml(p: {
 
         <!-- CTAs -->
         <tr><td style="padding:0 40px 40px;text-align:center">
-          <a href="${p.resultUrl}" style="display:inline-block;background:#1e2a52;color:#ffffff;font-size:15px;font-weight:bold;padding:14px 32px;border-radius:50px;text-decoration:none;margin-bottom:12px">Ver reporte completo</a>
+          <a href="${p.resultUrl}" style="display:inline-block;background:#1e2a52;color:#ffffff;font-size:15px;font-weight:bold;padding:14px 32px;border-radius:50px;text-decoration:none;margin-bottom:12px">Ver reporte online</a>
           <br>
-          <a href="${p.waUrl}" style="display:inline-block;background:#25d366;color:#ffffff;font-size:15px;font-weight:bold;padding:14px 32px;border-radius:50px;text-decoration:none">Hablar con un experto por WhatsApp</a>
+          <a href="${p.resultUrl}&download=true" style="display:inline-block;background:#0f8b8d;color:#ffffff;font-size:15px;font-weight:bold;padding:14px 32px;border-radius:50px;text-decoration:none;margin-bottom:12px;margin-top:4px">Descargar PDF</a>
+          <br>
+          <a href="${p.waUrl}" style="display:inline-block;background:#25d366;color:#ffffff;font-size:15px;font-weight:bold;padding:14px 32px;border-radius:50px;text-decoration:none;margin-top:4px">Hablar con un experto por WhatsApp</a>
         </td></tr>
 
         <!-- Footer -->

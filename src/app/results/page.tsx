@@ -69,10 +69,22 @@ function ResultsContent() {
         if (!res.ok) throw new Error('Not found');
         return res.json();
       })
-      .then((data) => setScan(data))
+      .then((data) => {
+        setScan(data);
+        if (searchParams.get('download') === 'true') {
+          setUnlocked(true);
+        }
+      })
       .catch(() => router.push('/'))
       .finally(() => setLoading(false));
   }, [searchParams, router]);
+
+  // Auto-download PDF when coming from email link (?download=true)
+  useEffect(() => {
+    if (scan && searchParams.get('download') === 'true') {
+      handlePdf();
+    }
+  }, [scan]);
 
   function handlePdf() {
     if (!scan) return;
