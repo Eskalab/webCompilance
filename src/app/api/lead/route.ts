@@ -122,7 +122,7 @@ export async function POST(request: NextRequest) {
       sender: { name: 'TDE Transformación Digital', email: 'info@tde.com.co' },
       to: [{ email }],
       subject: `Tu reporte de seguridad para ${url}`,
-      htmlContent: buildEmailHtml({ url: url ?? '', score: score ?? 0, cfg, resultUrl, waUrl }),
+      htmlContent: buildEmailHtml({ url: url ?? '', score: score ?? 0, cfg, resultUrl, waUrl, baseUrl }),
       ...(attachment.length > 0 && { attachment }),
     };
 
@@ -146,6 +146,7 @@ function buildEmailHtml(p: {
   cfg: ReturnType<typeof scoreConfig>;
   resultUrl: string;
   waUrl: string;
+  baseUrl: string;
 }) {
   return `<!DOCTYPE html>
 <html lang="es">
@@ -157,8 +158,9 @@ function buildEmailHtml(p: {
 
         <!-- Header -->
         <tr><td style="background:linear-gradient(120deg,#1e2a52 0%,#1e2a52 38%,#2d7d9a 50%,#1e2a52 62%,#1e2a52 100%);padding:32px 40px;text-align:center">
-          <p style="color:#ffffff;font-size:22px;font-weight:bold;margin:0">Reporte de Seguridad Digital</p>
-          <p style="color:rgba(255,255,255,0.75);font-size:14px;margin:8px 0 0">TDE Transformación Digital Empresarial</p>
+          <img src="${p.baseUrl}/logo.png" alt="TDE" style="height:56px;width:auto;object-fit:contain;filter:brightness(0) invert(1);margin-bottom:16px;display:block;margin-left:auto;margin-right:auto" />
+          <p style="color:#ffffff;font-size:20px;font-weight:bold;margin:0">Reporte de Seguridad Digital</p>
+          <p style="color:rgba(255,255,255,0.70);font-size:13px;margin:6px 0 0">Transformación Digital Empresarial</p>
         </td></tr>
 
         <!-- Score box -->
