@@ -245,15 +245,27 @@ function ResultsContent() {
                   <div key={check.checkId} className="border-b border-gray-100 last:border-0 px-4 sm:px-6 py-4 sm:py-5 space-y-3">
                     {/* Header */}
                     <div className="flex items-center gap-3">
-                      <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${isPass ? 'bg-green-100' : isWarn ? 'bg-yellow-100' : 'bg-red-100'}`}>
-                        {isPass && <CheckCircle2 className="w-4 h-4 text-green-600" />}
-                        {isWarn && <AlertTriangle className="w-4 h-4 text-yellow-600" />}
-                        {isFail && <XCircle className="w-4 h-4 text-red-600" />}
-                      </div>
+                      {unlocked ? (
+                        <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${isPass ? 'bg-green-100' : isWarn ? 'bg-yellow-100' : 'bg-red-100'}`}>
+                          {isPass && <CheckCircle2 className="w-4 h-4 text-green-600" />}
+                          {isWarn && <AlertTriangle className="w-4 h-4 text-yellow-600" />}
+                          {isFail && <XCircle className="w-4 h-4 text-red-600" />}
+                        </div>
+                      ) : (
+                        <div className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 bg-gray-100">
+                          <Lock className="w-3.5 h-3.5 text-gray-400" />
+                        </div>
+                      )}
                       <span className="flex-1 font-semibold text-[#1f2d3d] text-sm">{label}</span>
-                      <div className={`px-2.5 py-1 rounded-full text-xs font-semibold shrink-0 ${isPass ? 'bg-green-100 text-green-700' : isWarn ? 'bg-yellow-100 text-yellow-700' : 'bg-red-100 text-red-700'}`}>
-                        {locale === 'es' ? t(`status_${check.status === 'pass' ? 'pass' : check.status === 'warn' ? 'warn' : check.status === 'fail' ? 'fail' : 'skip'}` as const) : check.status.toUpperCase()}
-                      </div>
+                      {unlocked ? (
+                        <div className={`px-2.5 py-1 rounded-full text-xs font-semibold shrink-0 ${isPass ? 'bg-green-100 text-green-700' : isWarn ? 'bg-yellow-100 text-yellow-700' : 'bg-red-100 text-red-700'}`}>
+                          {locale === 'es' ? t(`status_${check.status === 'pass' ? 'pass' : check.status === 'warn' ? 'warn' : check.status === 'fail' ? 'fail' : 'skip'}` as const) : check.status.toUpperCase()}
+                        </div>
+                      ) : (
+                        <div className="px-2.5 py-1 rounded-full text-xs font-semibold shrink-0 bg-gray-100 text-gray-400">
+                          {locale === 'es' ? '———' : '———'}
+                        </div>
+                      )}
                     </div>
 
                     {/* Details */}
