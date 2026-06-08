@@ -171,27 +171,38 @@ function ResultsContent() {
             {t('scan_another')}
           </button>
 
-          {/* 1. RIESGOS DETECTADOS */}
-          {scan.summary.fail > 0 && (
-            <div className="bg-white rounded-[28px] sm:rounded-[36px] border border-red-200 shadow-xl p-5 sm:p-8 mb-8 sm:mb-10">
-              <div className="flex items-start gap-4 sm:gap-5">
-                <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-2xl sm:rounded-3xl bg-red-100 flex items-center justify-center shrink-0">
-                  <AlertTriangle className="w-6 h-6 sm:w-8 sm:h-8 text-red-500" />
-                </div>
-                <div>
-                  <p className="text-red-600 font-semibold mb-1 sm:mb-2 text-sm sm:text-base">{locale === 'es' ? 'Riesgo alto' : 'High risk'}</p>
-                  <h3 className="text-xl sm:text-2xl font-bold text-[#1f2d3d] mb-2 sm:mb-3">
-                    {locale === 'es' ? '¡Acción inmediata requerida!' : 'Immediate action required!'}
-                  </h3>
-                  <p className="text-gray-600 leading-relaxed text-sm sm:text-base">
-                    {locale === 'es'
-                      ? 'Tu nivel de riesgo es muy alto. Habla con un experto ahora.'
-                      : 'Your risk level is very high. Talk to an expert now.'}
-                  </p>
+          {/* 1. SEMÁFORO */}
+          {(scan.summary.fail > 0 || scan.summary.warn > 0) && (() => {
+            const isRed = scan.summary.fail > 0;
+            const borderColor = isRed ? 'border-red-200' : 'border-yellow-200';
+            const bgIcon = isRed ? 'bg-red-100' : 'bg-yellow-100';
+            const iconColor = isRed ? 'text-red-500' : 'text-yellow-500';
+            const labelColor = isRed ? 'text-red-600' : 'text-yellow-600';
+            const label = isRed
+              ? (locale === 'es' ? 'Riesgo alto' : 'High risk')
+              : (locale === 'es' ? 'Riesgo medio' : 'Medium risk');
+            const title = isRed
+              ? (locale === 'es' ? '¡Acción inmediata requerida!' : 'Immediate action required!')
+              : (locale === 'es' ? 'Hay aspectos por mejorar' : 'There are areas to improve');
+            const desc = isRed
+              ? (locale === 'es' ? 'Tu nivel de riesgo es muy alto. Habla con un experto ahora.' : 'Your risk level is very high. Talk to an expert now.')
+              : (locale === 'es' ? 'Tu sitio tiene advertencias de cumplimiento. Te recomendamos revisarlas antes de que se conviertan en un problema.' : 'Your site has compliance warnings. We recommend reviewing them before they become a problem.');
+
+            return (
+              <div className={`bg-white rounded-[28px] sm:rounded-[36px] border ${borderColor} shadow-xl p-5 sm:p-8 mb-8 sm:mb-10`}>
+                <div className="flex items-start gap-4 sm:gap-5">
+                  <div className={`w-12 h-12 sm:w-16 sm:h-16 rounded-2xl sm:rounded-3xl ${bgIcon} flex items-center justify-center shrink-0`}>
+                    <AlertTriangle className={`w-6 h-6 sm:w-8 sm:h-8 ${iconColor}`} />
+                  </div>
+                  <div>
+                    <p className={`${labelColor} font-semibold mb-1 sm:mb-2 text-sm sm:text-base`}>{label}</p>
+                    <h3 className="text-xl sm:text-2xl font-bold text-[#1f2d3d] mb-2 sm:mb-3">{title}</h3>
+                    <p className="text-gray-600 leading-relaxed text-sm sm:text-base">{desc}</p>
+                  </div>
                 </div>
               </div>
-            </div>
-          )}
+            );
+          })()}
 
           {/* CHECKS — two columns */}
           <div className="mt-14">
