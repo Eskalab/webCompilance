@@ -312,8 +312,17 @@ function ResultsContent() {
                           </h3>
                         </div>
                         <div className="text-right">
-                          <span className="text-2xl font-bold" style={{ color: scoreColor }}>{score}</span>
-                          <span className="text-gray-400 text-sm"> / 100</span>
+                          {unlocked ? (
+                            <>
+                              <span className="text-2xl font-bold" style={{ color: scoreColor }}>{score}</span>
+                              <span className="text-gray-400 text-sm"> / 100</span>
+                            </>
+                          ) : (
+                            <div className="flex items-center gap-1.5 text-gray-400">
+                              <Lock className="w-4 h-4" />
+                              <span className="text-sm font-medium">{locale === 'es' ? 'Bloqueado' : 'Locked'}</span>
+                            </div>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -376,27 +385,47 @@ function ResultsContent() {
                 <div className="absolute inset-0 rounded-full border-[16px] border-[#eaf5f3]" />
                 <div
                   className="absolute inset-0 rounded-full border-[16px] border-transparent"
-                  style={{ borderTopColor: scoreColor, borderRightColor: scoreColor, transform: `rotate(${scan.score * 1.8}deg)` }}
+                  style={unlocked
+                    ? { borderTopColor: scoreColor, borderRightColor: scoreColor, transform: `rotate(${scan.score * 1.8}deg)` }
+                    : { borderTopColor: '#d1d5db', borderRightColor: '#d1d5db', transform: 'rotate(90deg)' }
+                  }
                 />
                 <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <span className="text-5xl sm:text-6xl font-bold text-[#1f2d3d]">{scan.score}</span>
-                  <span className="font-semibold mt-1 text-sm" style={{ color: scoreColor }}>
-                    {scan.score >= 80 ? t('compliance_high') : scan.score >= 50 ? t('risk_medium') : t('risk_high')}
-                  </span>
+                  {unlocked ? (
+                    <>
+                      <span className="text-5xl sm:text-6xl font-bold text-[#1f2d3d]">{scan.score}</span>
+                      <span className="font-semibold mt-1 text-sm" style={{ color: scoreColor }}>
+                        {scan.score >= 80 ? t('compliance_high') : scan.score >= 50 ? t('risk_medium') : t('risk_high')}
+                      </span>
+                    </>
+                  ) : (
+                    <div className="flex flex-col items-center gap-1">
+                      <Lock className="w-8 h-8 text-gray-300" />
+                      <span className="text-gray-400 text-sm font-medium text-center px-4">
+                        {locale === 'es' ? 'Ingresa tu correo' : 'Enter your email'}
+                      </span>
+                    </div>
+                  )}
                 </div>
               </div>
               {/* Summary */}
               <div className="grid grid-cols-3 gap-4 flex-1 w-full">
                 <div className="bg-[#f7f8fa] rounded-2xl p-5 text-center">
-                  <p className="text-3xl font-bold text-[#30c48d]">{scan.summary.pass}</p>
+                  <p className={`text-3xl font-bold ${unlocked ? 'text-[#30c48d]' : 'text-gray-300'}`}>
+                    {unlocked ? scan.summary.pass : '—'}
+                  </p>
                   <p className="text-sm text-gray-600 mt-1">{t('passed')}</p>
                 </div>
                 <div className="bg-[#f7f8fa] rounded-2xl p-5 text-center">
-                  <p className="text-3xl font-bold text-[#f5b942]">{scan.summary.warn}</p>
+                  <p className={`text-3xl font-bold ${unlocked ? 'text-[#f5b942]' : 'text-gray-300'}`}>
+                    {unlocked ? scan.summary.warn : '—'}
+                  </p>
                   <p className="text-sm text-gray-600 mt-1">{t('warnings')}</p>
                 </div>
                 <div className="bg-[#f7f8fa] rounded-2xl p-5 text-center">
-                  <p className="text-3xl font-bold text-[#ef4444]">{scan.summary.fail}</p>
+                  <p className={`text-3xl font-bold ${unlocked ? 'text-[#ef4444]' : 'text-gray-300'}`}>
+                    {unlocked ? scan.summary.fail : '—'}
+                  </p>
                   <p className="text-sm text-gray-600 mt-1">{t('failed')}</p>
                 </div>
               </div>
