@@ -98,33 +98,35 @@ export async function POST(request: NextRequest) {
     );
     const waUrl = `https://wa.me/573143992911?text=${waMessage}`;
 
-    // Generate PDF attachment from scan data
-    let attachment: { name: string; content: string }[] = [];
-    if (scanId) {
-      try {
-        const scan = await prisma.scan.findUnique({ where: { id: scanId } });
-        if (scan) {
-          const pdfHtml = renderPdfHtml(
-            { id: scan.id, url: scan.url, scannedAt: scan.scannedAt.toISOString(), score: scan.score, checks: scan.checks as never, summary: scan.summary as never },
-            'es'
-          );
-          const pdfBuffer = await generatePdfBuffer(pdfHtml);
-          attachment = [{
-            name: `reporte-tde-${(url ?? 'sitio').replace(/https?:\/\//, '').replace(/[^a-z0-9]/gi, '-')}.pdf`,
-            content: pdfBuffer.toString('base64'),
-          }];
-        }
-      } catch (pdfErr) {
-        console.error('PDF generation error (continuing without attachment):', pdfErr);
-      }
-    }
+    // PDF attachment desactivado — Vercel free tier tiene límite de 10s por función
+    // y Puppeteer tarda ~10-15s. Para activar: usar Vercel Pro (maxDuration: 60)
+    // y descomentar el bloque de abajo.
+    //
+    // let attachment: { name: string; content: string }[] = [];
+    // if (scanId) {
+    //   try {
+    //     const scan = await prisma.scan.findUnique({ where: { id: scanId } });
+    //     if (scan) {
+    //       const pdfHtml = renderPdfHtml(
+    //         { id: scan.id, url: scan.url, scannedAt: scan.scannedAt.toISOString(), score: scan.score, checks: scan.checks as never, summary: scan.summary as never },
+    //         'es'
+    //       );
+    //       const pdfBuffer = await generatePdfBuffer(pdfHtml);
+    //       attachment = [{
+    //         name: `reporte-tde-${(url ?? 'sitio').replace(/https?:\/\//, '').replace(/[^a-z0-9]/gi, '-')}.pdf`,
+    //         content: pdfBuffer.toString('base64'),
+    //       }];
+    //     }
+    //   } catch (pdfErr) {
+    //     console.error('PDF generation error (continuing without attachment):', pdfErr);
+    //   }
+    // }
 
     const emailPayload = {
       sender: { name: 'TDE Transformación Digital', email: 'info@tde.com.co' },
       to: [{ email }],
       subject: `Tu reporte de seguridad para ${url}`,
       htmlContent: buildEmailHtml({ url: url ?? '', score: score ?? 0, cfg, resultUrl, waUrl, baseUrl }),
-      ...(attachment.length > 0 && { attachment }),
     };
 
     const emailRes = await fetch('https://api.brevo.com/v3/smtp/email', {
