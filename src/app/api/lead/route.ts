@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { readFileSync } from 'fs';
+import { join } from 'path';
 import { prisma } from '@/lib/db';
 import { generatePdfBuffer } from '@/lib/generate-pdf';
+import { renderPdfHtml } from '@/lib/render-pdf-html';
 
 const scoreConfig = (score: number) => {
   if (score >= 80) return {
@@ -101,12 +104,10 @@ export async function POST(request: NextRequest) {
       try {
         const scan = await prisma.scan.findUnique({ where: { id: scanId } });
         if (scan) {
-          const pdfRes = await fetch(`${baseUrl}/api/pdf`, {
-            method: 'POST',
-            headers: { 'content-type': 'application/json' },
-            body: JSON.stringify({ ...scan, checks: scan.checks, summary: scan.summary, lang: 'es' }),
-          });
-          const pdfHtml = await pdfRes.text();
+          const pdfHtml = renderPdfHtml(
+            { id: scan.id, url: scan.url, scannedAt: scan.scannedAt.toISOString(), score: scan.score, checks: scan.checks as never, summary: scan.summary as never },
+            'es'
+          );
           const pdfBuffer = await generatePdfBuffer(pdfHtml);
           attachment = [{
             name: `reporte-tde-${(url ?? 'sitio').replace(/https?:\/\//, '').replace(/[^a-z0-9]/gi, '-')}.pdf`,
@@ -140,6 +141,15 @@ export async function POST(request: NextRequest) {
   return NextResponse.json({ success: true });
 }
 
+function getLogoBase64(): string {
+  try {
+    const logoPath = join(process.cwd(), 'public', 'logo.png');
+    return `data:image/png;base64,${readFileSync(logoPath).toString('base64')}`;
+  } catch {
+    return '';
+  }
+}
+
 function buildEmailHtml(p: {
   url: string;
   score: number;
@@ -148,6 +158,8 @@ function buildEmailHtml(p: {
   waUrl: string;
   baseUrl: string;
 }) {
+  const logoSrc = getLogoBase64();
+
   return `<!DOCTYPE html>
 <html lang="es">
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
@@ -156,11 +168,14 @@ function buildEmailHtml(p: {
     <tr><td align="center">
       <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#ffffff;border-radius:24px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08)">
 
-        <!-- Header -->
-        <tr><td style="background:linear-gradient(120deg,#1e2a52 0%,#1e2a52 38%,#2d7d9a 50%,#1e2a52 62%,#1e2a52 100%);padding:32px 40px;text-align:center">
-          <img src="${p.baseUrl}/logo.png" alt="TDE" style="height:56px;width:auto;object-fit:contain;filter:brightness(0) invert(1);margin-bottom:16px;display:block;margin-left:auto;margin-right:auto" />
+        <!-- Logo strip -->
+        <tr><td style="background:#ffffff;padding:24px 40px;text-align:center;border-bottom:1px solid #f3f4f6">
+          ${logoSrc ? `<img src="${logoSrc}" alt="TDE Transformación Digital Empresarial" style="height:48px;width:auto;display:block;margin:0 auto" />` : `<p style="color:#1e2a52;font-size:20px;font-weight:bold;margin:0">TDE Transformación Digital Empresarial</p>`}
+        </td></tr>
+
+        <!-- Header banner -->
+        <tr><td style="background:linear-gradient(120deg,#1e2a52 0%,#1e2a52 38%,#2d7d9a 50%,#1e2a52 62%,#1e2a52 100%);padding:24px 40px;text-align:center">
           <p style="color:#ffffff;font-size:20px;font-weight:bold;margin:0">Reporte de Seguridad Digital</p>
-          <p style="color:rgba(255,255,255,0.70);font-size:13px;margin:6px 0 0">Transformación Digital Empresarial</p>
         </td></tr>
 
         <!-- Score box -->
