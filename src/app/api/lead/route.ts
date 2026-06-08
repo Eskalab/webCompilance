@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
+import { generatePdfBuffer } from '@/lib/generate-pdf';
 
 const scoreConfig = (score: number) => {
   if (score >= 80) return {
@@ -84,7 +85,7 @@ export async function POST(request: NextRequest) {
     console.error('Brevo contacts error:', err);
   }
 
-  // Send results email (best-effort)
+  // Send results email with PDF attachment (best-effort)
   try {
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://legalcompliance.tde.com.co';
     const resultUrl = `${baseUrl}/results?id=${scanId}`;
@@ -94,34 +95,36 @@ export async function POST(request: NextRequest) {
     );
     const waUrl = `https://wa.me/573143992911?text=${waMessage}`;
 
-    const templateId = process.env.BREVO_SCANNER_TEMPLATE_ID
-      ? parseInt(process.env.BREVO_SCANNER_TEMPLATE_ID)
-      : null;
-
-    const emailPayload = templateId
-      ? {
-          templateId,
-          to: [{ email }],
-          params: {
-            SITE_URL: url ?? '',
-            SCORE: score ?? 0,
-            LEVEL: cfg.level,
-            LEVEL_COLOR: cfg.color,
-            BOX_BG: cfg.boxBg,
-            BOX_BORDER: cfg.boxBorder,
-            BOX_TEXT_COLOR: cfg.boxTextColor,
-            LEVEL_TITLE: cfg.title,
-            LEVEL_DESC: cfg.desc,
-            RESULT_URL: resultUrl,
-            WA_URL: waUrl,
-          },
+    // Generate PDF attachment from scan data
+    let attachment: { name: string; content: string }[] = [];
+    if (scanId) {
+      try {
+        const scan = await prisma.scan.findUnique({ where: { id: scanId } });
+        if (scan) {
+          const pdfRes = await fetch(`${baseUrl}/api/pdf`, {
+            method: 'POST',
+            headers: { 'content-type': 'application/json' },
+            body: JSON.stringify({ ...scan, checks: scan.checks, summary: scan.summary, lang: 'es' }),
+          });
+          const pdfHtml = await pdfRes.text();
+          const pdfBuffer = await generatePdfBuffer(pdfHtml);
+          attachment = [{
+            name: `reporte-tde-${(url ?? 'sitio').replace(/https?:\/\//, '').replace(/[^a-z0-9]/gi, '-')}.pdf`,
+            content: pdfBuffer.toString('base64'),
+          }];
         }
-      : {
-          sender: { name: 'TDE Transformación Digital', email: 'info@tde.com.co' },
-          to: [{ email }],
-          subject: `Tu reporte de seguridad para ${url}`,
-          htmlContent: buildEmailHtml({ url: url ?? '', score: score ?? 0, cfg, resultUrl, waUrl }),
-        };
+      } catch (pdfErr) {
+        console.error('PDF generation error (continuing without attachment):', pdfErr);
+      }
+    }
+
+    const emailPayload = {
+      sender: { name: 'TDE Transformación Digital', email: 'info@tde.com.co' },
+      to: [{ email }],
+      subject: `Tu reporte de seguridad para ${url}`,
+      htmlContent: buildEmailHtml({ url: url ?? '', score: score ?? 0, cfg, resultUrl, waUrl }),
+      ...(attachment.length > 0 && { attachment }),
+    };
 
     const emailRes = await fetch('https://api.brevo.com/v3/smtp/email', {
       method: 'POST',
