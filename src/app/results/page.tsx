@@ -173,15 +173,21 @@ function ResultsContent() {
 
           {/* 1. RIESGOS DETECTADOS */}
           {scan.summary.fail > 0 && (
-            <div className="bg-white rounded-[36px] border border-red-100 shadow-xl p-8 mb-10">
+            <div className="bg-white rounded-[36px] border border-red-200 shadow-xl p-8 mb-10">
               <div className="flex items-start gap-5">
                 <div className="w-16 h-16 rounded-3xl bg-red-100 flex items-center justify-center shrink-0">
                   <AlertTriangle className="w-8 h-8 text-red-500" />
                 </div>
                 <div>
-                  <p className="text-red-500 font-semibold mb-2">{t('risks_detected')}</p>
-                  <h3 className="text-2xl font-bold text-[#1f2d3d] mb-4">{t('risk_alert_title')}</h3>
-                  <p className="text-gray-600 leading-relaxed">{t('risk_alert_desc')}</p>
+                  <p className="text-red-600 font-semibold mb-2">{locale === 'es' ? 'Riesgo alto' : 'High risk'}</p>
+                  <h3 className="text-2xl font-bold text-[#1f2d3d] mb-3">
+                    {locale === 'es' ? '¡Acción inmediata requerida!' : 'Immediate action required!'}
+                  </h3>
+                  <p className="text-gray-600 leading-relaxed">
+                    {locale === 'es'
+                      ? 'Tu nivel de riesgo es muy alto. Habla con un experto ahora.'
+                      : 'Your risk level is very high. Talk to an expert now.'}
+                  </p>
                 </div>
               </div>
             </div>
@@ -210,17 +216,14 @@ function ResultsContent() {
                 const isPass = check.status === 'pass';
                 const isWarn = check.status === 'warn';
                 const isFail = check.status === 'fail';
-                const isOpen = expanded.has(check.checkId);
                 const label = locale === 'es' && check.labelEs ? check.labelEs : check.label;
                 const details = locale === 'es' && check.detailsEs ? check.detailsEs : check.details;
                 const suggestion = locale === 'es' && check.suggestionEs ? check.suggestionEs : check.suggestion;
 
                 return (
-                  <div key={check.checkId} className="border-b border-gray-100 last:border-0">
-                    <button
-                      onClick={() => toggleExpand(check.checkId)}
-                      className="w-full flex items-center gap-3 px-6 py-4 hover:bg-[#fafafa] transition text-left"
-                    >
+                  <div key={check.checkId} className="border-b border-gray-100 last:border-0 px-6 py-5 space-y-3">
+                    {/* Header */}
+                    <div className="flex items-center gap-3">
                       <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${isPass ? 'bg-green-100' : isWarn ? 'bg-yellow-100' : 'bg-red-100'}`}>
                         {isPass && <CheckCircle2 className="w-4 h-4 text-green-600" />}
                         {isWarn && <AlertTriangle className="w-4 h-4 text-yellow-600" />}
@@ -230,35 +233,33 @@ function ResultsContent() {
                       <div className={`px-2.5 py-1 rounded-full text-xs font-semibold shrink-0 ${isPass ? 'bg-green-100 text-green-700' : isWarn ? 'bg-yellow-100 text-yellow-700' : 'bg-red-100 text-red-700'}`}>
                         {locale === 'es' ? t(`status_${check.status === 'pass' ? 'pass' : check.status === 'warn' ? 'warn' : check.status === 'fail' ? 'fail' : 'skip'}` as const) : check.status.toUpperCase()}
                       </div>
-                      <ChevronDown className={`w-4 h-4 text-gray-400 shrink-0 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
-                    </button>
+                    </div>
 
-                    {isOpen && (
-                      <div className="px-6 pb-4 space-y-3">
-                        <p className="text-gray-600 text-sm leading-relaxed">{details}</p>
-                        {showRecommendation && suggestion && (
-                          <div className="bg-[#f7f8fa] rounded-xl p-4 border border-gray-200 flex items-start gap-3">
-                            <SearchCheck className="w-4 h-4 text-[#0f8b8d] shrink-0 mt-0.5" />
-                            <p className="text-gray-600 text-sm leading-relaxed">{suggestion}</p>
+                    {/* Details */}
+                    <p className="text-gray-600 text-sm leading-relaxed">{details}</p>
+
+                    {/* Recommendation */}
+                    {showRecommendation && suggestion && (
+                      <div className="bg-[#f7f8fa] rounded-xl p-4 border border-gray-200 flex items-start gap-3">
+                        <SearchCheck className="w-4 h-4 text-[#0f8b8d] shrink-0 mt-0.5" />
+                        <p className="text-gray-600 text-sm leading-relaxed">{suggestion}</p>
+                      </div>
+                    )}
+                    {!showRecommendation && !unlocked && (
+                      <div className="bg-[#f7f8fa] rounded-xl p-4 border border-gray-200 relative overflow-hidden">
+                        <div className="blur-sm select-none pointer-events-none flex items-start gap-3">
+                          <SearchCheck className="w-4 h-4 text-[#0f8b8d] shrink-0 mt-0.5" />
+                          <p className="text-gray-600 text-sm">{t('recommendation_text')}</p>
+                        </div>
+                        <div className="absolute inset-0 flex flex-col items-center justify-center gap-1">
+                          <div className="flex items-center gap-1.5 text-[#0f8b8d] font-semibold text-sm">
+                            <Lock className="w-4 h-4" />
+                            <span>{t('premium_recommendations_locked')}</span>
                           </div>
-                        )}
-                        {!showRecommendation && !unlocked && (
-                          <div className="bg-[#f7f8fa] rounded-xl p-4 border border-gray-200 relative overflow-hidden">
-                            <div className="blur-sm select-none pointer-events-none flex items-start gap-3">
-                              <SearchCheck className="w-4 h-4 text-[#0f8b8d] shrink-0 mt-0.5" />
-                              <p className="text-gray-600 text-sm">{t('recommendation_text')}</p>
-                            </div>
-                            <div className="absolute inset-0 flex flex-col items-center justify-center gap-1">
-                              <div className="flex items-center gap-1.5 text-[#0f8b8d] font-semibold text-sm">
-                                <Lock className="w-4 h-4" />
-                                <span>{t('premium_recommendations_locked')}</span>
-                              </div>
-                              <button onClick={() => setShowModal(true)} className="text-[#0f8b8d] text-xs underline hover:text-[#0c7475] transition cursor-pointer">
-                                {t('click_to_unlock')}
-                              </button>
-                            </div>
-                          </div>
-                        )}
+                          <button onClick={() => setShowModal(true)} className="text-[#0f8b8d] text-xs underline hover:text-[#0c7475] transition cursor-pointer">
+                            {t('click_to_unlock')}
+                          </button>
+                        </div>
                       </div>
                     )}
                   </div>
@@ -300,17 +301,6 @@ function ResultsContent() {
                     <div className="flex-1">
                       {freeChecks.map(c => renderCheckItem(c, unlocked))}
 
-                      {!unlocked && ids === LEGAL_CHECKS && (
-                        <div id="lead-gate" className="p-6">
-                          <LeadGate
-                            scanId={scan.id}
-                            url={scan.url}
-                            score={scan.score}
-                            onUnlock={() => setUnlocked(true)}
-                          />
-                        </div>
-                      )}
-
                       {unlocked && premiumChecks.map(c => renderCheckItem(c, true))}
                     </div>
                   </div>
@@ -318,18 +308,31 @@ function ResultsContent() {
               };
 
               return (
-                <div className="grid md:grid-cols-2 gap-6">
-                  {renderColumn(
-                    'Seguridad Digital', 'Digital Security',
-                    <Shield className="w-5 h-5" style={{ color: '#1e2a52' }} />,
-                    securityScore, '#1e2a52', SECURITY_CHECKS
+                <>
+                  <div className="grid md:grid-cols-2 gap-6">
+                    {renderColumn(
+                      'Seguridad Digital', 'Digital Security',
+                      <Shield className="w-5 h-5" style={{ color: '#1e2a52' }} />,
+                      securityScore, '#1e2a52', SECURITY_CHECKS
+                    )}
+                    {renderColumn(
+                      'Cumplimiento Legal', 'Legal Compliance',
+                      <Scale className="w-5 h-5" style={{ color: '#0f8b8d' }} />,
+                      legalScore, '#0f8b8d', LEGAL_CHECKS
+                    )}
+                  </div>
+
+                  {!unlocked && (
+                    <div id="lead-gate" className="mt-6">
+                      <LeadGate
+                        scanId={scan.id}
+                        url={scan.url}
+                        score={scan.score}
+                        onUnlock={() => setUnlocked(true)}
+                      />
+                    </div>
                   )}
-                  {renderColumn(
-                    'Cumplimiento Legal', 'Legal Compliance',
-                    <Scale className="w-5 h-5" style={{ color: '#0f8b8d' }} />,
-                    legalScore, '#0f8b8d', LEGAL_CHECKS
-                  )}
-                </div>
+                </>
               );
             })()}
           </div>
