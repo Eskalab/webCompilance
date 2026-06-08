@@ -172,27 +172,37 @@ function ResultsContent() {
           </button>
 
           {/* 1. SEMÁFORO */}
-          {(scan.summary.fail > 0 || scan.summary.warn > 0) && (() => {
+          {(() => {
             const isRed = scan.summary.fail > 0;
-            const borderColor = isRed ? 'border-red-200' : 'border-yellow-200';
-            const bgIcon = isRed ? 'bg-red-100' : 'bg-yellow-100';
-            const iconColor = isRed ? 'text-red-500' : 'text-yellow-500';
-            const labelColor = isRed ? 'text-red-600' : 'text-yellow-600';
+            const isYellow = !isRed && scan.summary.warn > 0;
+            const isGreen = !isRed && !isYellow;
+
+            const borderColor = isRed ? 'border-red-200' : isYellow ? 'border-yellow-200' : 'border-green-200';
+            const bgIcon = isRed ? 'bg-red-100' : isYellow ? 'bg-yellow-100' : 'bg-green-100';
+            const iconColor = isRed ? 'text-red-500' : isYellow ? 'text-yellow-500' : 'text-green-500';
+            const labelColor = isRed ? 'text-red-600' : isYellow ? 'text-yellow-600' : 'text-green-600';
             const label = isRed
               ? (locale === 'es' ? 'Riesgo alto' : 'High risk')
-              : (locale === 'es' ? 'Riesgo medio' : 'Medium risk');
+              : isYellow
+              ? (locale === 'es' ? 'Riesgo medio' : 'Medium risk')
+              : (locale === 'es' ? 'Buen nivel de cumplimiento' : 'Good compliance level');
             const title = isRed
               ? (locale === 'es' ? '¡Acción inmediata requerida!' : 'Immediate action required!')
-              : (locale === 'es' ? 'Hay aspectos por mejorar' : 'There are areas to improve');
+              : isYellow
+              ? (locale === 'es' ? 'Hay aspectos por mejorar' : 'There are areas to improve')
+              : (locale === 'es' ? '¡Tu sitio está bien protegido!' : 'Your site is well protected!');
             const desc = isRed
               ? (locale === 'es' ? 'Tu nivel de riesgo es muy alto. Habla con un experto ahora.' : 'Your risk level is very high. Talk to an expert now.')
-              : (locale === 'es' ? 'Tu sitio tiene advertencias de cumplimiento. Te recomendamos revisarlas antes de que se conviertan en un problema.' : 'Your site has compliance warnings. We recommend reviewing them before they become a problem.');
+              : isYellow
+              ? (locale === 'es' ? 'Tu sitio tiene advertencias de cumplimiento. Te recomendamos revisarlas antes de que se conviertan en un problema.' : 'Your site has compliance warnings. We recommend reviewing them before they become a problem.')
+              : (locale === 'es' ? 'Todos los controles analizados están en orden. Mantén este nivel con revisiones periódicas.' : 'All analyzed controls are in order. Keep this level with periodic reviews.');
+            const Icon = isGreen ? CheckCircle2 : AlertTriangle;
 
             return (
               <div className={`bg-white rounded-[28px] sm:rounded-[36px] border ${borderColor} shadow-xl p-5 sm:p-8 mb-8 sm:mb-10`}>
                 <div className="flex items-start gap-4 sm:gap-5">
                   <div className={`w-12 h-12 sm:w-16 sm:h-16 rounded-2xl sm:rounded-3xl ${bgIcon} flex items-center justify-center shrink-0`}>
-                    <AlertTriangle className={`w-6 h-6 sm:w-8 sm:h-8 ${iconColor}`} />
+                    <Icon className={`w-6 h-6 sm:w-8 sm:h-8 ${iconColor}`} />
                   </div>
                   <div>
                     <p className={`${labelColor} font-semibold mb-1 sm:mb-2 text-sm sm:text-base`}>{label}</p>
