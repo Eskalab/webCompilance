@@ -26,7 +26,7 @@ import {
   Scale,
 } from 'lucide-react';
 
-const SECURITY_CHECKS = new Set(['ssl', 'third_party']);
+const SECURITY_CHECKS = new Set(['ssl', 'mixed_content', 'form_security', 'security_headers', 'third_party']);
 const LEGAL_CHECKS = new Set(['privacy_policy', 'legal_pages', 'forms_consent', 'cookie_banner']);
 
 function calcSubScore(checks: { checkId: string; status: string; weight: number }[], ids: Set<string>) {

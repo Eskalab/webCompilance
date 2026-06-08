@@ -6,6 +6,7 @@ export interface ScanContext {
   privacyPolicyContent: string;
   allLinks: LinkInfo[];
   fetchErrors: string[];
+  responseHeaders: Record<string, string>;
 }
 
 export interface LinkInfo {

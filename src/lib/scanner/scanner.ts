@@ -6,15 +6,21 @@ import { privacyPolicyCheck } from './checks/privacy-policy';
 import { legalPagesCheck } from './checks/legal-pages';
 import { thirdPartyCheck } from './checks/third-party';
 import { formsConsentCheck } from './checks/forms-consent';
+import { mixedContentCheck } from './checks/mixed-content';
+import { formSecurityCheck } from './checks/form-security';
+import { securityHeadersCheck } from './checks/security-headers';
 import { createHash } from 'crypto';
 import { prisma } from '@/lib/db';
 
 const checks: Check[] = [
   sslCheck,
+  mixedContentCheck,
+  formSecurityCheck,
+  securityHeadersCheck,
+  thirdPartyCheck,
   cookieBannerCheck,
   privacyPolicyCheck,
   legalPagesCheck,
-  thirdPartyCheck,
   formsConsentCheck,
 ];
 
