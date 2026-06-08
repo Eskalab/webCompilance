@@ -163,7 +163,7 @@ function ResultsContent() {
         <div className="relative max-w-7xl mx-auto px-6 py-16">
           {/* BACK */}
           <button
-            onClick={() => router.push('/')}
+            onClick={() => router.push('/scanner')}
             className="flex items-center gap-2 text-[#0f8b8d] font-medium mb-10 hover:opacity-80 transition"
           >
             <ChevronRight className="w-4 h-4 rotate-180" />
