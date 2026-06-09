@@ -37,9 +37,7 @@ export default function CookieConsent() {
         <p className="flex-1 text-sm text-gray-600 leading-relaxed">
           {t('cookie_message')}{' '}
           <a
-            href="https://tde.com.co"
-            target="_blank"
-            rel="noopener noreferrer"
+            href="/politicas#cookies"
             className="text-[#0f8b8d] underline hover:text-[#0c7475]"
           >
             {t('cookie_policy_link')}
