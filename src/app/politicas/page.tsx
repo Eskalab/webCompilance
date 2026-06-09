@@ -21,8 +21,8 @@ const policies = [
       {
         title: { es: '2. Identificación del Responsable del Tratamiento', en: '2. Data Controller' },
         items: {
-          es: ['Razón Social: Transformación Digital Empresarial – TDE', 'Correo electrónico: info@tde.com.co', 'Sitio web: tde.com.co', 'Teléfono: +57 314 399 2911'],
-          en: ['Company Name: Transformación Digital Empresarial – TDE', 'Email: info@tde.com.co', 'Website: tde.com.co', 'Phone: +57 314 399 2911'],
+          es: ['Razón Social: Transformación Digital Empresarial – TDE', 'Correo electrónico: pqrs@tde.com.co', 'Sitio web: tde.com.co', 'Teléfono: +57 314 399 2911'],
+          en: ['Company Name: Transformación Digital Empresarial – TDE', 'Email: pqrs@tde.com.co', 'Website: tde.com.co', 'Phone: +57 314 399 2911'],
         },
       },
       {
@@ -102,8 +102,8 @@ const policies = [
       {
         title: { es: '13. Procedimiento para Consultas y Reclamos', en: '13. Queries and Complaints Procedure' },
         body: {
-          es: 'Las solicitudes relacionadas con datos personales podrán presentarse mediante: correo electrónico oficial (info@tde.com.co), canal web, atención presencial o línea telefónica (+57 314 399 2911). Los términos de respuesta serán los establecidos por la Ley 1581 de 2012.',
-          en: 'Requests related to personal data may be submitted through: official email (info@tde.com.co), web channel, in-person service or phone line (+57 314 399 2911). Response times will be those established by Law 1581 of 2012.',
+          es: 'Las solicitudes relacionadas con datos personales podrán presentarse mediante: correo electrónico oficial (pqrs@tde.com.co), canal web, atención presencial o línea telefónica (+57 314 399 2911). Los términos de respuesta serán los establecidos por la Ley 1581 de 2012.',
+          en: 'Requests related to personal data may be submitted through: official email (pqrs@tde.com.co), web channel, in-person service or phone line (+57 314 399 2911). Response times will be those established by Law 1581 of 2012.',
         },
       },
       {
@@ -139,8 +139,8 @@ const policies = [
         title: { es: '3. Canales de Atención', en: '3. Service Channels' },
         body: { es: 'TDE dispondrá de los siguientes canales:', en: 'TDE will provide the following channels:' },
         items: {
-          es: ['Correo electrónico: info@tde.com.co', 'Formulario web', 'Línea telefónica: +57 314 399 2911', 'Atención presencial', 'Chat corporativo'],
-          en: ['Email: info@tde.com.co', 'Web form', 'Phone: +57 314 399 2911', 'In-person service', 'Corporate chat'],
+          es: ['Correo electrónico: pqrs@tde.com.co', 'Formulario web', 'Línea telefónica: +57 314 399 2911', 'Atención presencial', 'Chat corporativo'],
+          en: ['Email: pqrs@tde.com.co', 'Web form', 'Phone: +57 314 399 2911', 'In-person service', 'Corporate chat'],
         },
       },
       {
