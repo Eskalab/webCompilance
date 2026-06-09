@@ -55,7 +55,7 @@ export default function SiteFooter() {
             </h4>
             <div className="space-y-4 text-white/80">
               <p>+57 314 399 2911</p>
-              <p>info@tde.com.co</p>
+              <p>pqrs@tde.com.co</p>
               <p>Bogotá, Colombia</p>
             </div>
             <div className="flex gap-3 mt-6">
