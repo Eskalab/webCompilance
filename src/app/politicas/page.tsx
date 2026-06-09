@@ -21,8 +21,8 @@ const policies = [
       {
         title: { es: '2. Identificación del Responsable del Tratamiento', en: '2. Data Controller' },
         items: {
-          es: ['Razón Social: Transformación Digital Empresarial – TDE', 'NIT: [NÚMERO NIT]', 'Domicilio: [DIRECCIÓN]', 'Correo electrónico: info@tde.com.co', 'Sitio web: tde.com.co', 'Teléfono: +57 314 399 2911'],
-          en: ['Company Name: Transformación Digital Empresarial – TDE', 'NIT: [TAX ID]', 'Address: [ADDRESS]', 'Email: info@tde.com.co', 'Website: tde.com.co', 'Phone: +57 314 399 2911'],
+          es: ['Razón Social: Transformación Digital Empresarial – TDE', 'Correo electrónico: info@tde.com.co', 'Sitio web: tde.com.co', 'Teléfono: +57 314 399 2911'],
+          en: ['Company Name: Transformación Digital Empresarial – TDE', 'Email: info@tde.com.co', 'Website: tde.com.co', 'Phone: +57 314 399 2911'],
         },
       },
       {
@@ -334,7 +334,6 @@ function PoliticasContent() {
 
           <div className="pt-8 border-t border-gray-200 text-center text-gray-400 text-sm">
             <p>Transformación Digital Empresarial – TDE</p>
-            <p>info@tde.com.co · tde.com.co · +57 314 399 2911 · Bogotá, Colombia</p>
           </div>
         </div>
       </section>
