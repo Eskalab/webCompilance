@@ -20,14 +20,14 @@ export async function POST(request: NextRequest) {
   //   );
   // }
 
-  let body: { url?: string };
+  let body: { url?: string; country?: string };
   try {
     body = await request.json();
   } catch {
     return NextResponse.json({ error: 'Invalid JSON body.' }, { status: 400 });
   }
 
-  const { url } = body;
+  const { url, country = 'CO' } = body;
   if (!url) {
     return NextResponse.json({ error: 'URL is required.' }, { status: 400 });
   }

@@ -6,7 +6,7 @@ const SUPPORTED = new Set([
 ]);
 
 export async function GET(request: NextRequest) {
-  const country = request.headers.get('x-vercel-ip-country') ?? 'CO';
+  const country = request.headers.get('x-vercel-ip-country') ?? 'ES'; // TEMP: simular España
   const detected = SUPPORTED.has(country) ? country : 'CO';
   return NextResponse.json({ country: detected });
 }

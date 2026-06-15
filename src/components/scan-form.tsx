@@ -1,8 +1,26 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { useLanguage } from '@/contexts/language';
+
+const COOKIE_KEY = 'lcs_countries';
+
+function getUsedCountries(): string[] {
+  try {
+    const raw = document.cookie.split('; ').find(r => r.startsWith(`${COOKIE_KEY}=`));
+    return raw ? JSON.parse(decodeURIComponent(raw.split('=')[1])) : [];
+  } catch { return []; }
+}
+
+function saveUsedCountry(code: string) {
+  try {
+    const prev = getUsedCountries().filter(c => c !== code);
+    const next = [code, ...prev].slice(0, 10);
+    const expires = new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toUTCString();
+    document.cookie = `${COOKIE_KEY}=${encodeURIComponent(JSON.stringify(next))}; expires=${expires}; path=/`;
+  } catch {}
+}
 
 const COUNTRIES = [
   { code: 'CO', flag: '🇨🇴', es: 'Colombia',             en: 'Colombia'            },
@@ -31,15 +49,36 @@ const COUNTRIES = [
 export default function ScanForm() {
   const [url, setUrl] = useState('');
   const [country, setCountry] = useState('CO');
+  const [detected, setDetected] = useState('CO');
+  const [used, setUsed] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const router = useRouter();
   const { t, locale } = useLanguage();
 
+  const sortedCountries = useMemo(() => {
+    const priority = [detected, ...used.filter(c => c !== detected)];
+    return [...COUNTRIES].sort((a, b) => {
+      const ai = priority.indexOf(a.code);
+      const bi = priority.indexOf(b.code);
+      if (ai !== -1 && bi !== -1) return ai - bi;
+      if (ai !== -1) return -1;
+      if (bi !== -1) return 1;
+      return (locale === 'es' ? a.es : a.en).localeCompare(locale === 'es' ? b.es : b.en);
+    });
+  }, [detected, used, locale]);
+
   useEffect(() => {
+    const prevUsed = getUsedCountries();
+    setUsed(prevUsed);
     fetch('/api/geo')
       .then((r) => r.json())
-      .then((data) => { if (data.country) setCountry(data.country); })
+      .then((data) => {
+        const det = data.country ?? 'CO';
+        setDetected(det);
+        // Si no hay cookie, el default es el país detectado
+        setCountry(prevUsed.length > 0 ? prevUsed[0] : det);
+      })
       .catch(() => {});
   }, []);
 
@@ -63,6 +102,7 @@ export default function ScanForm() {
       return;
     }
 
+    saveUsedCountry(country);
     setLoading(true);
     try {
       const res = await fetch('/api/scan', {
@@ -120,7 +160,7 @@ export default function ScanForm() {
       <div className="mt-3">
         <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-hide">
           <span className="text-xs text-gray-400 shrink-0">{t('country_label')}</span>
-          {COUNTRIES.map((c) => {
+          {sortedCountries.map((c) => {
             const selected = country === c.code;
             return (
               <button
@@ -134,7 +174,7 @@ export default function ScanForm() {
                 }`}
               >
                 <span>{c.flag}</span>
-                <span>{locale === 'es' ? c.es : c.en}</span>
+                <span>{c.code}</span>
               </button>
             );
           })}
