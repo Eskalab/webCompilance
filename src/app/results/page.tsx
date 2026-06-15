@@ -219,7 +219,7 @@ function ResultsContent() {
                   <div>
                     <p className="font-semibold mb-1 sm:mb-2 text-sm sm:text-base text-gray-700">
                       {locale === 'es' ? 'La pagina web: ' : 'The website: '}
-                      <span className="font-semibold">{scan.url}</span>
+                      <a href={`https://${scan.url}`} target="_blank" rel="noopener noreferrer" className="font-semibold underline hover:opacity-75">{scan.url}</a>
                       {locale === 'es' ? ' tiene un : ' : ' has a : '}
                       <span className={labelColor}>{label}</span>
                     </p>
