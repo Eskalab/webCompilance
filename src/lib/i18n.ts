@@ -138,6 +138,18 @@ export const translations = {
     es: 'Error al enviar. Intenta de nuevo.',
     en: 'Error sending. Please try again.',
   },
+  terms_checkbox: {
+    es: 'Acepto los',
+    en: 'I accept the',
+  },
+  terms_link: {
+    es: 'términos y condiciones',
+    en: 'terms and conditions',
+  },
+  error_terms: {
+    es: 'Debes aceptar los términos y condiciones',
+    en: 'You must accept the terms and conditions',
+  },
 
   // Footer
   footer: {
