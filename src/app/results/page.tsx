@@ -29,6 +29,18 @@ import {
 const SECURITY_CHECKS = new Set(['ssl', 'mixed_content', 'form_security', 'security_headers', 'third_party']);
 const LEGAL_CHECKS = new Set(['privacy_policy', 'legal_pages', 'forms_consent', 'cookie_banner']);
 
+function getRisk(score: number): 'green' | 'yellow' | 'red' {
+  if (score >= 95) return 'green';
+  if (score >= 75) return 'yellow';
+  return 'red';
+}
+
+const RISK_COLOR = {
+  green:  { hex: '#30c48d', border: 'border-green-200', bg: 'bg-green-100',  icon: 'text-green-500',  label: 'text-green-600'  },
+  yellow: { hex: '#f5b942', border: 'border-yellow-200', bg: 'bg-yellow-100', icon: 'text-yellow-500', label: 'text-yellow-600' },
+  red:    { hex: '#ef4444', border: 'border-red-200',   bg: 'bg-red-100',    icon: 'text-red-500',    label: 'text-red-600'    },
+};
+
 function calcSubScore(checks: { checkId: string; status: string; weight: number }[], ids: Set<string>) {
   const group = checks.filter(c => ids.has(c.checkId));
   if (!group.length) return 0;
@@ -121,12 +133,7 @@ function ResultsContent() {
 
   if (!scan) return null;
 
-  const scoreColor =
-    scan.score >= 80
-      ? '#30c48d'
-      : scan.score >= 50
-      ? '#f5b942'
-      : '#ef4444';
+  const scoreColor = RISK_COLOR[getRisk(scan.score)].hex;
 
   return (
     <main className="min-h-screen bg-[#f7f8fa]">
@@ -185,30 +192,24 @@ function ResultsContent() {
 
           {/* 1. SEMÁFORO */}
           {(() => {
-            const isRed = scan.summary.fail > 0;
-            const isYellow = !isRed && scan.summary.warn > 0;
-            const isGreen = !isRed && !isYellow;
-
-            const borderColor = isRed ? 'border-red-200' : isYellow ? 'border-yellow-200' : 'border-green-200';
-            const bgIcon = isRed ? 'bg-red-100' : isYellow ? 'bg-yellow-100' : 'bg-green-100';
-            const iconColor = isRed ? 'text-red-500' : isYellow ? 'text-yellow-500' : 'text-green-500';
-            const labelColor = isRed ? 'text-red-600' : isYellow ? 'text-yellow-600' : 'text-green-600';
-            const label = isRed
+            const risk = getRisk(scan.score);
+            const { border: borderColor, bg: bgIcon, icon: iconColor, label: labelColor } = RISK_COLOR[risk];
+            const label = risk === 'red'
               ? (locale === 'es' ? 'Riesgo alto' : 'High risk')
-              : isYellow
+              : risk === 'yellow'
               ? (locale === 'es' ? 'Riesgo medio' : 'Medium risk')
               : (locale === 'es' ? 'Buen nivel de cumplimiento' : 'Good compliance level');
-            const title = isRed
+            const title = risk === 'red'
               ? (locale === 'es' ? '¡Acción inmediata requerida!' : 'Immediate action required!')
-              : isYellow
+              : risk === 'yellow'
               ? (locale === 'es' ? 'Hay aspectos por mejorar' : 'There are areas to improve')
               : (locale === 'es' ? '¡Tu sitio está bien protegido!' : 'Your site is well protected!');
-            const desc = isRed
+            const desc = risk === 'red'
               ? (locale === 'es' ? 'Tu nivel de riesgo es muy alto. Habla con un experto ahora.' : 'Your risk level is very high. Talk to an expert now.')
-              : isYellow
+              : risk === 'yellow'
               ? (locale === 'es' ? 'Tu sitio tiene advertencias de cumplimiento. Te recomendamos revisarlas antes de que se conviertan en un problema.' : 'Your site has compliance warnings. We recommend reviewing them before they become a problem.')
               : (locale === 'es' ? 'Todos los controles analizados están en orden. Mantén este nivel con revisiones periódicas.' : 'All analyzed controls are in order. Keep this level with periodic reviews.');
-            const Icon = isGreen ? CheckCircle2 : AlertTriangle;
+            const Icon = risk === 'green' ? CheckCircle2 : AlertTriangle;
 
             return (
               <div className={`bg-white rounded-[28px] sm:rounded-[36px] border ${borderColor} shadow-xl p-5 sm:p-8 mb-8 sm:mb-10`}>
@@ -322,7 +323,7 @@ function ResultsContent() {
                 score: number, accentColor: string,
                 ids: Set<string>
               ) => {
-                const scoreColor = score >= 80 ? '#30c48d' : score >= 50 ? '#f5b942' : '#ef4444';
+                const scoreColor = RISK_COLOR[getRisk(score)].hex;
                 const colChecks = scan.checks.filter(c => ids.has(c.checkId));
                 const freeChecks = colChecks.filter(c => c.tier === 'free');
                 const premiumChecks = colChecks.filter(c => c.tier === 'premium');
@@ -424,7 +425,7 @@ function ResultsContent() {
                     <>
                       <span className="text-5xl sm:text-6xl font-bold text-[#1f2d3d]">{scan.score}</span>
                       <span className="font-semibold mt-1 text-sm" style={{ color: scoreColor }}>
-                        {scan.score >= 80 ? t('compliance_high') : scan.score >= 50 ? t('risk_medium') : t('risk_high')}
+                        {getRisk(scan.score) === 'green' ? t('compliance_high') : getRisk(scan.score) === 'yellow' ? t('risk_medium') : t('risk_high')}
                       </span>
                     </>
                   ) : (
