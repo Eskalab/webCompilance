@@ -27,6 +27,12 @@ export const translations = {
     en: 'Privacy, terms, cookies',
   },
 
+  // Country pills
+  country_label: {
+    es: 'Normativa de:',
+    en: 'Regulations of:',
+  },
+
   // Scan form
   placeholder_url: {
     es: 'ejemplo.com',

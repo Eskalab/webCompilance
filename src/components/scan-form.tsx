@@ -1,15 +1,47 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useLanguage } from '@/contexts/language';
 
+const COUNTRIES = [
+  { code: 'CO', flag: '🇨🇴', es: 'Colombia',             en: 'Colombia'            },
+  { code: 'MX', flag: '🇲🇽', es: 'México',               en: 'Mexico'              },
+  { code: 'BR', flag: '🇧🇷', es: 'Brasil',               en: 'Brazil'              },
+  { code: 'AR', flag: '🇦🇷', es: 'Argentina',            en: 'Argentina'           },
+  { code: 'PE', flag: '🇵🇪', es: 'Perú',                 en: 'Peru'                },
+  { code: 'CL', flag: '🇨🇱', es: 'Chile',                en: 'Chile'               },
+  { code: 'EC', flag: '🇪🇨', es: 'Ecuador',              en: 'Ecuador'             },
+  { code: 'BO', flag: '🇧🇴', es: 'Bolivia',              en: 'Bolivia'             },
+  { code: 'PY', flag: '🇵🇾', es: 'Paraguay',             en: 'Paraguay'            },
+  { code: 'UY', flag: '🇺🇾', es: 'Uruguay',              en: 'Uruguay'             },
+  { code: 'VE', flag: '🇻🇪', es: 'Venezuela',            en: 'Venezuela'           },
+  { code: 'PA', flag: '🇵🇦', es: 'Panamá',               en: 'Panama'              },
+  { code: 'CR', flag: '🇨🇷', es: 'Costa Rica',           en: 'Costa Rica'          },
+  { code: 'GT', flag: '🇬🇹', es: 'Guatemala',            en: 'Guatemala'           },
+  { code: 'HN', flag: '🇭🇳', es: 'Honduras',             en: 'Honduras'            },
+  { code: 'SV', flag: '🇸🇻', es: 'El Salvador',          en: 'El Salvador'         },
+  { code: 'NI', flag: '🇳🇮', es: 'Nicaragua',            en: 'Nicaragua'           },
+  { code: 'DO', flag: '🇩🇴', es: 'Rep. Dominicana',      en: 'Dominican Rep.'      },
+  { code: 'CU', flag: '🇨🇺', es: 'Cuba',                 en: 'Cuba'                },
+  { code: 'PR', flag: '🇵🇷', es: 'Puerto Rico',          en: 'Puerto Rico'         },
+  { code: 'ES', flag: '🇪🇸', es: 'España',               en: 'Spain'               },
+];
+
 export default function ScanForm() {
   const [url, setUrl] = useState('');
+  const [country, setCountry] = useState('CO');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const router = useRouter();
-  const { t } = useLanguage();
+  const { t, locale } = useLanguage();
+
+  useEffect(() => {
+    fetch('/api/geo')
+      .then((r) => r.json())
+      .then((data) => { if (data.country) setCountry(data.country); })
+      .catch(() => {});
+  }, []);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -36,7 +68,7 @@ export default function ScanForm() {
       const res = await fetch('/api/scan', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ url: normalized }),
+        body: JSON.stringify({ url: normalized, country }),
       });
 
       if (!res.ok) {
@@ -83,6 +115,32 @@ export default function ScanForm() {
           )}
         </button>
       </div>
+
+      {/* Country pills — scrollable */}
+      <div className="mt-3">
+        <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-hide">
+          <span className="text-xs text-gray-400 shrink-0">{t('country_label')}</span>
+          {COUNTRIES.map((c) => {
+            const selected = country === c.code;
+            return (
+              <button
+                key={c.code}
+                type="button"
+                onClick={() => setCountry(c.code)}
+                className={`flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium transition-all border shrink-0 ${
+                  selected
+                    ? 'bg-[#0f8b8d] text-white border-[#0f8b8d]'
+                    : 'bg-white text-gray-500 border-gray-200 hover:border-[#0f8b8d] hover:text-[#0f8b8d]'
+                }`}
+              >
+                <span>{c.flag}</span>
+                <span>{locale === 'es' ? c.es : c.en}</span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
       {error && <p className="mt-3 text-red-500 text-sm">{error}</p>}
     </form>
   );
