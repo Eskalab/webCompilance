@@ -429,8 +429,8 @@ export const translations = {
     en: 'Analysis results',
   },
   premium_recommendations_locked: {
-    es: 'Recomendaciones premium bloqueadas',
-    en: 'Premium recommendations locked',
+    es: 'Ver análisis completo',
+    en: 'View full analysis',
   },
   premium_unlock_desc: {
     es: 'Desbloquea soluciones detalladas y PDF.',
