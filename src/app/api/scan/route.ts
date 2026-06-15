@@ -47,6 +47,15 @@ export async function POST(request: NextRequest) {
   // await prisma.rateLimit.create({ data: { ip } });
 
   try {
+    await fetch(parsed.href, { method: 'HEAD', signal: AbortSignal.timeout(6000) });
+  } catch {
+    return NextResponse.json(
+      { error: 'El sitio no existe o no es accesible. Verifica la URL e intenta de nuevo.' },
+      { status: 422 },
+    );
+  }
+
+  try {
     const result = await runScan(parsed.href);
     return NextResponse.json(result);
   } catch (err) {
