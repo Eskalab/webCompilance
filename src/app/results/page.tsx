@@ -217,7 +217,12 @@ function ResultsContent() {
                     <Icon className={`w-6 h-6 sm:w-8 sm:h-8 ${iconColor}`} />
                   </div>
                   <div>
-                    <p className={`${labelColor} font-semibold mb-1 sm:mb-2 text-sm sm:text-base`}>{label}</p>
+                    <p className="font-semibold mb-1 sm:mb-2 text-sm sm:text-base text-gray-700">
+                      {locale === 'es' ? 'La pagina web: ' : 'The website: '}
+                      <span className="font-semibold">{scan.url}</span>
+                      {locale === 'es' ? ' tiene un : ' : ' has a : '}
+                      <span className={labelColor}>{label}</span>
+                    </p>
                     <h3 className="text-xl sm:text-2xl font-bold text-[#1f2d3d] mb-2 sm:mb-3">{title}</h3>
                     <p className="text-gray-600 leading-relaxed text-sm sm:text-base">{desc}</p>
                   </div>
