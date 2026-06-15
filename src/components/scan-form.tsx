@@ -21,7 +21,11 @@ export default function ScanForm() {
     }
 
     try {
-      new URL(normalized);
+      const parsed = new URL(normalized);
+      if (!parsed.hostname.includes('.')) {
+        setError(t('error_invalid_url'));
+        return;
+      }
     } catch {
       setError(t('error_invalid_url'));
       return;
