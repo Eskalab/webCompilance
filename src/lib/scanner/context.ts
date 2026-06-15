@@ -5,20 +5,20 @@ const TIMEOUT_HTML = 10000;
 const TIMEOUT_OTHER = 5000;
 
 export async function buildContext(targetUrl: string): Promise<ScanContext> {
-  const origin = new URL(targetUrl).origin;
   const errors: string[] = [];
 
-  const [htmlFetch, robotsRes, sitemapRes] = await Promise.allSettled([
-    fetchWithTimeoutFull(targetUrl, TIMEOUT_HTML),
+  const htmlResult = await fetchWithTimeoutFull(targetUrl, TIMEOUT_HTML).catch((reason) => {
+    errors.push(`Failed to fetch homepage: ${reason}`);
+    return { text: '', headers: {}, finalUrl: targetUrl };
+  });
+
+  const { text: html, headers: responseHeaders, finalUrl } = htmlResult;
+  const origin = new URL(finalUrl).origin;
+
+  const [robotsRes, sitemapRes] = await Promise.allSettled([
     fetchWithTimeout(`${origin}/robots.txt`, TIMEOUT_OTHER),
     fetchWithTimeout(`${origin}/sitemap.xml`, TIMEOUT_OTHER),
   ]);
-
-  const { text: html, headers: responseHeaders } =
-    htmlFetch.status === 'fulfilled'
-      ? htmlFetch.value
-      : { text: '', headers: {} };
-  if (htmlFetch.status === 'rejected') errors.push(`Failed to fetch homepage: ${htmlFetch.reason}`);
 
   const robotsTxt = extractResult(robotsRes, errors, 'robots.txt');
   let sitemapXml = extractResult(sitemapRes, errors, 'sitemap.xml');
@@ -49,7 +49,7 @@ export async function buildContext(targetUrl: string): Promise<ScanContext> {
   }
 
   return {
-    url: targetUrl,
+    url: finalUrl,
     html,
     robotsTxt,
     sitemapUrls,
@@ -80,7 +80,7 @@ async function fetchWithTimeout(url: string, timeout: number): Promise<string> {
 async function fetchWithTimeoutFull(
   url: string,
   timeout: number,
-): Promise<{ text: string; headers: Record<string, string> }> {
+): Promise<{ text: string; headers: Record<string, string>; finalUrl: string }> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeout);
 
@@ -90,13 +90,13 @@ async function fetchWithTimeoutFull(
       headers: { 'User-Agent': USER_AGENT },
       redirect: 'follow',
     });
-    if (!res.ok) return { text: '', headers: {} };
+    if (!res.ok) return { text: '', headers: {}, finalUrl: url };
     const text = await res.text();
     const headers: Record<string, string> = {};
     res.headers.forEach((value, key) => {
       headers[key.toLowerCase()] = value;
     });
-    return { text, headers };
+    return { text, headers, finalUrl: res.url || url };
   } finally {
     clearTimeout(timer);
   }
