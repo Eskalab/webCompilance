@@ -30,8 +30,8 @@ const SECURITY_CHECKS = new Set(['ssl', 'mixed_content', 'form_security', 'secur
 const LEGAL_CHECKS = new Set(['privacy_policy', 'legal_pages', 'forms_consent', 'cookie_banner']);
 
 function getRisk(score: number): 'green' | 'yellow' | 'red' {
-  if (score >= 95) return 'green';
-  if (score >= 75) return 'yellow';
+  if (score >= 99) return 'green';
+  if (score >= 85) return 'yellow';
   return 'red';
 }
 
