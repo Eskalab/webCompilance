@@ -13,6 +13,7 @@ interface LeadGateModalProps {
 }
 
 export default function LeadGateModal({ scanId, url, score, onUnlock, onClose }: LeadGateModalProps) {
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -21,6 +22,10 @@ export default function LeadGateModal({ scanId, url, score, onUnlock, onClose }:
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (!name.trim()) {
+      setError(t('error_name_required'));
+      return;
+    }
     if (!email.includes('@')) {
       setError(t('error_invalid_email'));
       return;
@@ -37,7 +42,7 @@ export default function LeadGateModal({ scanId, url, score, onUnlock, onClose }:
       await fetch('/api/lead', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, scanId, url, score }),
+        body: JSON.stringify({ name, email, scanId, url, score }),
       });
       onUnlock();
     } catch {
@@ -75,12 +80,20 @@ export default function LeadGateModal({ scanId, url, score, onUnlock, onClose }:
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-3">
           <input
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder={t('name_placeholder')}
+            autoFocus
+            className="px-5 py-3 rounded-2xl border border-gray-300 text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-[#0f8b8d]"
+            disabled={loading}
+          />
+          <input
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="tu@email.com"
-            autoFocus
-            className="flex-1 px-5 py-3 rounded-2xl border border-gray-300 text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-[#0f8b8d]"
+            className="px-5 py-3 rounded-2xl border border-gray-300 text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-[#0f8b8d]"
             disabled={loading}
           />
           <label className="flex items-start gap-2 text-left cursor-pointer">
@@ -104,7 +117,7 @@ export default function LeadGateModal({ scanId, url, score, onUnlock, onClose }:
           </label>
           <button
             type="submit"
-            disabled={loading || !email.trim() || !acceptedTerms}
+            disabled={loading || !name.trim() || !email.trim() || !acceptedTerms}
             className="px-8 py-3 bg-[#0f8b8d] text-white font-semibold rounded-2xl hover:bg-[#0c7475] disabled:opacity-50 transition-colors"
           >
             {loading ? t('unlock_sending') : t('unlock_btn')}
