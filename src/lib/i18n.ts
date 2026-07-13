@@ -136,9 +136,17 @@ export const translations = {
     es: 'Enviando...',
     en: 'Sending...',
   },
+  name_placeholder: {
+    es: 'Tu nombre',
+    en: 'Your name',
+  },
   error_invalid_email: {
     es: 'Ingresa un email válido',
     en: 'Enter a valid email',
+  },
+  error_name_required: {
+    es: 'Ingresa tu nombre',
+    en: 'Enter your name',
   },
   error_send: {
     es: 'Error al enviar. Intenta de nuevo.',

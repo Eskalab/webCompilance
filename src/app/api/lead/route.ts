@@ -35,24 +35,45 @@ const scoreConfig = (score: number) => {
   };
 };
 
+async function getGeoFromIp(ip: string): Promise<{ city: string | null; country: string | null }> {
+  try {
+    if (!ip || ip === '127.0.0.1' || ip === '::1') return { city: null, country: null };
+    const res = await fetch(`https://ipapi.co/${ip}/json/`, { signal: AbortSignal.timeout(3000) });
+    if (!res.ok) return { city: null, country: null };
+    const data = await res.json();
+    return {
+      city: data.city ?? null,
+      country: data.country_name ?? null,
+    };
+  } catch {
+    return { city: null, country: null };
+  }
+}
+
 export async function POST(request: NextRequest) {
-  let body: { email?: string; scanId?: string; url?: string; score?: number };
+  let body: { name?: string; email?: string; scanId?: string; url?: string; score?: number };
   try {
     body = await request.json();
   } catch {
     return NextResponse.json({ error: 'Invalid JSON body.' }, { status: 400 });
   }
 
-  const { email, scanId, url, score } = body;
+  const { name, email, scanId, url, score } = body;
 
   if (!email || !email.includes('@')) {
     return NextResponse.json({ error: 'Valid email is required.' }, { status: 400 });
   }
 
+  const ip = (request.headers.get('x-forwarded-for') ?? '').split(',')[0].trim();
+  const { city, country } = await getGeoFromIp(ip);
+
   // Persist lead to DB
   await prisma.lead.create({
     data: {
       email,
+      name: name ?? null,
+      city,
+      country,
       scanId: scanId ?? null,
       url: url ?? null,
       score: score ?? null,
@@ -74,10 +95,13 @@ export async function POST(request: NextRequest) {
       body: JSON.stringify({
         email,
         attributes: {
+          FIRSTNAME: name ?? '',
           SITE_URL: url ?? '',
           SCORE: score ?? 0,
           SCAN_ID: scanId ?? '',
           SOURCE: 'lcs-web-scanner',
+          CITY: city ?? '',
+          COUNTRY: country ?? '',
         },
         listIds: process.env.BREVO_LIST_IDS ? JSON.parse(process.env.BREVO_LIST_IDS) : [2],
         updateEnabled: true,

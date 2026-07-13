@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useLanguage } from '@/contexts/language';
 
@@ -48,39 +48,11 @@ const COUNTRIES = [
 
 export default function ScanForm() {
   const [url, setUrl] = useState('');
-  const [country, setCountry] = useState('CO');
-  const [detected, setDetected] = useState('CO');
-  const [used, setUsed] = useState<string[]>([]);
+  const country = 'CO';
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const router = useRouter();
-  const { t, locale } = useLanguage();
-
-  const sortedCountries = useMemo(() => {
-    const priority = [detected, ...used.filter(c => c !== detected)];
-    return [...COUNTRIES].sort((a, b) => {
-      const ai = priority.indexOf(a.code);
-      const bi = priority.indexOf(b.code);
-      if (ai !== -1 && bi !== -1) return ai - bi;
-      if (ai !== -1) return -1;
-      if (bi !== -1) return 1;
-      return (locale === 'es' ? a.es : a.en).localeCompare(locale === 'es' ? b.es : b.en);
-    });
-  }, [detected, used, locale]);
-
-  useEffect(() => {
-    const prevUsed = getUsedCountries();
-    setUsed(prevUsed);
-    fetch('/api/geo')
-      .then((r) => r.json())
-      .then((data) => {
-        const det = data.country ?? 'CO';
-        setDetected(det);
-        // Si no hay cookie, el default es el país detectado
-        setCountry(prevUsed.length > 0 ? prevUsed[0] : det);
-      })
-      .catch(() => {});
-  }, []);
+  const { t } = useLanguage();
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -102,7 +74,6 @@ export default function ScanForm() {
       return;
     }
 
-    saveUsedCountry(country);
     setLoading(true);
     try {
       const res = await fetch('/api/scan', {
@@ -156,7 +127,7 @@ export default function ScanForm() {
         </button>
       </div>
 
-      {/* Country pills — scrollable */}
+      {/* Country pills — comentado, solo Colombia por ahora
       <div className="mt-3">
         <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-hide">
           <span className="text-xs text-gray-400 shrink-0">{t('country_label')}</span>
@@ -180,6 +151,7 @@ export default function ScanForm() {
           })}
         </div>
       </div>
+      */}
 
       {error && <p className="mt-3 text-red-500 text-sm">{error}</p>}
     </form>
