@@ -25,6 +25,8 @@ model Lead {
   id        Int      @id @default(autoincrement())
   email     String
   name      String?
+  position  String?
+  sector    String?
   city      String?
   country   String?
   scan      Scan?    @relation(fields: [scanId], references: [id])

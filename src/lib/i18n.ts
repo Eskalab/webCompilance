@@ -137,8 +137,20 @@ export const translations = {
     en: 'Sending...',
   },
   name_placeholder: {
-    es: 'Tu nombre',
-    en: 'Your name',
+    es: 'Nombre',
+    en: 'Name',
+  },
+  position_placeholder: {
+    es: 'Cargo',
+    en: 'Position',
+  },
+  corporate_email_placeholder: {
+    es: 'Email corporativo',
+    en: 'Corporate email',
+  },
+  sector_placeholder: {
+    es: 'Selecciona tu sector',
+    en: 'Select your sector',
   },
   error_invalid_email: {
     es: 'Ingresa un email válido',
@@ -147,6 +159,14 @@ export const translations = {
   error_name_required: {
     es: 'Ingresa tu nombre',
     en: 'Enter your name',
+  },
+  error_position_required: {
+    es: 'Ingresa tu cargo',
+    en: 'Enter your position',
+  },
+  error_sector_required: {
+    es: 'Selecciona tu sector',
+    en: 'Select your sector',
   },
   error_send: {
     es: 'Error al enviar. Intenta de nuevo.',

@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useLanguage } from '@/contexts/language';
+import { SECTORS } from '@/lib/sectors';
 import { X } from 'lucide-react';
 
 interface LeadGateModalProps {
@@ -14,11 +15,13 @@ interface LeadGateModalProps {
 
 export default function LeadGateModal({ scanId, url, score, onUnlock, onClose }: LeadGateModalProps) {
   const [name, setName] = useState('');
+  const [position, setPosition] = useState('');
   const [email, setEmail] = useState('');
+  const [sector, setSector] = useState('');
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const { t } = useLanguage();
+  const { t, locale } = useLanguage();
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -26,8 +29,16 @@ export default function LeadGateModal({ scanId, url, score, onUnlock, onClose }:
       setError(t('error_name_required'));
       return;
     }
+    if (!position.trim()) {
+      setError(t('error_position_required'));
+      return;
+    }
     if (!email.includes('@')) {
       setError(t('error_invalid_email'));
+      return;
+    }
+    if (!sector) {
+      setError(t('error_sector_required'));
       return;
     }
     if (!acceptedTerms) {
@@ -42,7 +53,7 @@ export default function LeadGateModal({ scanId, url, score, onUnlock, onClose }:
       await fetch('/api/lead', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email, scanId, url, score }),
+        body: JSON.stringify({ name, position, email, sector, scanId, url, score }),
       });
       onUnlock();
     } catch {
@@ -51,6 +62,8 @@ export default function LeadGateModal({ scanId, url, score, onUnlock, onClose }:
       setLoading(false);
     }
   }
+
+  const inputClass = "px-5 py-3 rounded-2xl border border-gray-300 text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-[#0f8b8d]";
 
   return (
     <div
@@ -85,17 +98,38 @@ export default function LeadGateModal({ scanId, url, score, onUnlock, onClose }:
             onChange={(e) => setName(e.target.value)}
             placeholder={t('name_placeholder')}
             autoFocus
-            className="px-5 py-3 rounded-2xl border border-gray-300 text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-[#0f8b8d]"
+            className={inputClass}
+            disabled={loading}
+          />
+          <input
+            type="text"
+            value={position}
+            onChange={(e) => setPosition(e.target.value)}
+            placeholder={t('position_placeholder')}
+            className={inputClass}
             disabled={loading}
           />
           <input
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="tu@email.com"
-            className="px-5 py-3 rounded-2xl border border-gray-300 text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-[#0f8b8d]"
+            placeholder={t('corporate_email_placeholder')}
+            className={inputClass}
             disabled={loading}
           />
+          <select
+            value={sector}
+            onChange={(e) => setSector(e.target.value)}
+            className={`${inputClass} ${sector ? 'text-gray-900' : 'text-gray-400'}`}
+            disabled={loading}
+          >
+            <option value="" disabled>{t('sector_placeholder')}</option>
+            {SECTORS.map((s) => (
+              <option key={s.value} value={s.value} className="text-gray-900">
+                {locale === 'es' ? s.es : s.en}
+              </option>
+            ))}
+          </select>
           <label className="flex items-start gap-2 text-left cursor-pointer">
             <input
               type="checkbox"
@@ -117,7 +151,7 @@ export default function LeadGateModal({ scanId, url, score, onUnlock, onClose }:
           </label>
           <button
             type="submit"
-            disabled={loading || !name.trim() || !email.trim() || !acceptedTerms}
+            disabled={loading || !name.trim() || !position.trim() || !email.trim() || !sector || !acceptedTerms}
             className="px-8 py-3 bg-[#0f8b8d] text-white font-semibold rounded-2xl hover:bg-[#0c7475] disabled:opacity-50 transition-colors"
           >
             {loading ? t('unlock_sending') : t('unlock_btn')}

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { readFileSync } from 'fs';
 import { join } from 'path';
 import { prisma } from '@/lib/db';
+import { SECTORS } from '@/lib/sectors';
 import { generatePdfBuffer } from '@/lib/generate-pdf';
 import { renderPdfHtml } from '@/lib/render-pdf-html';
 
@@ -36,18 +37,21 @@ const scoreConfig = (score: number) => {
 };
 
 export async function POST(request: NextRequest) {
-  let body: { name?: string; email?: string; scanId?: string; url?: string; score?: number };
+  let body: { name?: string; position?: string; email?: string; sector?: string; scanId?: string; url?: string; score?: number };
   try {
     body = await request.json();
   } catch {
     return NextResponse.json({ error: 'Invalid JSON body.' }, { status: 400 });
   }
 
-  const { name, email, scanId, url, score } = body;
+  const { name, position, email, sector, scanId, url, score } = body;
 
   if (!email || !email.includes('@')) {
     return NextResponse.json({ error: 'Valid email is required.' }, { status: 400 });
   }
+
+  // Guardamos la etiqueta legible del sector en vez del código interno
+  const sectorLabel = sector ? (SECTORS.find((s) => s.value === sector)?.es ?? sector) : null;
 
   const city = request.headers.get('x-vercel-ip-city')
     ? decodeURIComponent(request.headers.get('x-vercel-ip-city')!)
@@ -59,6 +63,8 @@ export async function POST(request: NextRequest) {
     data: {
       email,
       name: name ?? null,
+      position: position ?? null,
+      sector: sectorLabel,
       city,
       country,
       scanId: scanId ?? null,
@@ -83,6 +89,8 @@ export async function POST(request: NextRequest) {
         email,
         attributes: {
           FIRSTNAME: name ?? '',
+          JOB_TITLE: position ?? '',
+          SECTOR: sectorLabel ?? '',
           SITE_URL: url ?? '',
           SCORE: score ?? 0,
           SCAN_ID: scanId ?? '',
