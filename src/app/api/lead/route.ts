@@ -35,21 +35,6 @@ const scoreConfig = (score: number) => {
   };
 };
 
-async function getGeoFromIp(ip: string): Promise<{ city: string | null; country: string | null }> {
-  try {
-    if (!ip || ip === '127.0.0.1' || ip === '::1') return { city: null, country: null };
-    const res = await fetch(`https://ipapi.co/${ip}/json/`, { signal: AbortSignal.timeout(3000) });
-    if (!res.ok) return { city: null, country: null };
-    const data = await res.json();
-    return {
-      city: data.city ?? null,
-      country: data.country_name ?? null,
-    };
-  } catch {
-    return { city: null, country: null };
-  }
-}
-
 export async function POST(request: NextRequest) {
   let body: { name?: string; email?: string; scanId?: string; url?: string; score?: number };
   try {
@@ -64,8 +49,10 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Valid email is required.' }, { status: 400 });
   }
 
-  const ip = (request.headers.get('x-forwarded-for') ?? '').split(',')[0].trim();
-  const { city, country } = await getGeoFromIp(ip);
+  const city = request.headers.get('x-vercel-ip-city')
+    ? decodeURIComponent(request.headers.get('x-vercel-ip-city')!)
+    : null;
+  const country = request.headers.get('x-vercel-ip-country') ?? null;
 
   // Persist lead to DB
   await prisma.lead.create({
