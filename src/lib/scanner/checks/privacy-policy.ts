@@ -18,9 +18,9 @@ const PRIVACY_TEXT_KEYWORDS = [
 
 export const privacyPolicyCheck: Check = {
   id: 'privacy_policy',
-  label: 'Privacy Policy',
+  label: 'Data Processing Policy',
   tier: 'free',
-  description: 'Checks that your site has a designated privacy policy page that is accessible.',
+  description: 'Checks that your site has an accessible personal data processing policy (Ley 1581 / Decreto 1377).',
   weight: 10,
 
   async run(context: ScanContext): Promise<CheckResult> {
@@ -34,7 +34,7 @@ export const privacyPolicyCheck: Check = {
           checkId: this.id,
           status: 'pass',
           label: this.label,
-          labelEs: 'Política de Privacidad',
+          labelEs: 'Política de Tratamiento de Datos Personales',
           details: `Privacy policy link found: "${link.text}" → ${link.href} (location: ${link.location}).`,
           detailsEs: `Enlace de política de privacidad encontrado: "${link.text}" → ${link.href} (ubicación: ${link.location}).`,
           suggestion: '',
@@ -54,7 +54,7 @@ export const privacyPolicyCheck: Check = {
           checkId: this.id,
           status: 'pass',
           label: this.label,
-          labelEs: 'Política de Privacidad',
+          labelEs: 'Política de Tratamiento de Datos Personales',
           details: `Privacy policy link found in URL: ${link.href} (location: ${link.location}).`,
           detailsEs: `Enlace de política de privacidad encontrado en URL: ${link.href} (ubicación: ${link.location}).`,
           suggestion: '',
@@ -74,7 +74,7 @@ export const privacyPolicyCheck: Check = {
           checkId: this.id,
           status: 'pass',
           label: this.label,
-          labelEs: 'Política de Privacidad',
+          labelEs: 'Política de Tratamiento de Datos Personales',
           details: `Privacy policy page found in sitemap: ${url}.`,
           detailsEs: `Página de política de privacidad encontrada en el sitemap: ${url}.`,
           suggestion: 'Consider adding a visible link to your privacy policy in your site footer for easy access.',
@@ -91,7 +91,7 @@ export const privacyPolicyCheck: Check = {
       checkId: this.id,
       status: 'fail',
       label: this.label,
-      labelEs: 'Política de Privacidad',
+      labelEs: 'Política de Tratamiento de Datos Personales',
       details: 'No privacy policy page detected. We checked your page links, URLs, and sitemap.',
       detailsEs: 'No se detectó página de política de privacidad. Revisamos los enlaces de tu página, URLs y sitemap.',
       suggestion: 'Create a privacy policy page and add a visible link in your site footer. Most LATAM data protection laws (Ley 1581 in Colombia, LGPD in Brazil, etc.) require this.',

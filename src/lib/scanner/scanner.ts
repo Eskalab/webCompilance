@@ -3,7 +3,8 @@ import { buildContext } from './context';
 import { sslCheck } from './checks/ssl';
 import { cookieBannerCheck } from './checks/cookie-banner';
 import { privacyPolicyCheck } from './checks/privacy-policy';
-import { legalPagesCheck } from './checks/legal-pages';
+import { dataRightsCheck } from './checks/data-rights';
+import { cookiePolicyCheck } from './checks/cookie-policy';
 import { thirdPartyCheck } from './checks/third-party';
 import { formsConsentCheck } from './checks/forms-consent';
 import { mixedContentCheck } from './checks/mixed-content';
@@ -21,7 +22,8 @@ const checks: Check[] = [
   thirdPartyCheck,
   cookieBannerCheck,
   privacyPolicyCheck,
-  legalPagesCheck,
+  dataRightsCheck,
+  cookiePolicyCheck,
   formsConsentCheck,
 ];
 

@@ -28,13 +28,14 @@ import {
 } from 'lucide-react';
 
 const SECURITY_CHECKS = new Set(['ssl', 'mixed_content', 'form_security', 'security_headers', 'third_party']);
-const LEGAL_CHECKS = new Set(['privacy_policy', 'legal_pages', 'forms_consent', 'cookie_banner']);
+// legal_pages se mantiene por scans cacheados anteriores al split en data_rights/cookie_policy
+const LEGAL_CHECKS = new Set(['privacy_policy', 'data_rights', 'legal_pages', 'forms_consent', 'cookie_banner', 'cookie_policy']);
 
 // Las 3 piezas legales que exige la SIC (Ley 1581 / Decreto 1377)
 const LEGAL_GROUPS: { titleKey: TranslationKey; ids: string[] }[] = [
-  { titleKey: 'legal_group_politica', ids: ['privacy_policy', 'legal_pages'] },
+  { titleKey: 'legal_group_politica', ids: ['privacy_policy', 'data_rights', 'legal_pages'] },
   { titleKey: 'legal_group_aviso', ids: ['forms_consent'] },
-  { titleKey: 'legal_group_cookies', ids: ['cookie_banner'] },
+  { titleKey: 'legal_group_cookies', ids: ['cookie_banner', 'cookie_policy'] },
 ];
 
 function getRisk(score: number): 'green' | 'yellow' | 'red' {
