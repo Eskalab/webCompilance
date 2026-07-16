@@ -29,8 +29,12 @@ const checks: Check[] = [
 
 const CACHE_TTL_MS = 6 * 60 * 60 * 1000; // 6 hours
 
+// Incrementar cuando cambie la estructura de checks: invalida el cache
+// automáticamente (los scans viejos quedan bajo otra key y no se sirven).
+const ENGINE_VERSION = 2;
+
 export async function runScan(url: string): Promise<ScanResponse> {
-  const cacheKey = createHash('sha256').update(url).digest('hex').slice(0, 12);
+  const cacheKey = createHash('sha256').update(`${url}#v${ENGINE_VERSION}`).digest('hex').slice(0, 12);
 
   // Check DB cache
   const cached = await prisma.scan.findUnique({ where: { id: cacheKey } });
