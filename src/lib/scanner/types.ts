@@ -4,6 +4,7 @@ export interface ScanContext {
   robotsTxt: string;
   sitemapUrls: string[];
   privacyPolicyContent: string;
+  privacyPolicyUrl: string | null;
   allLinks: LinkInfo[];
   fetchErrors: string[];
   responseHeaders: Record<string, string>;

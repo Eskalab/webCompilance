@@ -54,6 +54,7 @@ export async function buildContext(targetUrl: string): Promise<ScanContext> {
     robotsTxt,
     sitemapUrls,
     privacyPolicyContent,
+    privacyPolicyUrl: privacyUrl,
     allLinks,
     fetchErrors: errors,
     responseHeaders,

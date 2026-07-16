@@ -3,6 +3,7 @@
 import React, { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useLanguage } from '@/contexts/language';
+import { TranslationKey } from '@/lib/i18n';
 import { ScanResponse } from '@/lib/scanner/types';
 import SiteHeader from '@/components/site-header';
 import SiteFooter from '@/components/site-footer';
@@ -28,6 +29,13 @@ import {
 
 const SECURITY_CHECKS = new Set(['ssl', 'mixed_content', 'form_security', 'security_headers', 'third_party']);
 const LEGAL_CHECKS = new Set(['privacy_policy', 'legal_pages', 'forms_consent', 'cookie_banner']);
+
+// Las 3 piezas legales que exige la SIC (Ley 1581 / Decreto 1377)
+const LEGAL_GROUPS: { titleKey: TranslationKey; ids: string[] }[] = [
+  { titleKey: 'legal_group_politica', ids: ['privacy_policy', 'legal_pages'] },
+  { titleKey: 'legal_group_aviso', ids: ['forms_consent'] },
+  { titleKey: 'legal_group_cookies', ids: ['cookie_banner'] },
+];
 
 function getRisk(score: number): 'green' | 'yellow' | 'red' {
   if (score >= 99) return 'green';
@@ -321,7 +329,8 @@ function ResultsContent() {
                 titleEs: string, titleEn: string,
                 icon: React.ReactNode,
                 score: number, accentColor: string,
-                ids: Set<string>
+                ids: Set<string>,
+                groups?: { titleKey: TranslationKey; ids: string[] }[]
               ) => {
                 const scoreColor = RISK_COLOR[getRisk(score)].hex;
                 const colChecks = scan.checks.filter(c => ids.has(c.checkId));
@@ -359,9 +368,38 @@ function ResultsContent() {
 
                     {/* Checks */}
                     <div className="flex-1">
-                      {freeChecks.map(c => renderCheckItem(c, unlocked))}
+                      {groups ? (
+                        groups.map((group) => {
+                          const freeGroup = colChecks.filter(c => group.ids.includes(c.checkId) && c.tier === 'free');
+                          const premiumGroup = colChecks.filter(c => group.ids.includes(c.checkId) && c.tier === 'premium');
+                          const hasVisible = freeGroup.length > 0 || (unlocked && premiumGroup.length > 0);
 
-                      {unlocked && premiumChecks.map(c => renderCheckItem(c, true))}
+                          return (
+                            <div key={group.titleKey}>
+                              <div className="px-4 sm:px-6 pt-4 pb-1 flex items-center gap-2">
+                                <span className="text-[11px] font-bold uppercase tracking-widest text-gray-400">{t(group.titleKey)}</span>
+                                <div className="flex-1 h-px bg-gray-100" />
+                              </div>
+                              {freeGroup.map(c => renderCheckItem(c, unlocked))}
+                              {unlocked && premiumGroup.map(c => renderCheckItem(c, true))}
+                              {!hasVisible && (
+                                <div className="px-4 sm:px-6 py-4 flex items-center gap-3 border-b border-gray-100">
+                                  <div className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 bg-gray-100">
+                                    <Lock className="w-3.5 h-3.5 text-gray-400" />
+                                  </div>
+                                  <span className="text-sm text-gray-400">{t('legal_group_locked')}</span>
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })
+                      ) : (
+                        <>
+                          {freeChecks.map(c => renderCheckItem(c, unlocked))}
+
+                          {unlocked && premiumChecks.map(c => renderCheckItem(c, true))}
+                        </>
+                      )}
                     </div>
                   </div>
                 );
@@ -378,7 +416,7 @@ function ResultsContent() {
                     {renderColumn(
                       'Cumplimiento Legal', 'Legal Compliance',
                       <Scale className="w-5 h-5" style={{ color: '#0f8b8d' }} />,
-                      legalScore, '#0f8b8d', LEGAL_CHECKS
+                      legalScore, '#0f8b8d', LEGAL_CHECKS, LEGAL_GROUPS
                     )}
                   </div>
 

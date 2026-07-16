@@ -11,6 +11,7 @@ import { formSecurityCheck } from './checks/form-security';
 import { securityHeadersCheck } from './checks/security-headers';
 import { createHash } from 'crypto';
 import { prisma } from '@/lib/db';
+import { analyzeLegal } from './legal/analyze';
 
 const checks: Check[] = [
   sslCheck,
@@ -60,11 +61,14 @@ export async function runScan(url: string): Promise<ScanResponse> {
     fail: results.filter((r) => r.status === 'fail').length,
   };
 
+  // Análisis legal detallado (Ley 1581 / D.1377) — solo backend, no va en ScanResponse
+  const legalAnalysis = JSON.parse(JSON.stringify(analyzeLegal(context)));
+
   // Persist to DB
   await prisma.scan.upsert({
     where: { id: cacheKey },
-    update: { url, score, summary, checks: JSON.parse(JSON.stringify(results)), scannedAt: now },
-    create: { id: cacheKey, url, score, summary, checks: JSON.parse(JSON.stringify(results)), scannedAt: now },
+    update: { url, score, summary, checks: JSON.parse(JSON.stringify(results)), legalAnalysis, scannedAt: now },
+    create: { id: cacheKey, url, score, summary, checks: JSON.parse(JSON.stringify(results)), legalAnalysis, scannedAt: now },
   });
 
   return {

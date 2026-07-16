@@ -9,14 +9,15 @@ datasource db {
 }
 
 model Scan {
-  id        String   @id
-  url       String
-  score     Int
-  summary   Json
-  checks    Json
-  scannedAt DateTime @default(now()) @map("scanned_at")
-  createdAt DateTime @default(now()) @map("created_at")
-  leads     Lead[]
+  id            String   @id
+  url           String
+  score         Int
+  summary       Json
+  checks        Json
+  legalAnalysis Json?    @map("legal_analysis")
+  scannedAt     DateTime @default(now()) @map("scanned_at")
+  createdAt     DateTime @default(now()) @map("created_at")
+  leads         Lead[]
 
   @@map("scans")
 }
