@@ -137,12 +137,12 @@ export const translations = {
     en: 'Sending...',
   },
   legal_group_politica: {
-    es: 'Política de Tratamiento de Datos',
-    en: 'Data Processing Policy',
+    es: 'Política de Datos Personales',
+    en: 'Personal Data Policy',
   },
   legal_group_aviso: {
-    es: 'Aviso de Privacidad y Autorización',
-    en: 'Privacy Notice & Authorization',
+    es: 'Política de Privacidad',
+    en: 'Privacy Policy',
   },
   legal_group_cookies: {
     es: 'Consentimiento de Cookies',
