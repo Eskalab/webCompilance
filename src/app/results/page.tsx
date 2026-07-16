@@ -31,8 +31,9 @@ const SECURITY_CHECKS = new Set(['ssl', 'mixed_content', 'form_security', 'secur
 // legal_pages se mantiene por scans cacheados anteriores al split en data_rights/cookie_policy
 const LEGAL_CHECKS = new Set(['privacy_policy', 'data_rights', 'legal_pages', 'forms_consent', 'cookie_banner', 'cookie_policy']);
 
-// Las 3 piezas legales que exige la SIC (Ley 1581 / Decreto 1377)
-const LEGAL_GROUPS: { titleKey: TranslationKey; ids: string[] }[] = [
+// Las 3 piezas legales que exige la SIC (Ley 1581 / Decreto 1377).
+// Cada una se muestra como un solo ítem que consolida el estado de sus checks.
+const LEGAL_ITEMS: { titleKey: TranslationKey; ids: string[] }[] = [
   { titleKey: 'legal_group_politica', ids: ['privacy_policy', 'data_rights', 'legal_pages'] },
   { titleKey: 'legal_group_aviso', ids: ['forms_consent'] },
   { titleKey: 'legal_group_cookies', ids: ['cookie_banner', 'cookie_policy'] },
@@ -326,12 +327,113 @@ function ResultsContent() {
                 );
               };
 
+              // Un ítem legal consolida varios checks en una sola fila:
+              // el peor estado manda (fail > warn > pass) y se juntan detalles y sugerencias.
+              const renderCompositeItem = (titleKey: TranslationKey, ids: string[]) => {
+                const members = scan.checks.filter(c => ids.includes(c.checkId) && c.status !== 'skip');
+                if (members.length === 0) return null;
+
+                const freeMembers = members.filter(c => c.tier === 'free');
+                const shown = unlocked ? members : freeMembers;
+                const title = t(titleKey);
+
+                // Solo checks premium y aún bloqueado: fila con nombre visible + candado
+                if (shown.length === 0) {
+                  return (
+                    <div key={titleKey} className="border-b border-gray-100 last:border-0 px-4 sm:px-6 py-4 sm:py-5 space-y-3">
+                      <div className="flex items-center gap-3">
+                        <div className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 bg-gray-100">
+                          <Lock className="w-3.5 h-3.5 text-gray-400" />
+                        </div>
+                        <span className="flex-1 font-semibold text-[#1f2d3d] text-sm">{title}</span>
+                        <div className="px-2.5 py-1 rounded-full text-xs font-semibold shrink-0 bg-gray-100 text-gray-400">———</div>
+                      </div>
+                      <p className="text-gray-600 text-sm leading-relaxed">{t('legal_group_locked')}</p>
+                    </div>
+                  );
+                }
+
+                const statuses = shown.map(c => c.status);
+                const status = statuses.includes('fail') ? 'fail' : statuses.includes('warn') ? 'warn' : 'pass';
+                const isPass = status === 'pass';
+                const isWarn = status === 'warn';
+                const isFail = status === 'fail';
+                const details = shown
+                  .map(c => (locale === 'es' && c.detailsEs ? c.detailsEs : c.details))
+                  .filter(Boolean);
+                const suggestions = shown
+                  .filter(c => c.status !== 'pass')
+                  .map(c => (locale === 'es' && c.suggestionEs ? c.suggestionEs : c.suggestion))
+                  .filter(Boolean);
+
+                return (
+                  <div key={titleKey} className="border-b border-gray-100 last:border-0 px-4 sm:px-6 py-4 sm:py-5 space-y-3">
+                    {/* Header */}
+                    <div className="flex items-center gap-3">
+                      {unlocked ? (
+                        <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${isPass ? 'bg-green-100' : isWarn ? 'bg-yellow-100' : 'bg-red-100'}`}>
+                          {isPass && <CheckCircle2 className="w-4 h-4 text-green-600" />}
+                          {isWarn && <AlertTriangle className="w-4 h-4 text-yellow-600" />}
+                          {isFail && <XCircle className="w-4 h-4 text-red-600" />}
+                        </div>
+                      ) : (
+                        <div className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 bg-gray-100">
+                          <Lock className="w-3.5 h-3.5 text-gray-400" />
+                        </div>
+                      )}
+                      <span className="flex-1 font-semibold text-[#1f2d3d] text-sm">{title}</span>
+                      {unlocked ? (
+                        <div className={`px-2.5 py-1 rounded-full text-xs font-semibold shrink-0 ${isPass ? 'bg-green-100 text-green-700' : isWarn ? 'bg-yellow-100 text-yellow-700' : 'bg-red-100 text-red-700'}`}>
+                          {locale === 'es' ? t(`status_${status}` as TranslationKey) : status.toUpperCase()}
+                        </div>
+                      ) : (
+                        <div className="px-2.5 py-1 rounded-full text-xs font-semibold shrink-0 bg-gray-100 text-gray-400">———</div>
+                      )}
+                    </div>
+
+                    {/* Details */}
+                    {details.map((d, i) => (
+                      <p key={i} className="text-gray-600 text-sm leading-relaxed">{d}</p>
+                    ))}
+
+                    {/* Recommendations */}
+                    {unlocked && suggestions.length > 0 && (
+                      <div className="bg-[#f7f8fa] rounded-xl p-4 border border-gray-200 space-y-3">
+                        {suggestions.map((s, i) => (
+                          <div key={i} className="flex items-start gap-3">
+                            <SearchCheck className="w-4 h-4 text-[#0f8b8d] shrink-0 mt-0.5" />
+                            <p className="text-gray-600 text-sm leading-relaxed">{s}</p>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                    {!unlocked && (
+                      <div className="bg-[#f7f8fa] rounded-xl p-4 border border-gray-200 relative overflow-hidden">
+                        <div className="blur-sm select-none pointer-events-none flex items-start gap-3">
+                          <SearchCheck className="w-4 h-4 text-[#0f8b8d] shrink-0 mt-0.5" />
+                          <p className="text-gray-600 text-sm">{t('recommendation_text')}</p>
+                        </div>
+                        <div className="absolute inset-0 flex flex-col items-center justify-center gap-1">
+                          <div className="flex items-center gap-1.5 text-[#0f8b8d] font-semibold text-sm">
+                            <Lock className="w-4 h-4" />
+                            <span>{t('premium_recommendations_locked')}</span>
+                          </div>
+                          <button onClick={() => setShowModal(true)} className="text-[#0f8b8d] text-xs underline hover:text-[#0c7475] transition cursor-pointer">
+                            {t('click_to_unlock')}
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                );
+              };
+
               const renderColumn = (
                 titleEs: string, titleEn: string,
                 icon: React.ReactNode,
                 score: number, accentColor: string,
                 ids: Set<string>,
-                groups?: { titleKey: TranslationKey; ids: string[] }[]
+                composite?: { titleKey: TranslationKey; ids: string[] }[]
               ) => {
                 const scoreColor = RISK_COLOR[getRisk(score)].hex;
                 const colChecks = scan.checks.filter(c => ids.has(c.checkId));
@@ -369,31 +471,8 @@ function ResultsContent() {
 
                     {/* Checks */}
                     <div className="flex-1">
-                      {groups ? (
-                        groups.map((group) => {
-                          const freeGroup = colChecks.filter(c => group.ids.includes(c.checkId) && c.tier === 'free');
-                          const premiumGroup = colChecks.filter(c => group.ids.includes(c.checkId) && c.tier === 'premium');
-                          const hasVisible = freeGroup.length > 0 || (unlocked && premiumGroup.length > 0);
-
-                          return (
-                            <div key={group.titleKey}>
-                              <div className="px-4 sm:px-6 pt-4 pb-1 flex items-center gap-2">
-                                <span className="text-[11px] font-bold uppercase tracking-widest text-gray-400">{t(group.titleKey)}</span>
-                                <div className="flex-1 h-px bg-gray-100" />
-                              </div>
-                              {freeGroup.map(c => renderCheckItem(c, unlocked))}
-                              {unlocked && premiumGroup.map(c => renderCheckItem(c, true))}
-                              {!hasVisible && (
-                                <div className="px-4 sm:px-6 py-4 flex items-center gap-3 border-b border-gray-100">
-                                  <div className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 bg-gray-100">
-                                    <Lock className="w-3.5 h-3.5 text-gray-400" />
-                                  </div>
-                                  <span className="text-sm text-gray-400">{t('legal_group_locked')}</span>
-                                </div>
-                              )}
-                            </div>
-                          );
-                        })
+                      {composite ? (
+                        composite.map((item) => renderCompositeItem(item.titleKey, item.ids))
                       ) : (
                         <>
                           {freeChecks.map(c => renderCheckItem(c, unlocked))}
@@ -417,7 +496,7 @@ function ResultsContent() {
                     {renderColumn(
                       'Cumplimiento Legal', 'Legal Compliance',
                       <Scale className="w-5 h-5" style={{ color: '#0f8b8d' }} />,
-                      legalScore, '#0f8b8d', LEGAL_CHECKS, LEGAL_GROUPS
+                      legalScore, '#0f8b8d', LEGAL_CHECKS, LEGAL_ITEMS
                     )}
                   </div>
 
