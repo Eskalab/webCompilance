@@ -1,27 +1,43 @@
-// Renderizado con navegador real (headless) para sitios que arman su contenido
-// con JavaScript (footers, menús) o que bloquean el fetch plano.
+// Renderizado con navegador real (Crawlee/Playwright) para SPAs y anti-bots.
 //
-// Usa Crawlee (PlaywrightCrawler): inyecta fingerprints de navegador reales por
-// defecto (browserPool), lo que ayuda con SPAs y con anti-bots. Es lento y pesado,
-// así que context.ts solo lo llama como fallback cuando el fetch/got-scraping falla.
+// ⚠️ DESACTIVADO A PROPÓSITO. El render con Chromium no cabe en el límite de 10s
+// de Vercel (los SPAs tardan 11–17s) y complica el deploy. Por eso renderPage()
+// está en modo STUB: siempre devuelve null → el pipeline se queda con la ingesta
+// en capas (fetch + got-scraping), rápida (<6s) y compatible con serverless.
+// Los SPAs caen al estado honesto "política no encontrada".
 //
-// Bloqueo (403 del anti-bot al navegador, ej. Avianca): NO es fatal. Se reintenta
-// una vez; si sigue bloqueado, renderPage devuelve null y el caller se queda con
-// el HTML del fetch plano (mejor un shell que nada).
-//
-// Serverless (Vercel): Playwright no trae Chromium empaquetado → se apunta el
-// executablePath a @sparticuz/chromium. En local usa el Chromium propio de Playwright.
-
-import { PlaywrightCrawler, Configuration, log, LogLevel } from 'crawlee';
+// La implementación real (Crawlee PlaywrightCrawler) quedó ABAJO, comentada,
+// para reactivarla cuando exista el scanner-worker fuera de Vercel: descomentar
+// el bloque, borrar el stub y agregar `crawlee`/`@sparticuz/chromium` al runtime.
 
 type RenderResult = { html: string; finalUrl: string };
 
-// Silencia el INFO ruidoso de Crawlee; deja WARN/ERROR (bloqueos, fallos).
-log.setLevel(LogLevel.WARNING);
+// STUB — sin navegador. El caller usa el HTML del fetch/got-scraping.
+export async function renderPage(
+  _url: string,
+  _timeoutMs = 15000,
+): Promise<RenderResult | null> {
+  return null;
+}
+
+/* ===== IMPLEMENTACIÓN REAL (Crawlee/Playwright) — descomentar para el worker =====
+
+import { PlaywrightCrawler, Configuration, log, LogLevel } from 'crawlee';
 
 const IS_SERVERLESS = !!(
   process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME
 );
+
+// Render con Chromium: por defecto ON en local, OFF en serverless (Vercel) para
+// no cargar Chromium ni exceder el límite de 10s por invocación. Override:
+//   SCANNER_RENDER=1  → forzar ON (ej. el scanner-worker fuera de Vercel)
+//   SCANNER_RENDER=0  → forzar OFF
+function renderEnabled(): boolean {
+  const flag = process.env.SCANNER_RENDER;
+  if (flag === '1' || flag === 'true') return true;
+  if (flag === '0' || flag === 'false') return false;
+  return !IS_SERVERLESS;
+}
 
 // En serverless, Playwright no trae Chromium empaquetado → usar @sparticuz/chromium.
 // En local, dejar que Playwright use su propio Chromium (launchOptions vacío).
@@ -42,6 +58,10 @@ export async function renderPage(
   url: string,
   timeoutMs = 15000,
 ): Promise<RenderResult | null> {
+  if (!renderEnabled()) return null;
+
+  log.setLevel(LogLevel.WARNING); // silencia el INFO ruidoso; deja WARN/ERROR
+
   let result: RenderResult | null = null;
   const launchOptions = await serverlessLaunchOptions();
   const navSecs = Math.ceil(timeoutMs / 1000);
@@ -79,3 +99,5 @@ export async function renderPage(
 
   return result;
 }
+
+===== FIN IMPLEMENTACIÓN REAL ===== */
