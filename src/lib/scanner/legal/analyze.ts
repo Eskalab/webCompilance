@@ -3,7 +3,7 @@
 
 import { ScanContext } from '../types';
 import { LegalAnalysis, PoliticaAnalysis } from './types';
-import { htmlToText } from './html-to-text';
+import { documentText } from './html-to-text';
 import { evaluatePolitica } from './politica-rubric';
 import { evaluateAviso } from './aviso-rubric';
 
@@ -11,7 +11,7 @@ import { evaluateAviso } from './aviso-rubric';
 const MIN_DOCUMENT_LENGTH = 200;
 
 function analyzePolitica(context: ScanContext): PoliticaAnalysis {
-  const text = htmlToText(context.privacyPolicyContent);
+  const text = documentText(context.privacyPolicyContent);
   const documentUrl = context.privacyPolicyUrl ?? null;
 
   if (text.length < MIN_DOCUMENT_LENGTH) {

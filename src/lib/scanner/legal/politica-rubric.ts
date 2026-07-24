@@ -70,7 +70,7 @@ const ITEMS: PoliticaItem[] = [
     thresholds: { half: 1, full: 2 },
     signals: [
       { name: 'area', regex: /\b[aá]rea\s+(?:responsable|encargada|de\s+(?:protecci[oó]n|datos|atenci[oó]n|servicio))/i },
-      { name: 'oficial_datos', regex: /\boficial de (?:protecci[oó]n|tratamiento|datos|privacidad)\b|\bdata protection officer\b|\bDPO\b/ },
+      { name: 'oficial_datos', regex: /\boficial de (?:protecci[oó]n|tratamiento|datos|privacidad)\b|\bdata protection officer\b|\bDPO\b/i },
       { name: 'responsable_atencion', regex: /\b(?:responsable|encargad[oa]) de (?:la )?atenci[oó]n\b/i },
       { name: 'email_datos', regex: /(?:datospersonales|protecciondatos|protecciondedatos|habeasdata|privacidad|tratamientodedatos)@[a-z0-9.-]+/i },
     ],

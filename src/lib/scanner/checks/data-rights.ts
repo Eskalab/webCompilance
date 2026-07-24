@@ -18,6 +18,14 @@ const POLICY_CONTENT_KEYWORDS = [
   'conocer, actualizar y rectificar', 'habeas data', 'derechos arco',
 ];
 
+// Compara por palabra completa: normaliza los separadores de URL (- / _ .) a
+// espacios para que 'arco' matchee en 'derechos-arco' pero NO dentro de
+// 'narcotrafico'. Sirve para keywords de una o varias palabras.
+function urlIncludesKeyword(href: string, keywords: string[]): boolean {
+  const normalized = ` ${href.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim()} `;
+  return keywords.some((kw) => normalized.includes(` ${kw.replace(/-/g, ' ')} `));
+}
+
 export const dataRightsCheck: Check = {
   id: 'data_rights',
   label: 'Data Subject Rights (Habeas Data)',
@@ -31,8 +39,7 @@ export const dataRightsCheck: Check = {
     // 1. Link o página dedicada a derechos del titular
     for (const link of allLinks) {
       const lowerText = link.text.toLowerCase();
-      const lowerHref = link.href.toLowerCase();
-      if (TEXT_KEYWORDS.some((kw) => lowerText.includes(kw)) || URL_KEYWORDS.some((kw) => lowerHref.includes(kw))) {
+      if (TEXT_KEYWORDS.some((kw) => lowerText.includes(kw)) || urlIncludesKeyword(link.href, URL_KEYWORDS)) {
         return {
           checkId: this.id,
           status: 'pass',
@@ -50,8 +57,7 @@ export const dataRightsCheck: Check = {
     }
 
     for (const url of sitemapUrls) {
-      const lower = url.toLowerCase();
-      if (URL_KEYWORDS.some((kw) => lower.includes(kw))) {
+      if (urlIncludesKeyword(url, URL_KEYWORDS)) {
         return {
           checkId: this.id,
           status: 'pass',
