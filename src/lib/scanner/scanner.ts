@@ -31,7 +31,7 @@ const CACHE_TTL_MS = 6 * 60 * 60 * 1000; // 6 hours
 
 // Incrementar cuando cambie la estructura de checks: invalida el cache
 // automáticamente (los scans viejos quedan bajo otra key y no se sirven).
-const ENGINE_VERSION = 2;
+export const ENGINE_VERSION = 2;
 
 export async function runScan(url: string): Promise<ScanResponse> {
   const cacheKey = createHash('sha256').update(`${url}#v${ENGINE_VERSION}`).digest('hex').slice(0, 12);
@@ -49,6 +49,7 @@ export async function runScan(url: string): Promise<ScanResponse> {
     };
   }
 
+  const startedAt = Date.now();
   const context = await buildContext(url);
   const results: CheckResult[] = [];
 
@@ -65,6 +66,7 @@ export async function runScan(url: string): Promise<ScanResponse> {
     pass: results.filter((r) => r.status === 'pass').length,
     warn: results.filter((r) => r.status === 'warn').length,
     fail: results.filter((r) => r.status === 'fail').length,
+    durationMs: Date.now() - startedAt,
   };
 
   // Análisis legal detallado (Ley 1581 / D.1377) — solo backend, no va en ScanResponse

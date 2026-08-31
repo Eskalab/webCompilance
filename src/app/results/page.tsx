@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useLanguage } from '@/contexts/language';
 import { TranslationKey } from '@/lib/i18n';
 import { ScanResponse } from '@/lib/scanner/types';
+import { getICDLevel, getNextGoal, calcAreaScore } from '@/lib/scanner/icd';
 import SiteHeader from '@/components/site-header';
 import SiteFooter from '@/components/site-footer';
 import LeadGate from '@/components/lead-gate';
@@ -39,32 +40,14 @@ const LEGAL_ITEMS: { titleKey: TranslationKey; ids: string[] }[] = [
   { titleKey: 'legal_group_cookies', ids: ['cookie_banner', 'cookie_policy'] },
 ];
 
-function getRisk(score: number): 'green' | 'yellow' | 'red' {
-  if (score >= 99) return 'green';
-  if (score >= 85) return 'yellow';
-  return 'red';
-}
-
-const RISK_COLOR = {
-  green:  { hex: '#30c48d', border: 'border-green-200', bg: 'bg-green-100',  icon: 'text-green-500',  label: 'text-green-600'  },
-  yellow: { hex: '#f5b942', border: 'border-yellow-200', bg: 'bg-yellow-100', icon: 'text-yellow-500', label: 'text-yellow-600' },
-  red:    { hex: '#ef4444', border: 'border-red-200',   bg: 'bg-red-100',    icon: 'text-red-500',    label: 'text-red-600'    },
-};
-
-function calcSubScore(checks: { checkId: string; status: string; weight: number }[], ids: Set<string>) {
-  const group = checks.filter(c => ids.has(c.checkId));
-  if (!group.length) return 0;
-  const passed = group.filter(c => c.status === 'pass').reduce((s, c) => s + c.weight, 0);
-  const total = group.reduce((s, c) => s + c.weight, 0);
-  return total ? Math.round((passed / total) * 100) : 0;
-}
+// Niveles de riesgo unificados en el Índice de Confianza Digital™ (ICD):
+// ver src/lib/scanner/icd.ts (5 niveles, textos y colores).
 
 function ResultsContent() {
   const [scan, setScan] = useState<ScanResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [unlocked, setUnlocked] = useState(false);
   const [showModal, setShowModal] = useState(false);
-  const [activeTab, setActiveTab] = useState<'security' | 'legal'>('security');
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
 
   const toggleExpand = (id: string) =>
@@ -143,7 +126,9 @@ function ResultsContent() {
 
   if (!scan) return null;
 
-  const scoreColor = RISK_COLOR[getRisk(scan.score)].hex;
+  const icd = getICDLevel(scan.score);
+  const nextGoal = getNextGoal(scan.score, locale === 'es' ? 'es' : 'en');
+  const scoreColor = icd.color;
 
   return (
     <main className="min-h-screen bg-[#f7f8fa]">
@@ -200,42 +185,38 @@ function ResultsContent() {
             {t('scan_another')}
           </button>
 
-          {/* 1. SEMÁFORO */}
+          {/* 1. TARJETA ICD — Índice de Confianza Digital™ */}
           {(() => {
-            const risk = getRisk(scan.score);
-            const { border: borderColor, bg: bgIcon, icon: iconColor, label: labelColor } = RISK_COLOR[risk];
-            const label = risk === 'red'
-              ? (locale === 'es' ? 'Riesgo alto' : 'High risk')
-              : risk === 'yellow'
-              ? (locale === 'es' ? 'Riesgo medio' : 'Medium risk')
-              : (locale === 'es' ? 'Buen nivel de cumplimiento' : 'Good compliance level');
-            const title = risk === 'red'
-              ? (locale === 'es' ? '¡Acción inmediata requerida!' : 'Immediate action required!')
-              : risk === 'yellow'
-              ? (locale === 'es' ? 'Hay aspectos por mejorar' : 'There are areas to improve')
-              : (locale === 'es' ? '¡Tu sitio está bien protegido!' : 'Your site is well protected!');
-            const desc = risk === 'red'
-              ? (locale === 'es' ? 'Tu nivel de riesgo es muy alto. Habla con un experto ahora.' : 'Your risk level is very high. Talk to an expert now.')
-              : risk === 'yellow'
-              ? (locale === 'es' ? 'Tu sitio tiene advertencias de cumplimiento. Te recomendamos revisarlas antes de que se conviertan en un problema.' : 'Your site has compliance warnings. We recommend reviewing them before they become a problem.')
-              : (locale === 'es' ? 'Todos los controles analizados están en orden. Mantén este nivel con revisiones periódicas.' : 'All analyzed controls are in order. Keep this level with periodic reviews.');
-            const Icon = risk === 'green' ? CheckCircle2 : AlertTriangle;
+            const es = locale === 'es';
+            const Icon = icd.id === 'confiable' || icd.id === 'estable' ? CheckCircle2 : AlertTriangle;
 
             return (
-              <div className={`bg-white rounded-[28px] sm:rounded-[36px] border ${borderColor} shadow-xl p-5 sm:p-8 mb-8 sm:mb-10`}>
+              <div className="bg-white rounded-[28px] sm:rounded-[36px] border shadow-xl p-5 sm:p-8 mb-8 sm:mb-10" style={{ borderColor: icd.border }}>
                 <div className="flex items-start gap-4 sm:gap-5">
-                  <div className={`w-12 h-12 sm:w-16 sm:h-16 rounded-2xl sm:rounded-3xl ${bgIcon} flex items-center justify-center shrink-0`}>
-                    <Icon className={`w-6 h-6 sm:w-8 sm:h-8 ${iconColor}`} />
+                  <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-2xl sm:rounded-3xl flex items-center justify-center shrink-0" style={{ backgroundColor: icd.bg }}>
+                    <Icon className="w-6 h-6 sm:w-8 sm:h-8" style={{ color: icd.color }} />
                   </div>
-                  <div>
-                    <p className="font-semibold mb-1 sm:mb-2 text-sm sm:text-base text-gray-700">
-                      {locale === 'es' ? 'La pagina web: ' : 'The website: '}
-                      <a href={`https://${scan.url}`} target="_blank" rel="noopener noreferrer" className="font-semibold underline hover:opacity-75">{scan.url}</a>
-                      {locale === 'es' ? ' tiene un : ' : ' has a : '}
-                      <span className={labelColor}>{label}</span>
+                  <div className="flex-1">
+                    <p className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-1">
+                      {es ? 'Índice de Confianza Digital™' : 'Digital Trust Index™'}
                     </p>
-                    <h3 className="text-xl sm:text-2xl font-bold text-[#1f2d3d] mb-2 sm:mb-3">{title}</h3>
-                    <p className="text-gray-600 leading-relaxed text-sm sm:text-base">{desc}</p>
+                    <p className="font-semibold mb-1 sm:mb-2 text-sm sm:text-base text-gray-700">
+                      <a href={`https://${scan.url}`} target="_blank" rel="noopener noreferrer" className="font-semibold underline hover:opacity-75">{scan.url}</a>
+                    </p>
+                    <h3 className="text-xl sm:text-2xl font-bold mb-2 sm:mb-3">
+                      {unlocked && <span className="text-[#1f2d3d]">{scan.score} / 100 · </span>}
+                      <span style={{ color: icd.color }}>{icd.emoji} {es ? icd.nameEs : icd.nameEn}</span>
+                    </h3>
+                    <p className="text-gray-600 leading-relaxed text-sm sm:text-base">
+                      {es ? icd.interpretationEs : icd.interpretationEn}
+                    </p>
+                    {unlocked && nextGoal && (
+                      <p className="mt-3 inline-block rounded-xl px-4 py-2 text-sm font-semibold text-[#1e2a52]" style={{ backgroundColor: icd.bg }}>
+                        🎯 {es
+                          ? `Próxima meta: alcanzar el nivel ${nextGoal.name} (${nextGoal.threshold} puntos).`
+                          : `Next goal: reach the ${nextGoal.name} level (${nextGoal.threshold} points).`}
+                      </p>
+                    )}
                   </div>
                 </div>
               </div>
@@ -258,8 +239,8 @@ function ResultsContent() {
             </div>
 
             {(() => {
-              const securityScore = calcSubScore(scan.checks, SECURITY_CHECKS);
-              const legalScore = calcSubScore(scan.checks, LEGAL_CHECKS);
+              const securityScore = calcAreaScore(scan.checks, SECURITY_CHECKS);
+              const legalScore = calcAreaScore(scan.checks, LEGAL_CHECKS);
 
               const renderCheckItem = (check: typeof scan.checks[number], showRecommendation: boolean) => {
                 const isPass = check.status === 'pass';
@@ -435,7 +416,7 @@ function ResultsContent() {
                 ids: Set<string>,
                 composite?: { titleKey: TranslationKey; ids: string[] }[]
               ) => {
-                const scoreColor = RISK_COLOR[getRisk(score)].hex;
+                const scoreColor = getICDLevel(score).color;
                 const colChecks = scan.checks.filter(c => ids.has(c.checkId));
                 const freeChecks = colChecks.filter(c => c.tier === 'free');
                 const premiumChecks = colChecks.filter(c => c.tier === 'premium');
@@ -543,7 +524,7 @@ function ResultsContent() {
                     <>
                       <span className="text-5xl sm:text-6xl font-bold text-[#1f2d3d]">{scan.score}</span>
                       <span className="font-semibold mt-1 text-sm" style={{ color: scoreColor }}>
-                        {getRisk(scan.score) === 'green' ? t('compliance_high') : getRisk(scan.score) === 'yellow' ? t('risk_medium') : t('risk_high')}
+                        {locale === 'es' ? icd.nameEs : icd.nameEn}
                       </span>
                     </>
                   ) : (

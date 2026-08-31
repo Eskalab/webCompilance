@@ -1,38 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { readFileSync } from 'fs';
-import { join } from 'path';
 import { prisma } from '@/lib/db';
 import { SECTORS } from '@/lib/sectors';
-import { generatePdfBuffer } from '@/lib/generate-pdf';
-import { renderPdfHtml } from '@/lib/render-pdf-html';
+import { getLogoBase64 } from '@/lib/logo';
+import { getICDLevel } from '@/lib/scanner/icd';
 
+// Nivel de riesgo unificado en el Índice de Confianza Digital™ (5 niveles).
 const scoreConfig = (score: number) => {
-  if (score >= 80) return {
-    level: 'VERDE',
-    color: '#10b981',
-    boxBg: '#ecfdf5',
-    boxBorder: '#a7f3d0',
-    boxTextColor: '#065f46',
-    title: '¡Tu sitio está bien protegido!',
-    desc: 'Tus controles básicos están en orden. Te recomendamos una revisión periódica para mantener este nivel.',
-  };
-  if (score >= 50) return {
-    level: 'AMARILLO',
-    color: '#f59e0b',
-    boxBg: '#fffbeb',
-    boxBorder: '#fde68a',
-    boxTextColor: '#92400e',
-    title: 'Hay aspectos por mejorar',
-    desc: 'Tu sitio tiene advertencias de cumplimiento. Un experto puede ayudarte a resolverlas antes de que se conviertan en un problema.',
-  };
+  const l = getICDLevel(score);
   return {
-    level: 'ROJO',
-    color: '#ef4444',
-    boxBg: '#fef2f2',
-    boxBorder: '#fecaca',
-    boxTextColor: '#b91c1c',
-    title: '¡Acción inmediata requerida!',
-    desc: 'Tu nivel de riesgo es muy alto. Tu sitio está expuesto a sanciones y brechas de seguridad. Habla con un experto ahora.',
+    level: l.nameEs,
+    emoji: l.emoji,
+    color: l.color,
+    boxBg: l.bg,
+    boxBorder: l.border,
+    boxTextColor: l.color,
+    title: `Índice de Confianza Digital™: ${l.emoji} ${l.nameEs}`,
+    desc: l.interpretationEs,
   };
 };
 
@@ -113,7 +96,7 @@ export async function POST(request: NextRequest) {
     const resultUrl = `${baseUrl}/results?id=${scanId}`;
     const cfg = scoreConfig(score ?? 0);
     const waMessage = encodeURIComponent(
-      `Hola, escaneé el sitio ${url} con el Scanner de TDE y mi nivel de riesgo es ${cfg.level}. Me gustaría agendar una consultoría gratuita.`
+      `Hola, escaneé el sitio ${url} con el Scanner de TDE y mi Índice de Confianza Digital es ${score ?? 0} (${cfg.level}). Me gustaría agendar una consultoría gratuita.`
     );
     const waUrl = `https://wa.me/573143992911?text=${waMessage}`;
 
@@ -160,15 +143,6 @@ export async function POST(request: NextRequest) {
   }
 
   return NextResponse.json({ success: true });
-}
-
-function getLogoBase64(): string {
-  try {
-    const logoPath = join(process.cwd(), 'public', 'logo.png');
-    return `data:image/png;base64,${readFileSync(logoPath).toString('base64')}`;
-  } catch {
-    return '';
-  }
 }
 
 function buildEmailHtml(p: {

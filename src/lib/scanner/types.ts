@@ -41,6 +41,8 @@ export interface ScanResponse {
     pass: number;
     warn: number;
     fail: number;
+    /** Duración del análisis en ms. Ausente en scans cacheados viejos. */
+    durationMs?: number;
   };
 }
 
