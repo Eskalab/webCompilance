@@ -3,60 +3,38 @@
 import React, { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useLanguage } from '@/contexts/language';
-import { TranslationKey } from '@/lib/i18n';
 import { ScanResponse } from '@/lib/scanner/types';
-import { getICDLevel, getNextGoal, calcAreaScore } from '@/lib/scanner/icd';
+import { getICDLevel, getNextGoal, calcAreaScore, ICD_AREAS, ICD_LEVELS, worstStatus } from '@/lib/scanner/icd';
+import { FINDINGS, FINDING_STATUS, selectFindings } from '@/lib/scanner/findings';
 import SiteHeader from '@/components/site-header';
 import SiteFooter from '@/components/site-footer';
 import LeadGate from '@/components/lead-gate';
 import LeadGateModal from '@/components/lead-gate-modal';
 
 import {
-  ShieldCheck,
-  AlertTriangle,
-  CheckCircle2,
-  XCircle,
   Download,
   ChevronRight,
-  ChevronDown,
   Globe,
   Lock,
   Cookie,
   FileText,
-  SearchCheck,
-  Shield,
-  Scale,
 } from 'lucide-react';
 
-const SECURITY_CHECKS = new Set(['ssl', 'mixed_content', 'form_security', 'security_headers', 'third_party']);
-// legal_pages se mantiene por scans cacheados anteriores al split en data_rights/cookie_policy
-const LEGAL_CHECKS = new Set(['privacy_policy', 'data_rights', 'legal_pages', 'forms_consent', 'cookie_banner', 'cookie_policy']);
+const STATUS_CHIP = {
+  pass: { es: 'Correcto', en: 'Correct', color: '#0e9f6e', tint: '#e6f7f0' },
+  warn: { es: 'Requiere revisión', en: 'Needs review', color: '#c27803', tint: '#fdf3df' },
+  fail: { es: 'Atención', en: 'Attention', color: '#e02424', tint: '#fdeaea' },
+  skip: { es: 'No aplica', en: 'N/A', color: '#6b7280', tint: '#f1f2f4' },
+};
 
-// Las 3 piezas legales que exige la SIC (Ley 1581 / Decreto 1377).
-// Cada una se muestra como un solo ítem que consolida el estado de sus checks.
-const LEGAL_ITEMS: { titleKey: TranslationKey; ids: string[] }[] = [
-  { titleKey: 'legal_group_politica', ids: ['privacy_policy', 'data_rights', 'legal_pages'] },
-  { titleKey: 'legal_group_aviso', ids: ['forms_consent'] },
-  { titleKey: 'legal_group_cookies', ids: ['cookie_banner', 'cookie_policy'] },
-];
-
-// Niveles de riesgo unificados en el Índice de Confianza Digital™ (ICD):
-// ver src/lib/scanner/icd.ts (5 niveles, textos y colores).
+const RING_R = 62;
+const RING_C = 2 * Math.PI * RING_R;
 
 function ResultsContent() {
   const [scan, setScan] = useState<ScanResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [unlocked, setUnlocked] = useState(false);
   const [showModal, setShowModal] = useState(false);
-  const [expanded, setExpanded] = useState<Set<string>>(new Set());
-
-  const toggleExpand = (id: string) =>
-    setExpanded(prev => {
-      const next = new Set(prev);
-      next.has(id) ? next.delete(id) : next.add(id);
-      return next;
-    });
-
   const router = useRouter();
   const searchParams = useSearchParams();
   const { t, locale } = useLanguage();
@@ -128,7 +106,6 @@ function ResultsContent() {
 
   const icd = getICDLevel(scan.score);
   const nextGoal = getNextGoal(scan.score, locale === 'es' ? 'es' : 'en');
-  const scoreColor = icd.color;
 
   return (
     <main className="min-h-screen bg-[#f7f8fa]">
@@ -185,50 +162,127 @@ function ResultsContent() {
             {t('scan_another')}
           </button>
 
-          {/* 1. TARJETA ICD — Índice de Confianza Digital™ */}
+          {/* 1. HERO ICD — anillo + nivel + escala */}
           {(() => {
             const es = locale === 'es';
-            const Icon = icd.id === 'confiable' || icd.id === 'estable' ? CheckCircle2 : AlertTriangle;
+            const ringOn = (RING_C * scan.score) / 100;
+            const ordered = [...ICD_LEVELS].reverse(); // crítico → confiable
 
             return (
-              <div className="bg-white rounded-[28px] sm:rounded-[36px] border shadow-xl p-5 sm:p-8 mb-8 sm:mb-10" style={{ borderColor: icd.border }}>
-                <div className="flex items-start gap-4 sm:gap-5">
-                  <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-2xl sm:rounded-3xl flex items-center justify-center shrink-0" style={{ backgroundColor: icd.bg }}>
-                    <Icon className="w-6 h-6 sm:w-8 sm:h-8" style={{ color: icd.color }} />
+              <div className="bg-white rounded-[24px] border border-gray-200/70 shadow-[0_1px_2px_rgba(16,23,40,.04),0_8px_24px_-12px_rgba(16,23,40,.08)] p-6 sm:p-8 mb-6">
+                <div className="flex flex-col sm:flex-row items-center gap-7 sm:gap-9">
+                  {/* Anillo */}
+                  <div className="relative w-40 h-40 sm:w-[164px] sm:h-[164px] shrink-0">
+                    <svg width="100%" height="100%" viewBox="0 0 164 164" className="-rotate-90">
+                      <circle cx="82" cy="82" r={RING_R} fill="none" stroke="#edf0f5" strokeWidth="14" />
+                      {unlocked && (
+                        <circle cx="82" cy="82" r={RING_R} fill="none" stroke={icd.color} strokeWidth="14" strokeLinecap="round"
+                          strokeDasharray={`${ringOn.toFixed(1)} ${RING_C.toFixed(1)}`} />
+                      )}
+                    </svg>
+                    <div className="absolute inset-0 flex flex-col items-center justify-center">
+                      {unlocked ? (
+                        <>
+                          <span className="text-[42px] font-extrabold leading-none tracking-tight text-[#101728]">{scan.score}</span>
+                          <span className="text-[10px] font-semibold tracking-widest text-gray-400 mt-1">{es ? 'DE 100' : 'OF 100'}</span>
+                        </>
+                      ) : (
+                        <>
+                          <Lock className="w-7 h-7 text-gray-300" />
+                          <span className="text-gray-400 text-xs font-medium mt-1.5 text-center px-4">{es ? 'Ingresa tu correo' : 'Enter your email'}</span>
+                        </>
+                      )}
+                    </div>
                   </div>
-                  <div className="flex-1">
-                    <p className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-1">
-                      {es ? 'Índice de Confianza Digital™' : 'Digital Trust Index™'}
+
+                  {/* Nivel + interpretación */}
+                  <div className="flex-1 text-center sm:text-left">
+                    <p className="text-[10px] font-extrabold uppercase tracking-[2px] text-gray-400 mb-2">
+                      {es ? 'Índice de Confianza Digital™' : 'Digital Trust Index™'} · <a href={`https://${scan.url}`} target="_blank" rel="noopener noreferrer" className="underline hover:opacity-75 normal-case tracking-normal">{scan.url}</a>
                     </p>
-                    <p className="font-semibold mb-1 sm:mb-2 text-sm sm:text-base text-gray-700">
-                      <a href={`https://${scan.url}`} target="_blank" rel="noopener noreferrer" className="font-semibold underline hover:opacity-75">{scan.url}</a>
-                    </p>
-                    <h3 className="text-xl sm:text-2xl font-bold mb-2 sm:mb-3">
-                      {unlocked && <span className="text-[#1f2d3d]">{scan.score} / 100 · </span>}
-                      <span style={{ color: icd.color }}>{icd.emoji} {es ? icd.nameEs : icd.nameEn}</span>
-                    </h3>
-                    <p className="text-gray-600 leading-relaxed text-sm sm:text-base">
+                    <span className="inline-flex items-center gap-2 text-xs font-bold px-3.5 py-1.5 rounded-full" style={{ color: icd.color, backgroundColor: icd.bg }}>
+                      <span className="w-2 h-2 rounded-full" style={{ backgroundColor: icd.color }} />
+                      {es ? icd.nameEs : icd.nameEn}
+                    </span>
+                    <p className="text-gray-600 leading-relaxed text-sm mt-3">
                       {es ? icd.interpretationEs : icd.interpretationEn}
                     </p>
                     {unlocked && nextGoal && (
-                      <p className="mt-3 inline-block rounded-xl px-4 py-2 text-sm font-semibold text-[#1e2a52]" style={{ backgroundColor: icd.bg }}>
-                        🎯 {es
-                          ? `Próxima meta: alcanzar el nivel ${nextGoal.name} (${nextGoal.threshold} puntos).`
-                          : `Next goal: reach the ${nextGoal.name} level (${nextGoal.threshold} points).`}
-                      </p>
+                      <div className="mt-3.5 inline-flex items-center gap-2.5 bg-[#f0f7f7] border border-[#d5eaea] rounded-xl px-3.5 py-2">
+                        <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#0f8b8d]">{es ? 'Próxima meta' : 'Next goal'}</span>
+                        <b className="text-xs text-[#1e2a52]">{es ? `Nivel ${nextGoal.name} · ${nextGoal.threshold} puntos` : `${nextGoal.name} level · ${nextGoal.threshold} points`}</b>
+                      </div>
                     )}
                   </div>
+                </div>
+
+                {/* Escala */}
+                <div className="flex items-start mt-6 pt-5 border-t border-gray-100 gap-1.5">
+                  {ordered.map((l) => {
+                    const current = l.id === icd.id;
+                    return (
+                      <div key={l.id} style={{ flex: `${l.max - l.min + 1} 0 0` }}>
+                        <div className="h-2 rounded-full" style={{ backgroundColor: l.color, opacity: current ? 1 : 0.25, outline: current ? `3px solid ${l.color}33` : 'none' }} />
+                        <p className="mt-2 text-[8.5px] font-bold uppercase tracking-wide leading-tight" style={{ color: current ? l.color : '#a3aab8' }}>{es ? l.nameEs : l.nameEn}</p>
+                        <p className="text-[8.5px] text-gray-300 tabular-nums">{l.min}–{l.max}</p>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             );
           })()}
 
-          {/* CHECKS — two columns */}
-          <div className="mt-14">
-            <div className="flex items-center justify-between flex-wrap gap-4 mb-6">
-              <div>
-                <p className="text-[#0f8b8d] font-semibold uppercase tracking-widest text-xs sm:text-sm mb-1">{t('compliance_report')}</p>
-                <h2 className="text-2xl sm:text-3xl font-bold text-[#1f2d3d]">{t('analysis_results')}</h2>
+          {/* 2. ÁREAS — 4 cards */}
+          {(() => {
+            const es = locale === 'es';
+            return (
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-2">
+                {ICD_AREAS.map((a) => {
+                  const status = worstStatus(scan.checks, a.checkIds);
+                  const score = calcAreaScore(scan.checks, a.checkIds);
+                  const chip = STATUS_CHIP[status];
+                  const fillColor = getICDLevel(score).color;
+                  return (
+                    <div key={a.id} className="bg-white rounded-[20px] border border-gray-200/70 shadow-[0_1px_2px_rgba(16,23,40,.04),0_8px_24px_-12px_rgba(16,23,40,.08)] p-4 sm:p-5">
+                      <div className="flex items-center justify-between gap-2 mb-2.5 flex-wrap">
+                        <span className="font-bold text-[13px] text-[#101728]">{es ? a.nameEs : a.nameEn}</span>
+                        {unlocked && (
+                          <span className="inline-flex items-center gap-1.5 text-[10px] font-bold px-2.5 py-1 rounded-full whitespace-nowrap" style={{ color: chip.color, backgroundColor: chip.tint }}>
+                            <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: chip.color }} />
+                            {es ? chip.es : chip.en}
+                          </span>
+                        )}
+                      </div>
+                      {unlocked ? (
+                        <>
+                          <p className="text-[26px] font-extrabold tracking-tight text-[#101728] mb-2.5 tabular-nums">{score}<span className="text-xs text-gray-400 font-semibold ml-0.5">/100</span></p>
+                          <div className="h-1.5 bg-[#edf0f5] rounded-full overflow-hidden">
+                            <div className="h-full rounded-full" style={{ width: `${score}%`, backgroundColor: fillColor }} />
+                          </div>
+                        </>
+                      ) : (
+                        <>
+                          <p className="text-[26px] font-extrabold tracking-tight text-gray-300 mb-2.5 flex items-center gap-2"><Lock className="w-4 h-4" />—</p>
+                          <div className="h-1.5 bg-[#edf0f5] rounded-full" />
+                        </>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            );
+          })()}
+
+          {/* 03 · PRINCIPALES HALLAZGOS */}
+          <div className="mt-12">
+            <div className="flex items-start justify-between flex-wrap gap-4 mb-5">
+              <div className="flex gap-3.5 items-start">
+                <span className="w-9 h-9 rounded-xl bg-[#1e2a52] text-white text-sm font-extrabold flex items-center justify-center shrink-0">03</span>
+                <div>
+                  <h2 className="text-xl sm:text-2xl font-extrabold tracking-tight text-[#101728]">{locale === 'es' ? 'Principales hallazgos' : 'Main findings'}</h2>
+                  <p className="text-sm text-gray-400">{locale === 'es' ? 'Los cinco aspectos más relevantes del análisis' : 'The five most relevant aspects of the analysis'}</p>
+                </div>
               </div>
               {unlocked && (
                 <button onClick={handlePdf} className="h-11 px-6 rounded-2xl bg-[#0f8b8d] text-white font-semibold hover:bg-[#0c7475] transition flex items-center gap-2 text-sm">
@@ -238,263 +292,153 @@ function ResultsContent() {
               )}
             </div>
 
-            {(() => {
-              const securityScore = calcAreaScore(scan.checks, SECURITY_CHECKS);
-              const legalScore = calcAreaScore(scan.checks, LEGAL_CHECKS);
-
-              const renderCheckItem = (check: typeof scan.checks[number], showRecommendation: boolean) => {
-                const isPass = check.status === 'pass';
-                const isWarn = check.status === 'warn';
-                const isFail = check.status === 'fail';
-                const label = locale === 'es' && check.labelEs ? check.labelEs : check.label;
-                const details = locale === 'es' && check.detailsEs ? check.detailsEs : check.details;
-                const suggestion = locale === 'es' && check.suggestionEs ? check.suggestionEs : check.suggestion;
-
+            <div className="space-y-4">
+              {selectFindings(scan.checks).map((c, i) => {
+                const es = locale === 'es';
+                const copy = FINDINGS[c.checkId];
+                const chip = FINDING_STATUS[c.status as 'pass' | 'warn' | 'fail'];
+                const ok = c.status === 'pass';
                 return (
-                  <div key={check.checkId} className="border-b border-gray-100 last:border-0 px-4 sm:px-6 py-4 sm:py-5 space-y-3">
-                    {/* Header */}
-                    <div className="flex items-center gap-3">
+                  <article key={c.checkId} className="bg-white rounded-[20px] border border-gray-200/70 border-l-4 shadow-[0_1px_2px_rgba(16,23,40,.04),0_8px_24px_-12px_rgba(16,23,40,.08)] p-5 sm:p-6" style={{ borderLeftColor: unlocked ? chip.color : '#c7ccd6' }}>
+                    <div className="flex items-center gap-3 mb-4 flex-wrap">
+                      <span className="text-[13px] font-extrabold text-gray-400 bg-[#f1f3f7] rounded-lg px-2.5 py-1.5 tabular-nums">{String(i + 1).padStart(2, '0')}</span>
+                      <h3 className="flex-1 font-extrabold text-[15px] text-[#101728] tracking-tight">{es ? copy.title.es : copy.title.en}</h3>
                       {unlocked ? (
-                        <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${isPass ? 'bg-green-100' : isWarn ? 'bg-yellow-100' : 'bg-red-100'}`}>
-                          {isPass && <CheckCircle2 className="w-4 h-4 text-green-600" />}
-                          {isWarn && <AlertTriangle className="w-4 h-4 text-yellow-600" />}
-                          {isFail && <XCircle className="w-4 h-4 text-red-600" />}
-                        </div>
+                        <span className="inline-flex items-center gap-1.5 text-[11px] font-bold px-3 py-1.5 rounded-full" style={{ color: chip.color, backgroundColor: chip.tint }}>
+                          <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: chip.color }} />
+                          {es ? chip.es : chip.en}
+                        </span>
                       ) : (
-                        <div className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 bg-gray-100">
-                          <Lock className="w-3.5 h-3.5 text-gray-400" />
-                        </div>
-                      )}
-                      <span className="flex-1 font-semibold text-[#1f2d3d] text-sm">{label}</span>
-                      {unlocked ? (
-                        <div className={`px-2.5 py-1 rounded-full text-xs font-semibold shrink-0 ${isPass ? 'bg-green-100 text-green-700' : isWarn ? 'bg-yellow-100 text-yellow-700' : 'bg-red-100 text-red-700'}`}>
-                          {locale === 'es' ? t(`status_${check.status === 'pass' ? 'pass' : check.status === 'warn' ? 'warn' : check.status === 'fail' ? 'fail' : 'skip'}` as const) : check.status.toUpperCase()}
-                        </div>
-                      ) : (
-                        <div className="px-2.5 py-1 rounded-full text-xs font-semibold shrink-0 bg-gray-100 text-gray-400">
-                          {locale === 'es' ? '———' : '———'}
-                        </div>
+                        <span className="inline-flex items-center gap-1.5 text-[11px] font-bold px-3 py-1.5 rounded-full bg-gray-100 text-gray-400"><Lock className="w-3 h-3" />———</span>
                       )}
                     </div>
-
-                    {/* Details */}
-                    <p className="text-gray-600 text-sm leading-relaxed">{details}</p>
-
-                    {/* Recommendation */}
-                    {showRecommendation && suggestion && (
-                      <div className="bg-[#f7f8fa] rounded-xl p-4 border border-gray-200 flex items-start gap-3">
-                        <SearchCheck className="w-4 h-4 text-[#0f8b8d] shrink-0 mt-0.5" />
-                        <p className="text-gray-600 text-sm leading-relaxed">{suggestion}</p>
+                    <div className="grid sm:grid-cols-2 gap-4 sm:gap-6">
+                      <div>
+                        <p className="text-[10px] font-extrabold uppercase tracking-[1.4px] text-gray-400 mb-1">{es ? 'Qué detectamos' : 'What we detected'}</p>
+                        {unlocked ? (
+                          <p className="text-[13px] text-[#414b5f] leading-relaxed">{ok ? (es ? copy.detectedOk.es : copy.detectedOk.en) : (es ? copy.detectedBad.es : copy.detectedBad.en)}</p>
+                        ) : (
+                          <p className="text-[13px] text-gray-300 leading-relaxed blur-[3px] select-none">{es ? copy.detectedBad.es : copy.detectedBad.en}</p>
+                        )}
                       </div>
-                    )}
-                    {!showRecommendation && !unlocked && (
-                      <div className="bg-[#f7f8fa] rounded-xl p-4 border border-gray-200 relative overflow-hidden">
-                        <div className="blur-sm select-none pointer-events-none flex items-start gap-3">
-                          <SearchCheck className="w-4 h-4 text-[#0f8b8d] shrink-0 mt-0.5" />
-                          <p className="text-gray-600 text-sm">{t('recommendation_text')}</p>
-                        </div>
-                        <div className="absolute inset-0 flex flex-col items-center justify-center gap-1">
-                          <div className="flex items-center gap-1.5 text-[#0f8b8d] font-semibold text-sm">
-                            <Lock className="w-4 h-4" />
-                            <span>{t('premium_recommendations_locked')}</span>
-                          </div>
-                          <button onClick={() => setShowModal(true)} className="text-[#0f8b8d] text-xs underline hover:text-[#0c7475] transition cursor-pointer">
-                            {t('click_to_unlock')}
-                          </button>
-                        </div>
+                      <div>
+                        <p className="text-[10px] font-extrabold uppercase tracking-[1.4px] text-gray-400 mb-1">{es ? 'Por qué importa' : 'Why it matters'}</p>
+                        <p className="text-[13px] text-[#414b5f] leading-relaxed">{es ? copy.why.es : copy.why.en}</p>
                       </div>
-                    )}
-                  </div>
-                );
-              };
-
-              // Un ítem legal consolida varios checks en una sola fila:
-              // el peor estado manda (fail > warn > pass) y se juntan detalles y sugerencias.
-              const renderCompositeItem = (titleKey: TranslationKey, ids: string[]) => {
-                const members = scan.checks.filter(c => ids.includes(c.checkId) && c.status !== 'skip');
-                if (members.length === 0) return null;
-
-                const freeMembers = members.filter(c => c.tier === 'free');
-                const shown = unlocked ? members : freeMembers;
-                const title = t(titleKey);
-
-                // Solo checks premium y aún bloqueado: fila con nombre visible + candado
-                if (shown.length === 0) {
-                  return (
-                    <div key={titleKey} className="border-b border-gray-100 last:border-0 px-4 sm:px-6 py-4 sm:py-5 space-y-3">
-                      <div className="flex items-center gap-3">
-                        <div className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 bg-gray-100">
-                          <Lock className="w-3.5 h-3.5 text-gray-400" />
-                        </div>
-                        <span className="flex-1 font-semibold text-[#1f2d3d] text-sm">{title}</span>
-                        <div className="px-2.5 py-1 rounded-full text-xs font-semibold shrink-0 bg-gray-100 text-gray-400">———</div>
-                      </div>
-                      <p className="text-gray-600 text-sm leading-relaxed">{t('legal_group_locked')}</p>
                     </div>
-                  );
-                }
-
-                const statuses = shown.map(c => c.status);
-                const status = statuses.includes('fail') ? 'fail' : statuses.includes('warn') ? 'warn' : 'pass';
-                const isPass = status === 'pass';
-                const isWarn = status === 'warn';
-                const isFail = status === 'fail';
-                const details = shown
-                  .map(c => (locale === 'es' && c.detailsEs ? c.detailsEs : c.details))
-                  .filter(Boolean);
-                const suggestions = shown
-                  .filter(c => c.status !== 'pass')
-                  .map(c => (locale === 'es' && c.suggestionEs ? c.suggestionEs : c.suggestion))
-                  .filter(Boolean);
-
-                return (
-                  <div key={titleKey} className="border-b border-gray-100 last:border-0 px-4 sm:px-6 py-4 sm:py-5 space-y-3">
-                    {/* Header */}
-                    <div className="flex items-center gap-3">
+                    <div className="mt-4 bg-[#f4f9f9] border border-[#dcecec] rounded-[14px] px-4 py-3 relative overflow-hidden flex gap-5 items-start justify-between">
                       {unlocked ? (
-                        <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${isPass ? 'bg-green-100' : isWarn ? 'bg-yellow-100' : 'bg-red-100'}`}>
-                          {isPass && <CheckCircle2 className="w-4 h-4 text-green-600" />}
-                          {isWarn && <AlertTriangle className="w-4 h-4 text-yellow-600" />}
-                          {isFail && <XCircle className="w-4 h-4 text-red-600" />}
-                        </div>
-                      ) : (
-                        <div className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 bg-gray-100">
-                          <Lock className="w-3.5 h-3.5 text-gray-400" />
-                        </div>
-                      )}
-                      <span className="flex-1 font-semibold text-[#1f2d3d] text-sm">{title}</span>
-                      {unlocked ? (
-                        <div className={`px-2.5 py-1 rounded-full text-xs font-semibold shrink-0 ${isPass ? 'bg-green-100 text-green-700' : isWarn ? 'bg-yellow-100 text-yellow-700' : 'bg-red-100 text-red-700'}`}>
-                          {locale === 'es' ? t(`status_${status}` as TranslationKey) : status.toUpperCase()}
-                        </div>
-                      ) : (
-                        <div className="px-2.5 py-1 rounded-full text-xs font-semibold shrink-0 bg-gray-100 text-gray-400">———</div>
-                      )}
-                    </div>
-
-                    {/* Details */}
-                    {details.map((d, i) => (
-                      <p key={i} className="text-gray-600 text-sm leading-relaxed">{d}</p>
-                    ))}
-
-                    {/* Recommendations */}
-                    {unlocked && suggestions.length > 0 && (
-                      <div className="bg-[#f7f8fa] rounded-xl p-4 border border-gray-200 space-y-3">
-                        {suggestions.map((s, i) => (
-                          <div key={i} className="flex items-start gap-3">
-                            <SearchCheck className="w-4 h-4 text-[#0f8b8d] shrink-0 mt-0.5" />
-                            <p className="text-gray-600 text-sm leading-relaxed">{s}</p>
+                        <>
+                          <div>
+                            <p className="text-[10px] font-extrabold uppercase tracking-[1.4px] text-[#0f8b8d] mb-0.5">{es ? 'Recomendación' : 'Recommendation'}</p>
+                            <p className="text-[13px] text-[#414b5f] leading-relaxed">{ok ? (es ? copy.recOk.es : copy.recOk.en) : (es ? copy.recBad.es : copy.recBad.en)}</p>
                           </div>
-                        ))}
-                      </div>
-                    )}
-                    {!unlocked && (
-                      <div className="bg-[#f7f8fa] rounded-xl p-4 border border-gray-200 relative overflow-hidden">
-                        <div className="blur-sm select-none pointer-events-none flex items-start gap-3">
-                          <SearchCheck className="w-4 h-4 text-[#0f8b8d] shrink-0 mt-0.5" />
-                          <p className="text-gray-600 text-sm">{t('recommendation_text')}</p>
-                        </div>
-                        <div className="absolute inset-0 flex flex-col items-center justify-center gap-1">
-                          <div className="flex items-center gap-1.5 text-[#0f8b8d] font-semibold text-sm">
-                            <Lock className="w-4 h-4" />
-                            <span>{t('premium_recommendations_locked')}</span>
-                          </div>
-                          <button onClick={() => setShowModal(true)} className="text-[#0f8b8d] text-xs underline hover:text-[#0c7475] transition cursor-pointer">
-                            {t('click_to_unlock')}
-                          </button>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                );
-              };
-
-              const renderColumn = (
-                titleEs: string, titleEn: string,
-                icon: React.ReactNode,
-                score: number, accentColor: string,
-                ids: Set<string>,
-                composite?: { titleKey: TranslationKey; ids: string[] }[]
-              ) => {
-                const scoreColor = getICDLevel(score).color;
-                const colChecks = scan.checks.filter(c => ids.has(c.checkId));
-                const freeChecks = colChecks.filter(c => c.tier === 'free');
-                const premiumChecks = colChecks.filter(c => c.tier === 'premium');
-
-                return (
-                  <div className="bg-white rounded-[24px] sm:rounded-[32px] border border-gray-100 shadow-xl overflow-hidden flex flex-col">
-                    {/* Column header */}
-                    <div className="px-4 sm:px-6 py-4 sm:py-5 border-b border-gray-100" style={{ borderTop: `4px solid ${accentColor}` }}>
-                      <div className="flex items-center justify-between flex-wrap gap-2">
-                        <div className="flex items-center gap-3">
-                          <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ backgroundColor: `${accentColor}18` }}>
-                            {icon}
-                          </div>
-                          <h3 className="font-bold text-[#1f2d3d]">
-                            {locale === 'es' ? titleEs : titleEn}
-                          </h3>
-                        </div>
-                        <div className="text-right">
-                          {unlocked ? (
-                            <>
-                              <span className="text-2xl font-bold" style={{ color: scoreColor }}>{score}</span>
-                              <span className="text-gray-400 text-sm"> / 100</span>
-                            </>
-                          ) : (
-                            <div className="flex items-center gap-1.5 text-gray-400">
-                              <Lock className="w-4 h-4" />
-                              <span className="text-sm font-medium">{locale === 'es' ? 'Bloqueado' : 'Locked'}</span>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Checks */}
-                    <div className="flex-1">
-                      {composite ? (
-                        composite.map((item) => renderCompositeItem(item.titleKey, item.ids))
+                          <span className="hidden sm:block shrink-0 text-[9.5px] text-gray-400 font-semibold max-w-[150px] text-right leading-snug pt-0.5">{es ? copy.norm.es : copy.norm.en}</span>
+                        </>
                       ) : (
                         <>
-                          {freeChecks.map(c => renderCheckItem(c, unlocked))}
-
-                          {unlocked && premiumChecks.map(c => renderCheckItem(c, true))}
+                          <div className="blur-sm select-none pointer-events-none">
+                            <p className="text-[10px] font-extrabold uppercase tracking-[1.4px] text-[#0f8b8d] mb-0.5">{es ? 'Recomendación' : 'Recommendation'}</p>
+                            <p className="text-[13px] text-gray-500">{t('recommendation_text')}</p>
+                          </div>
+                          <div className="absolute inset-0 flex flex-col items-center justify-center gap-1">
+                            <div className="flex items-center gap-1.5 text-[#0f8b8d] font-semibold text-sm">
+                              <Lock className="w-4 h-4" />
+                              <span>{t('premium_recommendations_locked')}</span>
+                            </div>
+                            <button onClick={() => setShowModal(true)} className="text-[#0f8b8d] text-xs underline hover:text-[#0c7475] transition cursor-pointer">
+                              {t('click_to_unlock')}
+                            </button>
+                          </div>
                         </>
                       )}
                     </div>
-                  </div>
+                  </article>
                 );
-              };
+              })}
+            </div>
 
-              return (
-                <>
-                  <div className="grid md:grid-cols-2 gap-6">
-                    {renderColumn(
-                      'Seguridad Digital', 'Digital Security',
-                      <Shield className="w-5 h-5" style={{ color: '#1e2a52' }} />,
-                      securityScore, '#1e2a52', SECURITY_CHECKS
-                    )}
-                    {renderColumn(
-                      'Cumplimiento Legal', 'Legal Compliance',
-                      <Scale className="w-5 h-5" style={{ color: '#0f8b8d' }} />,
-                      legalScore, '#0f8b8d', LEGAL_CHECKS, LEGAL_ITEMS
-                    )}
-                  </div>
-
-                  {!unlocked && (
-                    <div id="lead-gate" className="mt-6">
-                      <LeadGate
-                        scanId={scan.id}
-                        url={scan.url}
-                        score={scan.score}
-                        onUnlock={() => setUnlocked(true)}
-                      />
-                    </div>
-                  )}
-                </>
-              );
-            })()}
+            {!unlocked && (
+              <div id="lead-gate" className="mt-6">
+                <LeadGate
+                  scanId={scan.id}
+                  url={scan.url}
+                  score={scan.score}
+                  onUnlock={() => setUnlocked(true)}
+                />
+              </div>
+            )}
           </div>
+
+          {/* 04 · QUÉ SIGNIFICA PARA TU EMPRESA */}
+          {(() => {
+            const es = locale === 'es';
+            const businessBullets: [string, string][] = es
+              ? [['Confianza', 'La percepción de seguridad que tus clientes tienen al entregarte información.'],
+                 ['Profesionalismo', 'La imagen que proyecta tu empresa en cada punto de contacto digital.'],
+                 ['Protección', 'El resguardo real de la información que recopilas día a día.'],
+                 ['Preparación', 'Tu posición frente a futuras revisiones, auditorías o reclamaciones.']]
+              : [['Trust', 'How safe your customers feel when handing over their information.'],
+                 ['Professionalism', 'The image your company projects at every digital touchpoint.'],
+                 ['Protection', 'The real safeguarding of the information you collect every day.'],
+                 ['Readiness', 'Your position for future reviews, audits or claims.']];
+
+            const areaStates = ICD_AREAS.map((a) => ({ ...a, status: worstStatus(scan.checks, a.checkIds) }));
+            const names = (s: 'fail' | 'warn' | 'pass') => areaStates.filter((a) => a.status === s).map((a) => (es ? a.nameEs : a.nameEn)).join(' · ');
+            const priorities = [
+              { color: '#e02424', tint: '#fdeaea', label: es ? 'Prioridad alta' : 'High priority', areas: names('fail'),
+                text: es ? 'Revisar lo antes posible: puede impactar la protección de la información y la confianza de los usuarios.' : 'Review as soon as possible: it can impact information protection and user trust.' },
+              { color: '#c27803', tint: '#fdf3df', label: es ? 'Prioridad media' : 'Medium priority', areas: names('warn'),
+                text: es ? 'Oportunidades claras para fortalecer el cumplimiento y reducir riesgos futuros.' : 'Clear opportunities to strengthen compliance and reduce future risks.' },
+              { color: '#0e9f6e', tint: '#e6f7f0', label: es ? 'Prioridad baja' : 'Low priority', areas: names('pass'),
+                text: es ? 'Nivel adecuado; mantener controles y realizar revisiones periódicas.' : 'Adequate level; keep controls in place and review periodically.' },
+            ];
+
+            return (
+              <div className="mt-12">
+                <div className="flex gap-3.5 items-start mb-5">
+                  <span className="w-9 h-9 rounded-xl bg-[#1e2a52] text-white text-sm font-extrabold flex items-center justify-center shrink-0">04</span>
+                  <div>
+                    <h2 className="text-xl sm:text-2xl font-extrabold tracking-tight text-[#101728]">{es ? '¿Qué significa para tu empresa?' : 'What this means for your company'}</h2>
+                    <p className="text-sm text-gray-400">{es ? 'El impacto de estos resultados en el negocio' : 'The business impact of these results'}</p>
+                  </div>
+                </div>
+
+                <div className="grid sm:grid-cols-2 gap-4">
+                  {businessBullets.map(([h, d]) => (
+                    <div key={h} className="bg-white rounded-[20px] border border-gray-200/70 shadow-[0_1px_2px_rgba(16,23,40,.04),0_8px_24px_-12px_rgba(16,23,40,.08)] p-5 sm:p-6">
+                      <div className="w-7 h-1 rounded-full bg-gradient-to-r from-[#0f8b8d] to-[#67d4cf] mb-3" />
+                      <h4 className="font-extrabold text-[15px] text-[#101728] mb-1 tracking-tight">{h}</h4>
+                      <p className="text-[13px] text-gray-500 leading-relaxed">{d}</p>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="mt-4 bg-white rounded-[20px] border border-gray-200/70 border-l-4 shadow-[0_1px_2px_rgba(16,23,40,.04),0_8px_24px_-12px_rgba(16,23,40,.08)] p-5 sm:p-6" style={{ borderLeftColor: icd.color }}>
+                  <span className="inline-flex items-center gap-2 text-[11px] font-bold px-3 py-1.5 rounded-full" style={{ color: icd.color, backgroundColor: icd.bg }}>
+                    <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: icd.color }} />
+                    {es ? `Recomendación para tu nivel · ${icd.nameEs}` : `Recommendation for your level · ${icd.nameEn}`}
+                  </span>
+                  <p className="text-[13px] text-[#414b5f] leading-relaxed mt-3">{es ? icd.recommendationEs : icd.recommendationEn}</p>
+                </div>
+
+                <div className="grid sm:grid-cols-3 gap-4 mt-4">
+                  {priorities.map((p) => (
+                    <div key={p.label} className="bg-white rounded-[18px] border border-gray-200/70 border-t-4 shadow-[0_1px_2px_rgba(16,23,40,.04),0_8px_24px_-12px_rgba(16,23,40,.08)] p-5" style={{ borderTopColor: p.color }}>
+                      <span className="inline-flex items-center gap-1.5 text-[11px] font-bold px-3 py-1.5 rounded-full" style={{ color: p.color, backgroundColor: p.tint }}>
+                        <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: p.color }} />
+                        {p.label}
+                      </span>
+                      <p className="text-[12px] text-gray-500 leading-relaxed mt-2.5">{p.text}</p>
+                      <p className="text-[11.5px] font-bold text-[#101728] border-t border-gray-100 pt-2.5 mt-2.5">
+                        {unlocked ? (p.areas || (es ? 'Ninguna área en este nivel' : 'No areas at this level')) : '———'}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            );
+          })()}
 
           {/* 3. CALIFICACIÓN GLOBAL */}
           <div className="mt-8 sm:mt-10 bg-white rounded-[28px] sm:rounded-[36px] shadow-xl border border-gray-100 p-6 sm:p-10">
@@ -509,34 +453,6 @@ function ResultsContent() {
               </div>
             </div>
             <div className="flex flex-col lg:flex-row items-center gap-8 sm:gap-10">
-              {/* Circle */}
-              <div className="relative w-44 h-44 sm:w-52 sm:h-52 shrink-0">
-                <div className="absolute inset-0 rounded-full border-[16px] border-[#eaf5f3]" />
-                <div
-                  className="absolute inset-0 rounded-full border-[16px] border-transparent"
-                  style={unlocked
-                    ? { borderTopColor: scoreColor, borderRightColor: scoreColor, transform: `rotate(${scan.score * 1.8}deg)` }
-                    : { borderTopColor: '#d1d5db', borderRightColor: '#d1d5db', transform: 'rotate(90deg)' }
-                  }
-                />
-                <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  {unlocked ? (
-                    <>
-                      <span className="text-5xl sm:text-6xl font-bold text-[#1f2d3d]">{scan.score}</span>
-                      <span className="font-semibold mt-1 text-sm" style={{ color: scoreColor }}>
-                        {locale === 'es' ? icd.nameEs : icd.nameEn}
-                      </span>
-                    </>
-                  ) : (
-                    <div className="flex flex-col items-center gap-1">
-                      <Lock className="w-8 h-8 text-gray-300" />
-                      <span className="text-gray-400 text-sm font-medium text-center px-4">
-                        {locale === 'es' ? 'Ingresa tu correo' : 'Enter your email'}
-                      </span>
-                    </div>
-                  )}
-                </div>
-              </div>
               {/* Summary */}
               <div className="grid grid-cols-3 gap-4 flex-1 w-full">
                 <div className="bg-[#f7f8fa] rounded-2xl p-5 text-center">
@@ -585,22 +501,53 @@ function ResultsContent() {
         </div>
       </section>
 
-      {/* CTA */}
-      <section className="py-12 sm:py-24">
+      {/* 05 · EL PRIMER PASO + CTA LegalCheck 360° */}
+      <section className="pb-16 sm:pb-24">
         <div className="max-w-5xl mx-auto px-4 sm:px-6">
-          <div className="rounded-[28px] sm:rounded-[40px] bg-[linear-gradient(120deg,#1e2a52_0%,#1e2a52_38%,#2d7d9a_50%,#1e2a52_62%,#1e2a52_100%)] p-8 sm:p-14 text-center shadow-2xl">
-            <h2 className="text-3xl sm:text-5xl font-bold text-white mb-4 sm:mb-6">
-              {t('need_legal_help')}
-            </h2>
+          {(() => {
+            const es = locale === 'es';
+            const notAnalyzed = es
+              ? ['cómo se almacenan realmente los datos', 'quién tiene acceso a ellos', 'si tus documentos reflejan la operación de tu empresa', 'si tus procesos cumplen con la normativa', 'cómo respondes ante incidentes de seguridad']
+              : ['how data is actually stored', 'who has access to it', 'whether your documents reflect your company’s operation', 'whether your processes comply with regulations', 'how you respond to security incidents'];
+            const waMessage = encodeURIComponent(es
+              ? `Hola, escaneé el sitio ${scan.url} con el Scanner de TDE y mi Índice de Confianza Digital es ${scan.score} (${icd.nameEs}). Me gustaría agendar una sesión de revisión personalizada.`
+              : `Hi, I scanned ${scan.url} with the TDE Scanner and my Digital Trust Index is ${scan.score} (${icd.nameEn}). I would like to schedule a personalized review session.`);
+            return (
+              <>
+                <div className="flex gap-3.5 items-start mb-5">
+                  <span className="w-9 h-9 rounded-xl bg-[#1e2a52] text-white text-sm font-extrabold flex items-center justify-center shrink-0">05</span>
+                  <div>
+                    <h2 className="text-xl sm:text-2xl font-extrabold tracking-tight text-[#101728]">{es ? 'Este análisis es solo el primer paso' : 'This analysis is only the first step'}</h2>
+                    <p className="text-sm text-gray-400">{es ? 'Lo que este análisis no alcanza a ver' : 'What this analysis cannot see'}</p>
+                  </div>
+                </div>
 
-            <p className="text-white/90 text-base sm:text-xl mb-6 sm:mb-10 max-w-2xl mx-auto">
-              {t('need_legal_help_desc')}
-            </p>
+                <div className="grid sm:grid-cols-2 gap-3 mb-6">
+                  {notAnalyzed.map((n) => (
+                    <div key={n} className="bg-white rounded-[14px] border border-gray-200/70 px-4 py-3 text-[13px] text-[#414b5f] flex items-center gap-2.5">
+                      <span className="w-5 h-5 rounded-lg bg-[#f1f3f7] text-gray-400 text-[11px] font-extrabold flex items-center justify-center shrink-0">×</span>
+                      {n}
+                    </div>
+                  ))}
+                </div>
 
-            <button className="h-12 sm:h-14 px-7 sm:px-10 rounded-2xl bg-white text-[#0f8b8d] font-bold hover:scale-105 transition text-sm sm:text-base">
-              {t('talk_advisor')}
-            </button>
-          </div>
+                <div className="rounded-[24px] bg-[radial-gradient(120%_160%_at_90%_-30%,#2d7d9a_0%,#1e2a52_50%,#151d3b_100%)] p-8 sm:p-10 shadow-[0_24px_48px_-20px_rgba(30,42,82,.45)] flex flex-col sm:flex-row items-center gap-7 justify-between">
+                  <div className="text-center sm:text-left">
+                    <p className="text-[11px] font-extrabold uppercase tracking-[2.6px] text-[#67d4cf]">{es ? 'Diagnóstico integral' : 'Comprehensive diagnosis'}</p>
+                    <h3 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white mt-1.5 mb-2">LegalCheck 360°</h3>
+                    <p className="text-[#b9c3dd] text-sm max-w-md">{es
+                      ? 'Revisa la operación digital, los procesos y la documentación de tu empresa para entregar un mapa de riesgos y un plan de acción priorizado.'
+                      : 'Reviews your company’s digital operation, processes and documentation to deliver a risk map and a prioritized action plan.'}</p>
+                    <p className="text-[#8fa2c9] text-[11px] mt-2.5">+57 314 399 2911 · info@tde.com.co · tde.com.co</p>
+                  </div>
+                  <a href={`https://wa.me/573143992911?text=${waMessage}`} target="_blank" rel="noopener noreferrer"
+                     className="shrink-0 bg-white text-[#1e2a52] font-extrabold text-sm px-7 py-3.5 rounded-[14px] shadow-[0_8px_20px_-8px_rgba(0,0,0,.4)] hover:scale-105 transition">
+                    {es ? 'Solicitar una sesión →' : 'Request a session →'}
+                  </a>
+                </div>
+              </>
+            );
+          })()}
         </div>
       </section>
 

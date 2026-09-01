@@ -19,6 +19,7 @@ export default function LeadGateModal({ scanId, url, score, onUnlock, onClose }:
   const [email, setEmail] = useState('');
   const [sector, setSector] = useState('');
   const [acceptedTerms, setAcceptedTerms] = useState(false);
+  const [acceptedData, setAcceptedData] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const { t, locale } = useLanguage();
@@ -43,6 +44,10 @@ export default function LeadGateModal({ scanId, url, score, onUnlock, onClose }:
     }
     if (!acceptedTerms) {
       setError(t('error_terms'));
+      return;
+    }
+    if (!acceptedData) {
+      setError(t('error_data'));
       return;
     }
 
@@ -149,9 +154,28 @@ export default function LeadGateModal({ scanId, url, score, onUnlock, onClose }:
               </a>
             </span>
           </label>
+          <label className="flex items-start gap-2 text-left cursor-pointer">
+            <input
+              type="checkbox"
+              checked={acceptedData}
+              onChange={(e) => setAcceptedData(e.target.checked)}
+              className="mt-0.5 accent-[#0f8b8d] w-4 h-4 shrink-0"
+            />
+            <span className="text-sm text-gray-600">
+              {t('data_checkbox')}{' '}
+              <a
+                href="/politicas"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[#0f8b8d] underline hover:text-[#0c7475]"
+              >
+                {t('data_link')}
+              </a>
+            </span>
+          </label>
           <button
             type="submit"
-            disabled={loading || !name.trim() || !position.trim() || !email.trim() || !sector || !acceptedTerms}
+            disabled={loading || !name.trim() || !position.trim() || !email.trim() || !sector || !acceptedTerms || !acceptedData}
             className="px-8 py-3 bg-[#0f8b8d] text-white font-semibold rounded-2xl hover:bg-[#0c7475] disabled:opacity-50 transition-colors"
           >
             {loading ? t('unlock_sending') : t('unlock_btn')}

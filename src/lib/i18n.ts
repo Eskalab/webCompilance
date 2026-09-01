@@ -200,6 +200,18 @@ export const translations = {
     es: 'Debes aceptar los términos y condiciones',
     en: 'You must accept the terms and conditions',
   },
+  data_checkbox: {
+    es: 'Acepto el',
+    en: 'I accept the',
+  },
+  data_link: {
+    es: 'manejo de datos personales',
+    en: 'handling of my personal data',
+  },
+  error_data: {
+    es: 'Debes aceptar el manejo de datos personales',
+    en: 'You must accept the handling of personal data',
+  },
 
   // Footer
   footer: {

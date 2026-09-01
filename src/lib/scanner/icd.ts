@@ -9,7 +9,7 @@ import { CheckResult } from './types';
 // citan la Ley 1581 de 2012 sin artículos (el detalle es valor premium).
 // ─────────────────────────────────────────────────────────────────────────────
 
-export type ICDLevelId = 'confiable' | 'estable' | 'en_desarrollo' | 'expuesto' | 'critico';
+export type ICDLevelId = 'confiable' | 'estable' | 'expuesto' | 'critico';
 
 export interface ICDLevel {
   id: ICDLevelId;
@@ -32,7 +32,7 @@ export interface ICDLevel {
 export const ICD_LEVELS: ICDLevel[] = [
   {
     id: 'confiable',
-    min: 90, max: 100,
+    min: 96, max: 100,
     emoji: '🟢',
     color: '#30c48d', bg: '#ecfdf5', border: '#a7f3d0',
     nameEs: 'CONFIABLE', nameEn: 'TRUSTED',
@@ -45,7 +45,7 @@ export const ICD_LEVELS: ICDLevel[] = [
   },
   {
     id: 'estable',
-    min: 75, max: 89,
+    min: 80, max: 95,
     emoji: '🟢🟡',
     color: '#8fd14f', bg: '#f4fce8', border: '#d4f0a8',
     nameEs: 'ESTABLE', nameEn: 'STABLE',
@@ -57,21 +57,8 @@ export const ICD_LEVELS: ICDLevel[] = [
     recommendationEn: 'Prioritize updating the elements identified in this report to strengthen transparency, improve user experience and consolidate a preventive compliance strategy in line with Law 1581 of 2012.',
   },
   {
-    id: 'en_desarrollo',
-    min: 60, max: 74,
-    emoji: '🟡',
-    color: '#f5b942', bg: '#fffbeb', border: '#fde68a',
-    nameEs: 'EN DESARROLLO', nameEn: 'DEVELOPING',
-    shortEs: 'Se identifican oportunidades importantes de mejora en materia de protección de datos y cumplimiento.',
-    shortEn: 'Important improvement opportunities were identified regarding data protection and compliance.',
-    interpretationEs: 'El análisis evidencia que tu sitio cuenta con algunos controles básicos de privacidad y seguridad; sin embargo, existen aspectos relevantes que requieren atención para fortalecer la gestión de datos personales y disminuir la exposición a riesgos operativos y legales.',
-    interpretationEn: 'The analysis shows your site has some basic privacy and security controls; however, there are relevant aspects that require attention to strengthen personal data management and reduce exposure to operational and legal risks.',
-    recommendationEs: 'Se recomienda revisar y actualizar las prácticas identificadas como oportunidades de mejora, asegurando que la información publicada refleje la operación real de la empresa y que el tratamiento de datos personales se comunique de forma clara y transparente, conforme a la Ley 1581 de 2012.',
-    recommendationEn: 'We recommend reviewing and updating the practices identified as improvement opportunities, making sure the published information reflects the real operation of the company and that personal data processing is communicated clearly and transparently, in line with Law 1581 of 2012.',
-  },
-  {
     id: 'expuesto',
-    min: 40, max: 59,
+    min: 51, max: 79,
     emoji: '🟠',
     color: '#f97316', bg: '#fff7ed', border: '#fed7aa',
     nameEs: 'EXPUESTO', nameEn: 'EXPOSED',
@@ -84,7 +71,7 @@ export const ICD_LEVELS: ICDLevel[] = [
   },
   {
     id: 'critico',
-    min: 0, max: 39,
+    min: 0, max: 50,
     emoji: '🔴',
     color: '#ef4444', bg: '#fef2f2', border: '#fecaca',
     nameEs: 'CRÍTICO', nameEn: 'CRITICAL',
@@ -96,6 +83,16 @@ export const ICD_LEVELS: ICDLevel[] = [
     recommendationEn: 'We recommend a comprehensive assessment of the company’s digital operation, reviewing not only the visible elements of the website but also the internal processes related to personal data processing. A specialized diagnosis will establish a prioritized action plan to strengthen compliance with Law 1581 of 2012, improve risk management and increase the trust of clients and partners.',
   },
 ];
+
+// Curva exponencial: más dura que la lineal. Con exponente 2, cumplir el 90%
+// de los controles da 81 (Estable), el 80% da 64 (Expuesto) y el 70% da 49
+// (Crítico). Solo un cumplimiento casi perfecto alcanza Confiable (>= 96 ⇒ ~98%).
+export const SCORE_EXPONENT = 2;
+
+/** Convierte la proporción de peso cumplido (0-1) en score 0-100 con curva exponencial. */
+export function applyScoreCurve(ratio: number): number {
+  return Math.round(Math.pow(Math.max(0, Math.min(1, ratio)), SCORE_EXPONENT) * 100);
+}
 
 export function getICDLevel(score: number): ICDLevel {
   return ICD_LEVELS.find((l) => score >= l.min) ?? ICD_LEVELS[ICD_LEVELS.length - 1];
@@ -131,7 +128,8 @@ export const ICD_AREAS: ICDArea[] = [
 
 /**
  * Sub-score 0-100 de un grupo de checks, consistente con calculateScore():
- * pass = peso completo, warn = medio peso, skip no cuenta.
+ * pass = peso completo, warn = medio peso, skip no cuenta. Misma curva
+ * exponencial que el score global.
  */
 export function calcAreaScore(checks: Pick<CheckResult, 'checkId' | 'status' | 'weight'>[], ids: Set<string> | string[]): number {
   const idSet = ids instanceof Set ? ids : new Set(ids);
@@ -143,7 +141,7 @@ export function calcAreaScore(checks: Pick<CheckResult, 'checkId' | 'status' | '
     if (c.status === 'pass') earned += c.weight;
     else if (c.status === 'warn') earned += c.weight * 0.5;
   }
-  return totalWeight ? Math.round((earned / totalWeight) * 100) : 0;
+  return totalWeight ? applyScoreCurve(earned / totalWeight) : 0;
 }
 
 /** Peor estado de un grupo de checks (fail > warn > pass); skip se ignora. */

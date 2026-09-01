@@ -13,6 +13,7 @@ import { securityHeadersCheck } from './checks/security-headers';
 import { createHash } from 'crypto';
 import { prisma } from '@/lib/db';
 import { analyzeLegal } from './legal/analyze';
+import { applyScoreCurve } from './icd';
 
 const checks: Check[] = [
   sslCheck,
@@ -29,9 +30,10 @@ const checks: Check[] = [
 
 const CACHE_TTL_MS = 6 * 60 * 60 * 1000; // 6 hours
 
-// Incrementar cuando cambie la estructura de checks: invalida el cache
-// automáticamente (los scans viejos quedan bajo otra key y no se sirven).
-export const ENGINE_VERSION = 2;
+// Incrementar cuando cambie la estructura de checks o el cálculo del score:
+// invalida el cache automáticamente (los scans viejos quedan bajo otra key).
+// v3: curva exponencial (ICD) — los scores lineales cacheados quedan obsoletos.
+export const ENGINE_VERSION = 3;
 
 export async function runScan(url: string): Promise<ScanResponse> {
   const cacheKey = createHash('sha256').update(`${url}#v${ENGINE_VERSION}`).digest('hex').slice(0, 12);
@@ -120,5 +122,6 @@ function calculateScore(results: CheckResult[]): number {
   }
 
   if (totalWeight === 0) return 0;
-  return Math.round((earned / totalWeight) * 100);
+  // Curva exponencial (ver icd.ts): castiga más fuerte cada control incumplido.
+  return applyScoreCurve(earned / totalWeight);
 }
