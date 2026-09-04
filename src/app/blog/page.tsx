@@ -19,17 +19,18 @@ function BlogContent() {
   const { locale } = useLanguage();
 
   return (
-    <section className="py-16 px-4 bg-[#f7f8fa]">
-      <div className="max-w-6xl mx-auto">
-
-        <h1 className="text-3xl font-bold text-[#1f2d3d] mb-2">
-          {locale === 'es' ? 'Blog' : 'Blog'}
-        </h1>
-        <p className="text-gray-500 text-sm mb-10">
+    <>
+      <section className="bg-gradient-to-r from-[#1a2a3a] to-[#2c3e50] py-20 px-6 text-center text-white">
+        <h1 className="text-4xl lg:text-6xl font-bold mb-4">Blog</h1>
+        <p className="text-lg lg:text-xl text-white/80 max-w-2xl mx-auto">
           {locale === 'es'
             ? 'Artículos sobre protección de datos, derecho digital y comercio electrónico en Colombia.'
             : 'Articles on data protection, digital law and e-commerce in Colombia.'}
         </p>
+      </section>
+
+      <section className="py-16 px-4 bg-[#f7f8fa]">
+      <div className="max-w-6xl mx-auto">
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {[...blogPosts].sort((a, b) => b.date.localeCompare(a.date)).map((post) => (
@@ -87,7 +88,8 @@ function BlogContent() {
           ))}
         </div>
       </div>
-    </section>
+      </section>
+    </>
   );
 }
 
