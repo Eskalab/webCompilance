@@ -46,7 +46,8 @@ const COUNTRIES = [
   { code: 'ES', flag: '🇪🇸', es: 'España',               en: 'Spain'               },
 ];
 
-export default function ScanForm() {
+// brand: colores de TDE (la landing de producto); sin él, el azul original de /scanner
+export default function ScanForm({ brand = false }: { brand?: boolean }) {
   const [url, setUrl] = useState('');
   const country = 'CO';
   const [loading, setLoading] = useState(false);
@@ -105,13 +106,13 @@ export default function ScanForm() {
           value={url}
           onChange={(e) => setUrl(e.target.value)}
           placeholder={t('placeholder_url')}
-          className="flex-1 px-4 py-3 rounded-lg border border-gray-300 text-lg text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className={`flex-1 px-4 py-3 rounded-lg border border-gray-300 text-lg text-gray-900 bg-white focus:outline-none focus:ring-2 ${brand ? 'focus:ring-[#0f8b8d]' : 'focus:ring-blue-500'} focus:border-transparent`}
           disabled={loading}
         />
         <button
           type="submit"
           disabled={loading}
-          className="px-8 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          className={`px-8 py-3 text-white font-semibold rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-colors ${brand ? 'bg-[#0f8b8d] hover:bg-[#0c7475]' : 'bg-blue-600 hover:bg-blue-700'}`}
         >
           {loading ? (
             <span className="flex items-center gap-2">
