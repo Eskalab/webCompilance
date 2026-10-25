@@ -5,6 +5,7 @@ import SiteHeader from '@/components/site-header';
 import SiteFooter from '@/components/site-footer';
 import HeroSlider from '@/components/home/hero-slider';
 import QueHacemos from '@/components/home/que-hacemos';
+import ScannerBand from '@/components/home/scanner-band';
 import QuienesSomos from '@/components/home/quienes-somos';
 import ServicesSection from '@/components/home/services-section';
 import Capacitaciones from '@/components/home/capacitaciones';
@@ -19,6 +20,7 @@ export default function HomePage() {
       <SiteHeader />
       <HeroSlider />
       <QueHacemos />
+      <ScannerBand />
       <QuienesSomos />
       <ServicesSection />
       <Capacitaciones />

@@ -60,7 +60,7 @@ export default function SiteHeader() {
                 </button>
 
                 {/* DROPDOWN */}
-                <div className="absolute left-0 top-full pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
+                <div className="absolute left-1/2 -translate-x-1/2 top-full pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
                   <div className="bg-[#0b6f75] min-w-[760px] shadow-2xl overflow-hidden">
                     {services.map((svc, i) => (
                       <a
@@ -194,6 +194,18 @@ export default function SiteHeader() {
         )}
 
       </header>
+
+      {/* BARRA DEL ESCÁNER — lleva a la landing del Escáner Legal */}
+      <a
+        href="/productos/escaner-legal"
+        className="block bg-[#0f8b8d] hover:bg-[#0c7475] transition-colors text-white text-sm font-medium"
+      >
+        <div className="max-w-7xl mx-auto px-6 h-10 flex items-center justify-center">
+          <span className="hidden md:inline">{t('scan_strip')}</span>
+          <span className="md:hidden">{t('scan_strip_short')}</span>
+          <span className="ml-2" aria-hidden="true">→</span>
+        </div>
+      </a>
     </>
   );
 }

@@ -254,6 +254,14 @@ export const translations = {
     es: 'Contacto',
     en: 'Contact',
   },
+  scan_strip: {
+    es: '¿Tu sitio web cumple la Ley 1581? Escanéalo gratis aquí',
+    en: 'Does your website comply with Law 1581? Scan it for free here',
+  },
+  scan_strip_short: {
+    es: 'Escanea gratis tu sitio web',
+    en: 'Scan your website for free',
+  },
   nav_svc_ecommerce_data: {
     es: 'Manejo de Datos Personales para el Comercio Electrónico',
     en: 'Personal Data Management for E-Commerce',
@@ -403,6 +411,10 @@ export const translations = {
   footer_platform: {
     es: 'Plataforma',
     en: 'Platform',
+  },
+  footer_products: {
+    es: 'Productos',
+    en: 'Products',
   },
   footer_contact: {
     es: 'Contacto',

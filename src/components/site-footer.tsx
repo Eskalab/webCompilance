@@ -8,7 +8,7 @@ export default function SiteFooter() {
   return (
     <footer id="footer" className="bg-[linear-gradient(120deg,#1e2a52_0%,#1e2a52_38%,#2d7d9a_50%,#1e2a52_62%,#1e2a52_100%)]">
       <div className="max-w-7xl mx-auto px-6 py-16">
-        <div className="grid lg:grid-cols-4 gap-12">
+        <div className="grid lg:grid-cols-5 gap-12">
           {/* BRAND */}
           <div className="lg:col-span-2">
             <img
@@ -44,6 +44,18 @@ export default function SiteFooter() {
               </a>
               <a href="/politicas" className="block text-white/70 hover:text-white transition-colors">
                 {locale === 'es' ? 'Política de privacidad' : 'Privacy Policy'}
+              </a>
+            </div>
+          </div>
+
+          {/* PRODUCTOS */}
+          <div>
+            <h4 className="font-bold text-white mb-6">
+              {t('footer_products')}
+            </h4>
+            <div className="space-y-4">
+              <a href="/productos/escaner-legal" className="block text-white/70 hover:text-white transition-colors">
+                {locale === 'es' ? 'Escáner Legal' : 'Legal Scanner'}
               </a>
             </div>
           </div>
