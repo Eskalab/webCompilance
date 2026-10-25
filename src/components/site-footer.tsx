@@ -54,9 +54,18 @@ export default function SiteFooter() {
               {t('footer_products')}
             </h4>
             <div className="space-y-4">
-              <a href="/productos/escaner-legal" className="block text-white/70 hover:text-white transition-colors">
-                {locale === 'es' ? 'Escáner Legal' : 'Legal Scanner'}
-              </a>
+              {[
+                { href: '/productos/escaner-legal', es: 'Escáner Legal', en: 'Legal Scanner' },
+                { href: '/productos/diagnostico-legal-360', es: 'Diagnóstico Legal 360', en: 'Legal Diagnosis 360' },
+                { href: '/productos/capacitaciones-seguridad-informacion', es: 'Capacitaciones empresariales', en: 'Corporate training' },
+                { href: '/productos/contratos-influencers', es: 'Contratos para creadores', en: 'Contracts for creators' },
+                { href: '/productos/analisis-pia', es: 'Análisis PIA', en: 'PIA analysis' },
+                { href: '/productos/asesoria-derecho-digital', es: 'Derecho digital y TIC', en: 'Digital and ICT law' },
+              ].map((p) => (
+                <a key={p.href} href={p.href} className="block text-white/70 hover:text-white transition-colors">
+                  {p[locale]}
+                </a>
+              ))}
             </div>
           </div>
 
