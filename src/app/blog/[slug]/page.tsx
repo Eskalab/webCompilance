@@ -30,7 +30,7 @@ function renderContent(content: string) {
       return (
         <ul key={i} className="list-disc list-inside space-y-2 text-gray-700 my-4 pl-2">
           {items.map((item, j) => (
-            <li key={j} dangerouslySetInnerHTML={{ __html: item.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') }} />
+            <li key={j} className="text-justify" dangerouslySetInnerHTML={{ __html: item.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') }} />
           ))}
         </ul>
       );
@@ -39,7 +39,7 @@ function renderContent(content: string) {
     return (
       <p
         key={i}
-        className="text-gray-700 leading-relaxed my-4"
+        className="text-gray-700 leading-relaxed my-4 text-justify"
         dangerouslySetInnerHTML={{ __html: block.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') }}
       />
     );
