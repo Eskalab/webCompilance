@@ -25,14 +25,24 @@ function renderContent(content: string) {
     if (block.startsWith('### ')) {
       return <h3 key={i} className="text-xl font-bold text-[#1f2d3d] mt-7 mb-2">{block.slice(4)}</h3>;
     }
-    if (block.includes('\n- ')) {
-      const items = block.split('\n- ').filter(Boolean);
+    const lines = block.split('\n');
+    const bold = (s: string) => s.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+    if (lines.length > 1 && lines.every((l) => l.startsWith('- '))) {
       return (
         <ul key={i} className="list-disc list-inside space-y-2 text-gray-700 my-4 pl-2">
-          {items.map((item, j) => (
-            <li key={j} className="text-justify" dangerouslySetInnerHTML={{ __html: item.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') }} />
+          {lines.map((l, j) => (
+            <li key={j} className="text-justify" dangerouslySetInnerHTML={{ __html: bold(l.slice(2)) }} />
           ))}
         </ul>
+      );
+    }
+    if (lines.length > 1 && lines.every((l) => /^\d+\. /.test(l))) {
+      return (
+        <ol key={i} start={parseInt(lines[0], 10)} className="list-decimal list-inside space-y-2 text-gray-700 my-4 pl-2">
+          {lines.map((l, j) => (
+            <li key={j} className="text-justify" dangerouslySetInnerHTML={{ __html: bold(l.replace(/^\d+\. /, '')) }} />
+          ))}
+        </ol>
       );
     }
     if (!block.trim()) return null;
