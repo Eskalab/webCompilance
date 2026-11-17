@@ -27,7 +27,7 @@ function renderContent(content: string) {
     }
     const lines = block.split('\n');
     const bold = (s: string) => s.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-    if (lines.length > 1 && lines.every((l) => l.startsWith('- '))) {
+    if (lines.every((l) => l.startsWith('- '))) {
       return (
         <ul key={i} className="list-disc list-inside space-y-2 text-gray-700 my-4 pl-2">
           {lines.map((l, j) => (
