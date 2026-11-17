@@ -144,6 +144,42 @@ function PostContent({ slug }: { slug: string }) {
               {locale === 'es' ? 'CONTACTAR POR WHATSAPP' : 'CONTACT VIA WHATSAPP'}
             </a>
           </div>
+
+          {/* Fuentes y referencias */}
+          {(post.references?.length || post.disclaimer) && (
+            <div className="mt-12 pt-6 border-t border-gray-100 text-sm text-gray-500">
+              {post.references && post.references.length > 0 && (
+                <>
+                  <h2 className="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-3">
+                    {locale === 'es' ? 'Fuentes y referencias' : 'Sources and references'}
+                  </h2>
+                  <ol className="list-decimal pl-5 space-y-2 leading-relaxed">
+                    {post.references.map((ref, j) => (
+                      <li key={j}>
+                        {ref.text}
+                        {ref.url && (
+                          <>
+                            {' '}
+                            <a
+                              href={ref.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-[#0f8b8d] hover:underline break-all"
+                            >
+                              {ref.url}
+                            </a>
+                          </>
+                        )}
+                      </li>
+                    ))}
+                  </ol>
+                </>
+              )}
+              {post.disclaimer && (
+                <p className="mt-5 text-xs italic text-gray-400">{post.disclaimer}</p>
+              )}
+            </div>
+          )}
         </div>
       </section>
 
