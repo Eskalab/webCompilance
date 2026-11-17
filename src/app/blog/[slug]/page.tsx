@@ -26,10 +26,17 @@ function renderContent(content: string) {
       return <h3 key={i} className="text-xl font-bold text-[#1f2d3d] mt-7 mb-2">{block.slice(4)}</h3>;
     }
     const lines = block.split('\n');
-    const bold = (s: string) => s.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+    // **negrita** y [texto](url) → enlace externo
+    const bold = (s: string) =>
+      s
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(
+          /\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/g,
+          '<a href="$2" target="_blank" rel="noopener noreferrer" class="text-[#0f8b8d] font-semibold underline hover:text-[#1f2d3d]">$1</a>'
+        );
     if (lines.every((l) => l.startsWith('- '))) {
       return (
-        <ul key={i} className="list-disc list-inside space-y-2 text-gray-700 my-4 pl-2">
+        <ul key={i} className="list-disc list-outside space-y-2 text-gray-700 my-4 pl-7 marker:text-gray-500">
           {lines.map((l, j) => (
             <li key={j} className="text-justify" dangerouslySetInnerHTML={{ __html: bold(l.slice(2)) }} />
           ))}
@@ -38,7 +45,7 @@ function renderContent(content: string) {
     }
     if (lines.length > 1 && lines.every((l) => /^\d+\. /.test(l))) {
       return (
-        <ol key={i} start={parseInt(lines[0], 10)} className="list-decimal list-inside space-y-2 text-gray-700 my-4 pl-2">
+        <ol key={i} start={parseInt(lines[0], 10)} className="list-decimal list-outside space-y-2 text-gray-700 my-4 pl-7 marker:text-gray-500">
           {lines.map((l, j) => (
             <li key={j} className="text-justify" dangerouslySetInnerHTML={{ __html: bold(l.replace(/^\d+\. /, '')) }} />
           ))}
@@ -50,7 +57,7 @@ function renderContent(content: string) {
       <p
         key={i}
         className="text-gray-700 leading-relaxed my-4 text-justify"
-        dangerouslySetInnerHTML={{ __html: block.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') }}
+        dangerouslySetInnerHTML={{ __html: bold(block) }}
       />
     );
   });
